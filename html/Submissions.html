@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO DEMY Submissions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="Student_Home.html"><img src="../img/CodemyL.png" alt="CO DEMY" height="60"></a>
+            <a href="Submissions.html">Submissions</a>
+            <a href="Opportunities.html">Opportunities</a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Companies, Major">
+            <button><img src="../img/Search.png" alt="Search" width="30px"></button>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Bell.png" alt="Notifications" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Notification1(); return false;">Notification 1</a>
+                    <a href="#" onclick="Notification2(); return false;">Notification 2</a>
+                    <a href="#" onclick="NotificationAll(); return false;">See all notifications</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Settings.png" alt="Menu" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Arabic(); return false;">Switch to Arabic</a>
+                    <a href="#" id="mode-toggle" onclick="Mode()">Switch to dark mode</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Profile.png" alt="Profile" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="Student_Profile.html">View Profile</a>
+                    <a href="Student_Profile.html">Edit Profile</a>
+                    <a href="#" id="logout-link" onclick="Logout(); return false;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <table id="statusTable">
+            <!-- Rows will be populated by JavaScript -->
+        </table>
+        <div class="navigation">
+            <span class="arrow" onclick="prevPage()">&#10094;</span>
+            <span class="arrow" onclick="nextPage()">&#10095;</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        Contact us: Phone: 0555555555 | Email: Service@Co.Demy
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const dataArray = [
+            { program: "Aramco Student CO-OP Program", status: "In Progress" },
+            { program: "Sabic", status: "Accepted" },
+            { program: "Imam Abdulrahman Bin Faisal University", status: "Accepted" },
+            { program: "Program 4", status: "Denied" },
+            { program: "Program 5", status: "Accepted" },
+            { program: "Program 6", status: "Denied" },
+            { program: "Program 7", status: "In Progress" }
+        ];
+
+        let currentPage = 0;
+        const rowsPerPage = 4;
+
+        renderTable();
+    </script>
+</body>
+</html>

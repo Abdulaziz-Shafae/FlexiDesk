@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO DEMY Opportunities</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="Home.html"><img src="../img/CodemyL.png" alt="CO DEMY" height="60"></a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Companies, Major">
+            <button><img src="../img/Search.png" alt="Search" width="30px"></button>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Settings.png" alt="Menu" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Arabic(); return false;">Switch to Arabic</a>
+                    <a href="#" id="mode-toggle" onclick="Mode()">Switch to dark mode</a>
+                </div>
+            </div>
+            <div class="navbarRight">
+    <a href="Login.html">Log In</a>
+    <a href="signup.html">Sign Up </a>
+</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="container" id="arrayContainer">
+            <!-- Items will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <div class="footer">
+        Contact us: Phone: 0555555555 | Email: Service@Co.Demy
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Array with a mix of Aramco and Sabic images, now including age and GPA
+        const programs = [
+            { title: "Aramco Program 1", img: "../img/aramco.png", age: 21, gpa: 3.5, requirementsMet: true },
+            { title: "Sabic Program 1", img: "../img/sabic.png", age: 25, gpa: 2.3, requirementsMet: true },
+            { title: "Aramco Program 2", img: "../img/aramco.png", age: 22, gpa: 3.7, requirementsMet: true },
+            { title: "Sabic Program 2", img: "../img/sabic.png", age: 26, gpa: 2.8, requirementsMet: true },
+            { title: "Aramco Program 3", img: "../img/aramco.png", age: 23, gpa: 2.4, requirementsMet: true },
+            { title: "Sabic Program 3", img: "../img/sabic.png", age: 24, gpa: 3.6, requirementsMet: true },
+            { title: "Aramco Program 4", img: "../img/aramco.png", age: 21, gpa: 3.8, requirementsMet: true },
+            { title: "Sabic Program 4", img: "../img/sabic.png", age: 25, gpa: 2.1, requirementsMet: true },
+            { title: "Aramco Program 5", img: "../img/aramco.png", age: 22, gpa: 3.9, requirementsMet: true },
+            { title: "Sabic Program 5", img: "../img/sabic.png", age: 26, gpa: 3.0, requirementsMet: true },
+            { title: "Aramco Program 6", img: "../img/aramco.png", age: 23, gpa: 2.0, requirementsMet: true },
+            { title: "Sabic Program 6", img: "../img/sabic.png", age: 24, gpa: 3.7, requirementsMet: true }
+        ];
+
+        const container = document.getElementById('arrayContainer');
+
+        // Loop through the array and create HTML structure for each item
+        programs.forEach(program => {
+            // Create a div for each program
+            const programDiv = document.createElement('div');
+            programDiv.className = 'program';
+
+            // Set the HTML structure for each program item
+            programDiv.innerHTML = `
+                <img src="${program.img}" alt="${program.title}">
+                <h3>${program.title}</h3>
+                <button class="apply-btn ${!program.requirementsMet ? 'disabled' : ''}">Apply</button>
+                <div class="requirements">Please Log-in First.</div>
+                <a class="requirements-link">Show Requirements</a>
+                <div class="requirements">${!program.requirementsMet ? 'Requirements Not Met' : ''}</div>
+                <div class="additional-info">
+                    Age: ${program.age}<br>
+                    GPA: ${program.gpa}
+                </div>
+            `;
+
+            // Append the program div to the container
+            container.appendChild(programDiv);
+        });
+
+        // Add event listeners to all apply buttons
+        document.querySelectorAll('.apply-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.classList.contains('disabled')) {
+                    const message = this.nextElementSibling;
+                    message.style.display = 'block';
+                }
+            });
+        });
+
+        // Add event listeners to all requirements links
+        document.querySelectorAll('.requirements-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const requirements = this.nextElementSibling;
+                const additionalInfo = requirements.nextElementSibling;
+                requirements.style.display = 'block'; // Ensure the "Requirements Not Met" message is visible
+                if (additionalInfo.style.display === 'block') {
+                    additionalInfo.style.display = 'none';
+                } else {
+                    additionalInfo.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

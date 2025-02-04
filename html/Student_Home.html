@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO DEMY Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="Student_Home.html"><img src="../img/CodemyL.png" alt="CO DEMY" height="60"></a>
+            <a href="Submissions.html">Submissions</a>
+            <a href="Opportunities.html">Opportunities</a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Companies, Major">
+            <button><img src="../img/Search.png" alt="Search" width="30px"></button>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Bell.png" alt="Notifications" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Notification1(); return false;">Notification 1</a>
+                    <a href="#" onclick="Notification2(); return false;">Notification 2</a>
+                    <a href="#" onclick="NotificationAll(); return false;">See all notifications</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Settings.png" alt="Menu" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Arabic(); return false;">Switch to Arabic</a>
+                    <a href="#" id="mode-toggle" onclick="Mode()">Switch to dark mode</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Profile.png" alt="Profile" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="Student_Profile.html">View Profile</a>
+                    <a href="Student_Profile.html">Edit Profile</a>
+                    <a href="#" id="logout-link" onclick="Logout(); return false;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="slideshow-container">
+            <div class="mySlides">
+                <img src="https://via.placeholder.com/800x400?text=Slide+1" alt="Slide 1">
+                <div class="text">New training opportunities at Imam Abdulrahman Bin Faisal University</div>
+            </div>
+            <div class="mySlides">
+                <img src="https://via.placeholder.com/800x400?text=Slide+2" alt="Slide 2">
+                <div class="text">Upcoming workshops in Computer Science</div>
+            </div>
+            <div class="mySlides">
+                <img src="https://via.placeholder.com/800x400?text=Slide+3" alt="Slide 3">
+                <div class="text">Guest Lecture by Industry Experts</div>
+            </div>
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            <div class="dot-container">
+                <span class="dot" onclick="currentSlide(1)"></span>
+                <span class="dot" onclick="currentSlide(2)"></span>
+                <span class="dot" onclick="currentSlide(3)"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Contact us: Phone: 0555555555 | Email: Service@Co.Demy
+    </div>
+    <script src="script.js"></script>
+    <script>
+        let slideIndex = 1;
+        showSlides(slideIndex);
+    </script>
+</body>
+</html>

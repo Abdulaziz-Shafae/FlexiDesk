@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co Demy Profile Form</title>
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="Student_Home.html"><img src="../img/CodemyL.png" alt="CO DEMY" height="60"></a>
+            <a href="Submissions.html">Submissions</a>
+            <a href="Opportunities.html">Opportunities</a>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Companies, Major">
+            <button><img src="../img/Search.png" alt="Search" width="30px"></button>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Bell.png" alt="Notifications" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Notification1(); return false;">Notification 1</a>
+                    <a href="#" onclick="Notification2(); return false;">Notification 2</a>
+                    <a href="#" onclick="NotificationAll(); return false;">See all notifications</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Settings.png" alt="Menu" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Arabic(); return false;">Switch to Arabic</a>
+                    <a href="#" id="mode-toggle" onclick="Mode()">Switch to dark mode</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Profile.png" alt="Profile" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="Student_Profile.html">View Profile</a>
+                    <a href="Student_Profile.html">Edit Profile</a>
+                    <a href="#" id="logout-link" onclick="Logout(); return false;">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <form onsubmit="return validateForm();">
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Name">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Name">
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" class="phoneNumber" placeholder="+966">
+                <input type="text" id="phoneNumber2" name="phoneNumber2" class="phoneNumber2" placeholder="505050505">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" placeholder="******">
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" placeholder="Dammam">
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="text" id="dob" name="dob" placeholder="DD / MM / YYYY">
+            </div>
+            <div class="form-group">
+                <label for="id">National ID / Iqama:</label>
+                <input type="text" id="id" name="id" placeholder="ID">
+            </div>
+            <div class="form-group">
+                <label for="university">University:</label>
+                <input type="text" id="university" name="university" placeholder="University">
+            </div>
+            <div class="form-group">
+                <label for="college">College:</label>
+                <input type="text" id="college" name="college" placeholder="College">
+            </div>
+            <div class="form-group">
+                <label for="major">Major:</label>
+                <input type="text" id="major" name="major" placeholder="Major">
+            </div>
+            <div class="form-group">
+                <label for="gpa">GPA:</label>
+                <input type="text" id="gpa" name="gpa" class="gpa" placeholder="0">
+                <select id="gpaScale" name="gpaScale" class="gpaScale">
+                    <option value="" selected></option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="transcript">Transcript:</label>
+                <input type="file" id="transcript" name="transcript">
+            </div>
+            <div class="form-group">
+                <label for="lor">Letter of Recommendation:</label>
+                <input type="file" id="lor" name="lor">
+            </div>
+
+            <div class="apply-button">
+                <button type="submit">Apply</button>
+            </div>
+        </form>
+
+    </div>
+
+    
+    <div class="footer">
+        Contact us: Phone: 0555555555 | Email: Service@Co.Demy
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

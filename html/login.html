@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CO DEMY Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <a href="Home.html"><img src="../img/CodemyL.png" alt="CO DEMY" height="60"></a>
+        </div>
+        <div class="navbar-right">
+            <div class="dropdown">
+                <a href="#" class="icon-button"><img src="../img/Settings.png" alt="Menu" width="50"></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="Arabic(); return false;">Switch to Arabic</a>
+                    <a href="#" id="mode-toggle" onclick="Mode()">Switch to dark mode</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="login-container">
+            <a href="#"><img src="../img/Codemy.png" alt="CO DEMY" style="width: 150px; margin-bottom: 20px;"></a>
+            <a href="#"><img src="../img/BlogoTX.png" alt="CO DEMY" style="width: 150px; margin-bottom: 20px;"></a>
+            <form id="loginForm">
+                <input type="text" placeholder="Email / User Name" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Log In</button>
+            </form>
+            <a href="signup.html">New account</a>
+            <a> / </a>
+            <a href="forget-pass.html">Forget password?</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Contact us: Phone: 0555555555 | Email: Service@Co.Demy</p>
+    </footer>
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            window.location.href = 'Student_Home.html';
+        });
+    </script>
+</body>
+</html>
