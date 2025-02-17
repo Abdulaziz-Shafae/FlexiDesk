@@ -77,3 +77,27 @@
 .add-task-btn:hover {
     background: #0056b3;
 }
+
+/* Progress Bar */
+.progress-container {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 80%;
+    max-width: 500px;
+    height: 20px;
+    background: #ddd;
+    border-radius: 10px;
+    position: relative;
+    margin: auto;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #28a745;
+    width: 0;
+    transition: width 1s ease-in-out;
+}
