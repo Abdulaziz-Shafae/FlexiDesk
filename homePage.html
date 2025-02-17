@@ -3,112 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlexiDesk - Home</title>
-    <link rel="stylesheet" href="Style.css">
+    <title>FlexiDesk - Projects</title>
+    <link rel="stylesheet" href="navbarStyle.css">
+    <link rel="stylesheet" href="viwesStyle.css">
     <style>
-        /* General Styling */
+        /* General Page Styling */
         body {
             font-family: Arial, sans-serif;
             background: #f4f4f4;
             margin: 0;
             padding: 0;
-        }
-
-        .main-content {
-            padding-top: 80px;
             text-align: center;
         }
 
-        /* Navbar */
-        .navbar {
-            background: #2c3e50;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-        }
-
-        .navbar div {
-            display: flex;
-            gap: 20px;
-        }
-
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            justify-content: center;
+        /* Logo Styling */
+        .logo-container {
             margin-top: 20px;
         }
 
-        .tab {
-            padding: 10px 20px;
-            background: #2c3e50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            margin: 0 5px;
-            border-radius: 5px;
-            transition: background 0.3s ease;
+        .logo-container img {
+            width: 200px; /* Adjust size as needed */
+            height: auto;
         }
 
-        .tab:hover, .tab.active {
-            background: #3498db;
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            padding: 20px;
-            max-width: 900px;
-            margin: auto;
+        /* Container for Projects */
+        .projects-container {
+            max-width: 1200px;
+            margin: 20px auto;
             background: white;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
         }
 
-        .tab-content.active {
-            display: block;
+        /* Grid Layout for Projects */
+        .projects-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
         }
 
-        /* Calendar View - Bigger & Scrollable */
-        #calendar iframe {
-            width: 100%;
-            height: 700px;
-            border: none;
-            overflow-y: scroll;
+        /* Enlarged Project Card */
+        .project-card {
+            width: 350px;
+            height: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .project-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .project-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 15px 0;
         }
 
         /* Progress Bar */
-        .progress-container {
-            margin-top: 40px;
-            text-align: center;
+        .progress-bar-container {
+            width: 90%;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            margin: 15px auto;
         }
 
         .progress-bar {
-            width: 80%;
-            max-width: 500px;
-            height: 20px;
-            background: #ddd;
-            border-radius: 10px;
-            position: relative;
-            margin: auto;
-            overflow: hidden;
-        }
-
-        .progress {
             height: 100%;
             background: #28a745;
-            width: 0;
-            transition: width 1s ease-in-out;
+        }
+
+        /* Buttons Styling */
+        .btn {
+            display: block;
+            width: 90%;
+            padding: 12px;
+            margin-top: 10px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        .download-btn {
+            background: #3498db;
+        }
+
+        .download-btn:hover {
+            background: #217dbb;
+        }
+
+        .enter-btn {
+            background: #2c3e50;
+        }
+
+        .enter-btn:hover {
+            background: #1a252f;
+        }
+
+        /* Project Deadline */
+        .deadline {
+            font-size: 16px;
+            color: #555;
+            margin-top: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -116,109 +128,80 @@
 
 <!-- Navbar -->
 <div class="navbar">
-    <h2 class="logo">FlexiDesk</h2>
+    <div>
+        <h2 href="#" class="logo">FlexiDesk</h2>  
+    </div>
+
     <div>
         <a href="#">Home</a>
         <a href="#">Features</a>
         <a href="#">Pricing</a>
         <a href="#">Contact</a>
     </div>
+
+    <div>
+        <div class="dark-mode">
+            <label for="dark-mode-switch">Dark Mode</label>
+            <div class="switch">
+                <input type="checkbox" id="dark-mode-switch">
+                <span class="slider"></span>
+            </div>
+        </div>
+    </div>
 </div> 
+
 
 <!-- Main Content -->
 <div class="main-content">
-    <h1>Welcome to FlexiDesk</h1>
+    <h2>Number of projects: 3</h2>
+    <div class="projects-container">
+        <div class="projects-grid">
+            <!-- Project Card 1 -->
+            <div class="project-card">
+                <img src="https://www.itarian.com/assets-new/images/project-management.png" alt="Project Image">
+                <p class="project-title">Cybersecurity Project</p>
+                <p><strong>Progress</strong></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 30%;"></div>
+                </div>
+                <a href="#" class="btn download-btn">Download Report</a>
+                <button onclick="enterProject()" class="btn enter-btn">Enter Project</button>
+                <p class="deadline">Deadline: 23/5/2024</p>
+            </div>
 
-    <!-- Tabs for Views -->
-    <div class="tabs">
-        <button class="tab active" onclick="changeTab('table')">Table View</button>
-        <button class="tab" onclick="changeTab('calendar')">Calendar View</button>
-        <button class="tab" onclick="changeTab('gantt')">Gantt View</button>
-    </div>
+            <!-- Project Card 2 -->
+            <div class="project-card">
+                <img src="https://www.itarian.com/assets-new/images/project-management.png" alt="Project Image">
+                <p class="project-title">Cybersecurity Project</p>
+                <p><strong>Progress</strong></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 60%;"></div>
+                </div>
+                <a href="#" class="btn download-btn">Download Report</a>
+                <button onclick="enterProject()" class="btn enter-btn">Enter Project</button>
+                <p class="deadline">Deadline: 23/5/2024</p>
+            </div>
 
-    <!-- Tab Content -->
-    <div id="table" class="tab-content active">
-        <iframe id="tableIframe" src="tableView.html" width="100%" height="500px" style="border: none;"></iframe>
-    </div>
-
-    <div id="calendar" class="tab-content">
-        <iframe id="calendarIframe" src="calenderView.html" width="100%" height="700px" style="border: none; overflow-y: scroll;"></iframe>
-    </div>
-
-    <div id="gantt" class="tab-content">
-        <p>Gantt View will be added here...</p>
-    </div>
-
-    <!-- Interactive Progress Bar -->
-    <div class="progress-container">
-        <h2>Project Progress</h2>
-        <div class="progress-bar">
-            <div class="progress" id="progress-bar"></div>
+            <!-- Project Card 3 -->
+            <div class="project-card">
+                <img src="https://www.itarian.com/assets-new/images/project-management.png" alt="Project Image">
+                <p class="project-title">Cybersecurity Project</p>
+                <p><strong>Progress</strong></p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 90%;"></div>
+                </div>
+                <a href="#" class="btn download-btn">Download Report</a>
+                <button onclick="enterProject()" class="btn enter-btn">Enter Project</button>
+                <p class="deadline">Deadline: 23/5/2024</p>
+            </div>
         </div>
-        <p id="progress-text">0%</p>
     </div>
 </div>
 
-<!-- JavaScript -->
 <script>
-    function changeTab(view) {
-        document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-        document.querySelectorAll(".tab").forEach(button => button.classList.remove("active"));
-        document.getElementById(view).classList.add("active");
-        document.querySelector(`[onclick="changeTab('${view}')"]`).classList.add("active");
-
-        updateProgress();
+    function enterProject() {
+        window.location.href = "ganttView.html"; // Default entry is the Gantt Chart view
     }
-
-    function updateProgress() {
-        let completedTasks = 0;
-        let totalTasks = 0;
-
-        let tableIframe = document.getElementById("tableIframe");
-        let calendarIframe = document.getElementById("calendarIframe");
-
-        function countTasksFromIframe(iframe, statusSelector, completedClass = null) {
-            if (iframe.contentDocument) {
-                let tasks = iframe.contentDocument.querySelectorAll(statusSelector);
-                tasks.forEach(task => {
-                    totalTasks++;
-                    if (completedClass) {
-                        if (task.classList.contains(completedClass)) {
-                            completedTasks++;
-                        }
-                    } else {
-                        if (task.textContent.trim().toLowerCase() === "completed") {
-                            completedTasks++;
-                        }
-                    }
-                });
-            }
-        }
-
-        // Get completed tasks from Table View
-        countTasksFromIframe(tableIframe, "tbody tr td:nth-child(4)"); // 4th column = status
-
-        // Get completed tasks from Calendar View
-        countTasksFromIframe(calendarIframe, ".task", "completed");
-
-        // Calculate and update progress
-        let progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-        document.getElementById("progress-bar").style.width = progress + "%";
-        document.getElementById("progress-text").textContent = Math.round(progress) + "%";
-    }
-
-    // Wait for iframes to load before calculating progress
-    window.onload = function () {
-        setTimeout(updateProgress, 2000);
-    };
-
-    // Refresh progress every time the tab is clicked
-    document.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-            setTimeout(updateProgress, 500);
-        });
-    });
-
 </script>
 
 </body>
