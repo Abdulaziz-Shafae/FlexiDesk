@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexiDesk - Home</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            padding-top: 80px;
+            text-align: center;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: #2c3e50;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .navbar div {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .tab:hover, .tab.active {
+            background: #3498db;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Calendar View - Bigger & Scrollable */
+        #calendar iframe {
+            width: 100%;
+            height: 700px;
+            border: none;
+            overflow-y: scroll;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 80%;
+            max-width: 500px;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            position: relative;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: #28a745;
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h2 class="logo">FlexiDesk</h2>
+    <div>
+        <a href="#">Home</a>
+        <a href="#">Features</a>
+        <a href="#">Pricing</a>
+        <a href="#">Contact</a>
+    </div>
+</div> 
+
+<!-- Main Content -->
+<div class="main-content">
+    <h1>Welcome to FlexiDesk</h1>
+
+    <!-- Tabs for Views -->
+    <div class="tabs">
+        <button class="tab active" onclick="changeTab('table')">Table View</button>
+        <button class="tab" onclick="changeTab('calendar')">Calendar View</button>
+        <button class="tab" onclick="changeTab('gantt')">Gantt View</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="table" class="tab-content active">
+        <iframe id="tableIframe" src="tableView.html" width="100%" height="500px" style="border: none;"></iframe>
+    </div>
+
+    <div id="calendar" class="tab-content">
+        <iframe id="calendarIframe" src="calenderView.html" width="100%" height="700px" style="border: none; overflow-y: scroll;"></iframe>
+    </div>
+
+    <div id="gantt" class="tab-content">
+        <p>Gantt View will be added here...</p>
+    </div>
+
+    <!-- Interactive Progress Bar -->
+    <div class="progress-container">
+        <h2>Project Progress</h2>
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+        <p id="progress-text">0%</p>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    function changeTab(view) {
+        document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+        document.querySelectorAll(".tab").forEach(button => button.classList.remove("active"));
+        document.getElementById(view).classList.add("active");
+        document.querySelector(`[onclick="changeTab('${view}')"]`).classList.add("active");
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        let completedTasks = 0;
+        let totalTasks = 0;
+
+        let tableIframe = document.getElementById("tableIframe");
+        let calendarIframe = document.getElementById("calendarIframe");
+
+        function countTasksFromIframe(iframe, statusSelector, completedClass = null) {
+            if (iframe.contentDocument) {
+                let tasks = iframe.contentDocument.querySelectorAll(statusSelector);
+                tasks.forEach(task => {
+                    totalTasks++;
+                    if (completedClass) {
+                        if (task.classList.contains(completedClass)) {
+                            completedTasks++;
+                        }
+                    } else {
+                        if (task.textContent.trim().toLowerCase() === "completed") {
+                            completedTasks++;
+                        }
+                    }
+                });
+            }
+        }
+
+        // Get completed tasks from Table View
+        countTasksFromIframe(tableIframe, "tbody tr td:nth-child(4)"); // 4th column = status
+
+        // Get completed tasks from Calendar View
+        countTasksFromIframe(calendarIframe, ".task", "completed");
+
+        // Calculate and update progress
+        let progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+        document.getElementById("progress-bar").style.width = progress + "%";
+        document.getElementById("progress-text").textContent = Math.round(progress) + "%";
+    }
+
+    // Wait for iframes to load before calculating progress
+    window.onload = function () {
+        setTimeout(updateProgress, 2000);
+    };
+
+    // Refresh progress every time the tab is clicked
+    document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+            setTimeout(updateProgress, 500);
+        });
+    });
+
+</script>
+
+</body>
+</html>
