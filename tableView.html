@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table View - FlexiDesk</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-content {
+            padding-top: 80px;
+            text-align: center;
+        }
+
+        /* Table Container */
+        .table-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        /* Add Task Button */
+        .add-task-btn {
+            padding: 8px 15px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .add-task-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div>
+        <h2 class="logo">FlexiDesk</h2>
+    </div>
+    <div>
+        <a href="index.html">Home</a>
+        <a href="calenderView.html">Calendar View</a>
+        <a href="tableView.html">Table View</a>
+        <a href="contact.html">Contact</a>
+    </div>
+    <div>
+        <div class="dark-mode">
+            <label for="dark-mode-switch">Dark Mode</label>
+            <div class="switch">
+                <input type="checkbox" id="dark-mode-switch">
+                <span class="slider"></span>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- Main Content -->
+<div class="main-content">
+    <h1>Project Table View</h1>
+    <button class="add-task-btn">+ Add Task</button>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Priority</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Finalize Report</td>
+                    <td>High</td>
+                    <td>Feb 25, 2025</td>
+                    <td>In Progress</td>
+                </tr>
+                <tr>
+                    <td>Team Meeting</td>
+                    <td>Medium</td>
+                    <td>Feb 20, 2025</td>
+                    <td>Pending</td>
+                </tr>
+                <tr>
+                    <td>Bug Fixing</td>
+                    <td>Critical</td>
+                    <td>Feb 18, 2025</td>
+                    <td>Completed</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JavaScript for Dark Mode -->
+<script>
+    const toggleSwitch = document.getElementById("dark-mode-switch");
+    const body = document.body;
+
+    toggleSwitch.addEventListener("change", () => {
+        body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : "disabled");
+    });
+
+    if (localStorage.getItem("darkMode") === "enabled") {
+        body.classList.add("dark-mode");
+        toggleSwitch.checked = true;
+    }
+</script>
+
+</body>
+</html>
