@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlexiDesk</title>
+    <link rel="stylesheet" href="Style.css">
+
     <style>
         /* General Styles */
         * {
@@ -37,120 +39,6 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        header {
-            background-color: var(--header-bg);
-            padding: 2rem;
-            text-align: center;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        
-        
-        /* Navigation Links */
-.nav-links {
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-link {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    position: relative;
-    transition: color 0.3s ease;
-}
-
-.nav-link::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    background-color: #3498db;
-    bottom: -5px;
-    left: 0;
-    transition: width 0.3s ease;
-}
-
-.nav-link:hover {
-    color: #3498db;
-}
-
-.nav-link:hover::after {
-    width: 100%;
-}
-
-        .logo {
-            color: #ffffff;
-            font-size: 2.5rem;
-            font-weight: bold;
-            text-decoration: none;
-            letter-spacing: 2px;
-        }
-
-        .dark-mode-toggle {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .dark-mode-toggle label {
-            color: #ffffff;
-            font-size: 0.9rem;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #3498db;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(26px);
         }
 
         .container {
@@ -250,25 +138,24 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1 class="logo">FlexiDesk</h1>
-        <div class="dark-mode-toggle">
-            <label for="dark-mode-switch">Dark Mode</label>
-            <div class="switch">
-                <input type="checkbox" id="dark-mode-switch">
-                <span class="slider"></span>
+    <div class="navbar">
+
+        <div>
+            <h2 href="#" class="logo">FlexiDesk</h2>  
+        </div>
+
+
+        <div>
+            <div class="dark-mode">
+                <label for="dark-mode-switch">Dark Mode</label>
+                <div class="switch">
+                    <input type="checkbox" id="dark-mode-switch">
+                    <span class="slider"></span>
+                </div>
             </div>
         </div>
-        <div>
-            <nav class="nav-links">
-                <a href="#" class="nav-link">Home</a>
-                <a href="../FlexiDesk/about.html" class="nav-link">About</a>
-                <a href="#" class="nav-link">Contact</a>
-            </nav>
 
-
-        </div>
-    </header>
+    </div> 
 
     <div class="container">
         <div class="form-container">
