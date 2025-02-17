@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", { packages: ["gantt"] });
+      google.charts.setOnLoadCallback(drawChart);
+
+      var data;
+      var chart;
+
+      // Function to draw the Gantt chart
+      function drawChart() {
+        data = new google.visualization.DataTable();
+        data.addColumn("string", "Task ID");
+        data.addColumn("string", "Task Name");
+        data.addColumn("string", "Resource");
+        data.addColumn("date", "Start Date");
+        data.addColumn("date", "End Date");
+        data.addColumn("number", "Duration");
+        data.addColumn("number", "Percent Complete");
+        data.addColumn("string", "Dependencies");
+
+        // Initial tasks
+        data.addRows([
+          ["1", "Research", "Research Team", new Date(2025, 1, 10), new Date(2025, 1, 15), null, 50, null],
+          ["2", "Design", "Design Team", new Date(2025, 1, 16), new Date(2025, 1, 20), null, 70, "1"],
+        ]);
+
+        var options = {
+          height: 350,
+          gantt: {
+            trackHeight: 30,
+            barHeight: 20
+          }
+        };
+
+        chart = new google.visualization.Gantt(document.getElementById("gantt_chart"));
+        chart.draw(data, options);
+      }
+
+      // Function to open the modal
+      function openModal() {
+        document.getElementById('taskModal').style.display = 'block';
+      }
+
+      // Function to close the modal
+      function closeModal() {
+        document.getElementById('taskModal').style.display = 'none';
+      }
+
+      // Function to add a new task to the chart
+      function addTask() {
+        var taskName = document.getElementById("taskName").value;
+        var startDate = new Date(document.getElementById("startDate").value);
+        var endDate = new Date(document.getElementById("endDate").value);
+        var percentComplete = parseInt(document.getElementById("percentComplete").value, 10);
+
+        // Get next Task ID
+        var nextTaskId = data.getNumberOfRows() + 1;
+
+        // Add new row to data
+        data.addRow([nextTaskId.toString(), taskName, "New Resource", startDate, endDate, null, percentComplete, null]);
+
+        // Re-draw chart with updated data
+        chart.draw(data, { height: 350, gantt: { trackHeight: 30, barHeight: 20 } });
+
+        // Close the modal after adding the task
+        closeModal();
+      }
+    </script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      #gantt_chart {
+        margin-bottom: 20px;
+      }
+      #addTaskButton {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      #taskModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        justify-content: center;
+        align-items: center;
+      }
+      #modalContent {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        width: 300px;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      #modalButtons {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Project Gantt Chart</h2>
+
+    <!-- Gantt chart div -->
+    <div id="gantt_chart"></div>
+
+    <!-- Add Task Button -->
+    <button id="addTaskButton" onclick="openModal()">Add Task</button>
+
+    <!-- Modal for adding a task -->
+    <div id="taskModal">
+      <div id="modalContent">
+        <h3>Add New Task</h3>
+        <label for="taskName">Task Name:</label>
+        <input type="text" id="taskName" placeholder="Enter task name" />
+        
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" />
+        
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" />
+        
+        <label for="percentComplete">Percent Complete:</label>
+        <input type="number" id="percentComplete" placeholder="0-100" />
+
+        <div id="modalButtons">
+          <button onclick="addTask()">Add Task</button>
+          <button onclick="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
