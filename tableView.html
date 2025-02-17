@@ -4,20 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table View - FlexiDesk</title>
-    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="navbarStyle.css">
+    <link rel="stylesheet" href="viwesStyle.css">
+    
+</head>
+<body>
     <style>
-        /* General Styling */
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .main-content {
-            padding-top: 80px;
-            text-align: center;
-        }
+        
 
         /* Table Container */
         .table-container {
@@ -50,24 +43,9 @@
             background: #f1f1f1;
         }
 
-        /* Add Task Button */
-        .add-task-btn {
-            padding: 8px 15px;
-            font-size: 16px;
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .add-task-btn:hover {
-            background: #0056b3;
-        }
+        
     </style>
-</head>
-<body>
+
 
 <!-- Navbar -->
 <div class="navbar">
@@ -93,39 +71,50 @@
 
 <!-- Main Content -->
 <div class="main-content">
-    <h1>Project Table View</h1>
-    <button class="add-task-btn">+ Add Task</button>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Task Name</th>
-                    <th>Priority</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Finalize Report</td>
-                    <td>High</td>
-                    <td>Feb 25, 2025</td>
-                    <td>In Progress</td>
-                </tr>
-                <tr>
-                    <td>Team Meeting</td>
-                    <td>Medium</td>
-                    <td>Feb 20, 2025</td>
-                    <td>Pending</td>
-                </tr>
-                <tr>
-                    <td>Bug Fixing</td>
-                    <td>Critical</td>
-                    <td>Feb 18, 2025</td>
-                    <td>Completed</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="viwes-container">
+        <div class="tabs">
+            <a href="ganttView.html" class="tab">Gantt</a>
+            <a href="tableView.html" class="tab active">Table</a>
+            <a href="calenderView.html" class="tab">Calendar</a>
+        </div>       
+        <div class="viwes-header">
+            <h1>Project Name</h1>
+            <button class="add-task-btn">+ Add Task</button>
+        </div>
+
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Task Name</th>
+                        <th>Priority</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Finalize Report</td>
+                        <td>High</td>
+                        <td>Feb 25, 2025</td>
+                        <td>In Progress</td>
+                    </tr>
+                    <tr>
+                        <td>Team Meeting</td>
+                        <td>Medium</td>
+                        <td>Feb 20, 2025</td>
+                        <td>Pending</td>
+                    </tr>
+                    <tr>
+                        <td>Bug Fixing</td>
+                        <td>Critical</td>
+                        <td>Feb 18, 2025</td>
+                        <td>Completed</td>
+                   </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

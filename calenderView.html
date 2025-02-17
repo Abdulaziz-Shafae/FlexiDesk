@@ -4,62 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar View - Project Management</title>
-    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="navbarStyle.css">
+    <link rel="stylesheet" href="viwesStyle.css">
+
 </head>
 <body>
 
 <style>
-/* General Styling */
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
-
-/* Add some spacing to prevent content from overlapping navbar */
-.main-content {
-    padding-top: 80px;
-}
-
-/* Calendar Container */
-.calendar-container {
-    max-width: 800px;
-    margin: 30px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Header */
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 2px solid #ddd;
-}
-
-.calendar-header h1 {
-    font-size: 24px;
-    color: #333;
-}
-
-/* Add Task Button */
-.add-task-btn {
-    padding: 8px 15px;
-    font-size: 16px;
-    background: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.add-task-btn:hover {
-    background: #0056b3;
-}
 
 /* Calendar Grid */
 .calendar {
@@ -142,9 +93,14 @@ body {
 
 <!-- Main Content -->
 <div class="main-content">
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <h1>Project Calendar</h1>
+    <div class="viwes-container">
+        <div class="tabs">
+            <a href="ganttView.html" class="tab">Gantt</a>
+            <a href="tableView.html" class="tab">Table</a>
+            <a href="calenderView.html" class="tab active">Calendar</a>
+        </div>       
+        <div class="viwes-header">
+            <h1>Project Name</h1>
             <button class="add-task-btn">+ Add Task</button>
         </div>
 
