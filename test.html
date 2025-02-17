@@ -1,151 +1,106 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load("current", { packages: ["gantt"] });
-      google.charts.setOnLoadCallback(drawChart);
-
-      var data;
-      var chart;
-
-      // Function to draw the Gantt chart
-      function drawChart() {
-        data = new google.visualization.DataTable();
-        data.addColumn("string", "Task ID");
-        data.addColumn("string", "Task Name");
-        data.addColumn("string", "Resource");
-        data.addColumn("date", "Start Date");
-        data.addColumn("date", "End Date");
-        data.addColumn("number", "Duration");
-        data.addColumn("number", "Percent Complete");
-        data.addColumn("string", "Dependencies");
-
-        // Initial tasks
-        data.addRows([
-          ["1", "Research", "Research Team", new Date(2025, 1, 10), new Date(2025, 1, 15), null, 50, null],
-          ["2", "Design", "Design Team", new Date(2025, 1, 16), new Date(2025, 1, 20), null, 70, "1"],
-        ]);
-
-        var options = {
-          height: 350,
-          gantt: {
-            trackHeight: 30,
-            barHeight: 20
-          }
-        };
-
-        chart = new google.visualization.Gantt(document.getElementById("gantt_chart"));
-        chart.draw(data, options);
-      }
-
-      // Function to open the modal
-      function openModal() {
-        document.getElementById('taskModal').style.display = 'block';
-      }
-
-      // Function to close the modal
-      function closeModal() {
-        document.getElementById('taskModal').style.display = 'none';
-      }
-
-      // Function to add a new task to the chart
-      function addTask() {
-        var taskName = document.getElementById("taskName").value;
-        var startDate = new Date(document.getElementById("startDate").value);
-        var endDate = new Date(document.getElementById("endDate").value);
-        var percentComplete = parseInt(document.getElementById("percentComplete").value, 10);
-
-        // Get next Task ID
-        var nextTaskId = data.getNumberOfRows() + 1;
-
-        // Add new row to data
-        data.addRow([nextTaskId.toString(), taskName, "New Resource", startDate, endDate, null, percentComplete, null]);
-
-        // Re-draw chart with updated data
-        chart.draw(data, { height: 350, gantt: { trackHeight: 30, barHeight: 20 } });
-
-        // Close the modal after adding the task
-        closeModal();
-      }
-    </script>
-
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gantt Chart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.css">
     <style>
-      body {
-        font-family: Arial, sans-serif;
-      }
-      #gantt_chart {
-        margin-bottom: 20px;
-      }
-      #addTaskButton {
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-      #taskModal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        justify-content: center;
-        align-items: center;
-      }
-      #modalContent {
-        background-color: white;
-        padding: 20px;
-        border-radius: 5px;
-        width: 300px;
-      }
-      input {
-        width: 100%;
-        padding: 8px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-      }
-      #modalButtons {
-        display: flex;
-        justify-content: space-between;
-      }
+        .low { background: #28a745; color: white; }
+        .medium-low { background: #17a2b8; color: white; }
+        .medium { background: #ffc107; color: black; }
+        .high { background: #fd7e14; color: white; }
+        .critical { background: #dc3545; color: white; }
     </style>
-  </head>
-
-  <body>
-    <h2>Project Gantt Chart</h2>
-
-    <!-- Gantt chart div -->
-    <div id="gantt_chart"></div>
-
-    <!-- Add Task Button -->
-    <button id="addTaskButton" onclick="openModal()">Add Task</button>
-
-    <!-- Modal for adding a task -->
-    <div id="taskModal">
-      <div id="modalContent">
+</head>
+<body>
+    <h2>Gantt Chart</h2>
+    <svg id="gantt"></svg>
+    <button onclick="openModal()">Add Task</button>
+    
+    <div id="taskModal" style="display:none; position: fixed; top: 10%; left: 30%; background: white; padding: 20px; border: 1px solid black;">
         <h3>Add New Task</h3>
-        <label for="taskName">Task Name:</label>
-        <input type="text" id="taskName" placeholder="Enter task name" />
-        
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" />
-        
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" />
-        
-        <label for="percentComplete">Percent Complete:</label>
-        <input type="number" id="percentComplete" placeholder="0-100" />
-
-        <div id="modalButtons">
-          <button onclick="addTask()">Add Task</button>
-          <button onclick="closeModal()">Close</button>
-        </div>
-      </div>
+        <input type="text" id="taskName" placeholder="Task Name">
+        <input type="date" id="taskStart" placeholder="Start Date">
+        <input type="number" id="taskDuration" placeholder="Duration (days)">
+        <input type="number" id="taskPercentage" placeholder="Completion %">
+        <select id="taskPriority">
+            <option value="low">Low</option>
+            <option value="medium-low">Medium-Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+        </select>
+        <select id="taskDependencies">
+            <option value="none">No Dependencies</option>
+        </select>
+        <textarea id="taskComments" placeholder="Comments"></textarea>
+        <button onclick="addTask()">Add</button>
+        <button onclick="closeModal()">Close</button>
     </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/frappe-gantt/0.5.0/frappe-gantt.min.js"></script>
+    <script>
+        let tasks = [
+            { id: "1", name: "Task 1", start: "2024-02-10", end: "2024-02-15", progress: 50, dependencies: "", priority: "medium" },
+            { id: "2", name: "Task 2", start: "2024-02-12", end: "2024-02-18", progress: 30, dependencies: "1", priority: "high" },
+            { id: "3", name: "Task 3", start: "2024-02-14", end: "2024-02-20", progress: 80, dependencies: "2", priority: "critical" }
+        ];
 
-  </body>
+        function renderGantt() {
+            document.getElementById("gantt").innerHTML = "";
+            new Gantt("#gantt", tasks, {
+                on_click: task => alert("Task: " + task.name),
+                on_date_change: (task, start, end) => {
+                    task.start = start;
+                    task.end = end;
+                },
+                on_progress_change: (task, progress) => task.progress = progress,
+                on_view_change: mode => console.log("View mode changed to", mode)
+            });
+        }
+
+        function openModal() {
+            document.getElementById("taskModal").style.display = "block";
+            let dependenciesSelect = document.getElementById("taskDependencies");
+            dependenciesSelect.innerHTML = '<option value="none">No Dependencies</option>';
+            tasks.forEach(task => {
+                let option = document.createElement("option");
+                option.value = task.id;
+                option.textContent = task.name;
+                dependenciesSelect.appendChild(option);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById("taskModal").style.display = "none";
+        }
+
+        function addTask() {
+            let name = document.getElementById("taskName").value;
+            let start = document.getElementById("taskStart").value;
+            let duration = parseInt(document.getElementById("taskDuration").value);
+            let percentage = parseInt(document.getElementById("taskPercentage").value);
+            let priority = document.getElementById("taskPriority").value;
+            let dependencies = document.getElementById("taskDependencies").value;
+            let comments = document.getElementById("taskComments").value;
+            
+            let end = new Date(start);
+            end.setDate(end.getDate() + duration);
+            end = end.toISOString().split('T')[0];
+
+            tasks.push({
+                id: (tasks.length + 1).toString(),
+                name, start, end, progress: percentage,
+                dependencies: dependencies === "none" ? "" : dependencies,
+                priority, comments
+            });
+            
+            closeModal();
+            renderGantt();
+        }
+
+        renderGantt();
+    </script>
+</body>
 </html>
