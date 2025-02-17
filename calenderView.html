@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar View - Project Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<style>
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #2c3e50;
+    padding: 1rem 2rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 1 ;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: #ffffff;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 1.5px;
+    transition: color 0.3s ease;
+}
+
+.logo:hover {
+    color: #3498db;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background-color: #3498db;
+    bottom: -5px;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #3498db;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Add some spacing to prevent content from overlapping navbar */
+.main-content {
+    padding-top: 80px;
+}
+
+/* Calendar Container */
+.calendar-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 2px solid #ddd;
+}
+
+.calendar-header h1 {
+    font-size: 24px;
+    color: #333;
+}
+
+/* Add Task Button */
+.add-task-btn {
+    padding: 8px 15px;
+    font-size: 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.add-task-btn:hover {
+    background: #0056b3;
+}
+
+/* Calendar Grid */
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding: 20px 0;
+}
+
+.day {
+    background: #f9f9f9;
+    padding: 15px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 5px;
+    position: relative;
+    min-height: 60px;
+    border: 1px solid #ddd;
+}
+
+.day:hover {
+    background: #ececec;
+}
+
+.task {
+    display: block;
+    font-size: 12px;
+    padding: 4px;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+/* Priority Colors */
+.low { background: #28a745; color: white; }        /* Green */
+.medium-low { background: #17a2b8; color: white; } /* Blue */
+.medium { background: #ffc107; color: black; }     /* Yellow */
+.high { background: #fd7e14; color: white; }       /* Orange */
+.critical { background: #dc3545; color: white; }   /* Red */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .calendar {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+</style>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="#" class="logo">FlexiDesk</a>
+    <div class="nav-links">
+        <a href="../FlexiDesk/index.html" class="nav-link">Home</a>
+        <a href="#" class="nav-link">Features</a>
+        <a href="#" class="nav-link">Pricing</a>
+        <a href="#" class="nav-link">Contact</a>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <h1>Project Calendar</h1>
+            <button class="add-task-btn">+ Add Task</button>
+        </div>
+
+        <div class="calendar">
+            <div class="day">1 <span class="task high">Submit Report</span></div>
+            <div class="day">2</div>
+            <div class="day">3 <span class="task critical">Client Meeting</span></div>
+            <div class="day">4</div>
+            <div class="day">5 <span class="task low">Check Emails</span></div>
+            <div class="day">6</div>
+            <div class="day">7 <span class="task medium">Project Update</span></div>
+            <div class="day">8</div>
+            <div class="day">9 <span class="task medium-low">Team Review</span></div>
+            <div class="day">10</div>
+            <div class="day">11</div>
+            <div class="day">12 <span class="task critical">Launch Deadline</span></div>
+            <div class="day">13</div>
+            <div class="day">14</div>
+            <div class="day">15 <span class="task high">Prepare Presentation</span></div>
+            <div class="day">16</div>
+            <div class="day">17</div>
+            <div class="day">18</div>
+            <div class="day">19 <span class="task medium">Bug Fixing</span></div>
+            <div class="day">20</div>
+            <div class="day">21 <span class="task low">Team Meeting</span></div>
+            <div class="day">22</div>
+            <div class="day">23</div>
+            <div class="day">24 <span class="task medium-low">Code Review</span></div>
+            <div class="day">25</div>
+            <div class="day">26</div>
+            <div class="day">27 <span class="task high">Deadline</span></div>
+            <div class="day">28</div>
+            <div class="day">29</div>
+            <div class="day">30 <span class="task critical">Final Submission</span></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
