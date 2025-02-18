@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexiDesk - Create Account</title>
+    <link rel="stylesheet" href="navbarStyle.css">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+
+        .container {
+            margin-top: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+
+        .form-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            transition: color 0.3s ease;
+        }
+
+
+
+        /* Floating Label Input Styles */
+        .wave-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+
+        .wave-group .input {
+            font-size: 16px;
+            padding: 10px 10px 10px 5px;
+            display: block;
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #515151;
+            background: transparent;
+            color: inherit;
+        }
+
+        .wave-group .input:focus {
+            outline: none;
+        }
+
+        .wave-group .label {
+            color: #999;
+            font-size: 18px;
+            position: absolute;
+            pointer-events: none;
+            left: 5px;
+            top: 10px;
+            transition: 0.2s ease all;
+        }
+
+        .wave-group input[type="date"] ~ .label,   /* So the title and place holder dont mix */
+        .wave-group .input:focus ~ .label,
+        .wave-group .input:valid ~ .label {
+            transform: translateY(-28px);
+            font-size: 14px;
+            color: #5264AE;
+        }       
+
+        
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        
+        textarea.input {
+            resize: none; /* Prevent manual resizing */
+            overflow-y: hidden; /* Hide scrollbar */
+        }
+
+
+    </style>
+</head>
+<body>
+    
+    <!-- Navbar  -->
+    <div class="navbar">
+
+        <div>
+            <h2 href="#" class="logo">FlexiDesk</h2>  
+        </div>
+
+        <div>
+            <a href="#" >Home</a>
+            <a href="#" >Features</a>
+            <a href="#" >Pricing</a>
+            <a href="#" >Contact</a>
+        </div>
+
+        <div>
+            <div class="dark-mode">
+                <label for="dark-mode-switch">Dark Mode</label>
+                <div class="switch">
+                    <input type="checkbox" id="dark-mode-switch">
+                    <span class="slider"></span>
+                </div>
+            </div>
+        </div>
+
+    </div> 
+    
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Create Project</h2>
+            <form id="signup-form">
+                <div class="wave-group">
+                    <input type="text" id="project-title" class="input" required>
+                    <label class="label">Project Title</label>
+                </div>
+
+                <div class="wave-group">
+                    <textarea id="project-description" class="input" required></textarea>
+                    <label class="label">Project Description</label>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const textarea = document.getElementById("project-description");
+                
+                        textarea.addEventListener("input", function () {
+                            this.style.height = "auto"; // Reset height
+                            this.style.height = this.scrollHeight + "px"; // Set new height
+                        });
+                    });
+                </script>
+                
+                
+                
+
+                <div class="wave-group">
+                    <input type="date" id="start-date" class="input" required>
+                    <label class="label">Start Date</label>
+                </div>
+                
+                <div class="wave-group">
+                    <input type="date" id="end-date" class="input" required>
+                    <label class="label">End Date</label>
+                </div>
+                
+                
+
+                <button type="submit" class="btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+
+</body>
+</html>
