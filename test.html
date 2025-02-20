@@ -18,6 +18,7 @@
             gap: 10px; /* Space between elements */
             padding: 5px;
             background-color: #f8f9fa; /* Light gray background */
+            justify-content: flex-end; /* Aligns buttons to the right */
         }
 
         .Toolbar-btn, .zoom-btn  {
@@ -29,6 +30,8 @@
             cursor: pointer;
             border-radius: 5px;
             height: 35px;
+            margin-top: 3px;
+            margin-bottom: 3px;
             display: inline-block;
         }
      
@@ -45,6 +48,32 @@
         .zoom-btn:hover img, .Toolbar-btn:hover {
             opacity: 0.7;
         }
+
+        
+        .gantt_task_line.gantt_milestone {
+            width: 16px !important; 
+            height: 16px !important;
+            background: #2c3e50 !important; /* Dark Blue */
+            border: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            padding: 1px;
+            margin: 4px;
+            transform: translate(120%, -5%) ; 
+        }
+
+
+/* Priority Background Colors */
+.gantt_task_line.low { background-color: #28a745 !important; }        /* Green */
+.gantt_task_line.medium-low { background-color: #17a2b8 !important; } /* Blue */
+.gantt_task_line.medium { background-color: #ffc107 !important; }     /* Yellow */
+.gantt_task_line.high { background-color: #fd7e14 !important; }       /* Orange */
+.gantt_task_line.critical { background-color: #dc3545 !important; }   /* Red */
+
+
+
+
     </style>
 
     <div class="navbar">
@@ -67,13 +96,14 @@
     <div class="main-content">
         <div class="viwes-container">
             <div class="tabs">
-                <a href="ganttView.html" class="tab active">Gantt</a>
+                <a href="ganttView.html" class="tab">Gantt</a>
+                <a href="test.html" class="tab active">Gantt test</a>
                 <a href="tableView.html" class="tab">Table</a>
                 <a href="calenderView.html" class="tab">Calendar</a>
             </div>       
             <div class="viwes-header">
                 <h1>Project Name</h1>
-                <button class="add-task-btn">+ Add Task </button>    
+                <button class="add-task-btn" id="add-task-btn">+ Add Task </button>    
             </div>
 
             <div class="toolbar">
@@ -97,55 +127,103 @@
     </div>
 
     <script>
-        gantt.config.start_date = new Date(2025, 1, 1);
+
+        // edit this for the start/end of the GAntt chart
+        //0=Jan
+        //11=Dec
+
+        gantt.config.start_date = new Date(2025, 0, 1);
         gantt.config.end_date = new Date(2025, 11, 31);
         gantt.config.fit_tasks = true;
-        
-        gantt.serverList("types", [
-            { key: "task", label: "Task" },
-            { key: "milestone", label: "Milestone" }
-        ]);
-        
-        gantt.serverList("Priority", [
-            { key: "low", label: "low" },
-            { key: "medium", label: "medium" },
-            { key: "high", label: "high" }
-        ]);
-        
+
+        gantt.plugins({
+		    tooltip: true
+        });
+
+	    gantt.attachEvent("onGanttReady", function(){
+		    var tooltips = gantt.ext.tooltips;
+		    tooltips.tooltip.setViewport(gantt.$task_data);
+	    });
+
         gantt.config.lightbox.sections = [
-            { name: "description", height: 38, map_to: "text", type: "textarea", focus: true },
+            { name: "text", height: 30, map_to: "text", type: "textarea", focus: true },
             { name: "type", height: 22, map_to: "type", type: "select", options: [
                 { key: "task", label: "Task" },
                 { key: "milestone", label: "Milestone" }
             ] },
-            { name: "Priority", height: 22, map_to: "priority", type: "select", options: [
-                { key: "low", label: "Low" },
-                { key: "medium", label: "Medium" },
-                { key: "high", label: "High" }
+            { name: "priority", height: 22, map_to: "priority", type: "select", options: [
+                { key: 1, label: "Low" },
+                { key: 2, label: "Medium-low" },
+                { key: 3, label: "Medium" },
+                { key: 4, label: "High" },           
+                { key: 5, label: "Critical" }
+
             ] },
-            { name: "notes", height: 50, map_to: "notes", type: "textarea" },
+            { name: "description", height: 50, map_to: "description", type: "textarea" },
             { name: "time", height: 72, map_to: "auto", type: "duration" }
         ];
         
+        gantt.locale.labels.section_text = "Name";
+        gantt.locale.labels.section_priority = "Priority";
+        gantt.locale.labels.section_description = "Description";
+
+//update the coloring need working
         gantt.templates.task_class = function (start, end, task) {
-            return task.type === "milestone" ? "gantt_milestone" : "";
+            let priorityClass = "";
+            switch (task.priority) {
+                case 1: priorityClass = "low"; break;        // Green
+                case 2: priorityClass = "medium-low"; break; // Blue
+                case 3: priorityClass = "medium"; break;     // Yellow
+                case 4: priorityClass = "high"; break;       // Orange
+                case 5: priorityClass = "critical"; break;   // Red
+                default: priorityClass = "";                 // No class if priority is not set
+            }
+    
+            // Keep the milestone style but apply the same color as tasks
+            if (task.type === "milestone") { return `gantt_milestone ${priorityClass}`; }
+            
+            return priorityClass;
         };
-        
+
+// remove the text from the milestone 
+        gantt.templates.task_text = function (start, end, task) {
+            if (task.type === "milestone") {
+            return ""; // Hide text for milestones
+            }
+            return task.text; // Show text for other tasks
+        };
+
         gantt.init("gantt_here");
+
+// add task button , neeed to make it connected with the dhtmlx
+        document.getElementById("add-task-btn").addEventListener("click", function() {
+            const newTaskId = gantt.addTask({
+                id: gantt.uid(),
+                text: "New Task",
+                start_date: gantt.date.date_to_str("%d-%m-%Y")(new Date()), // Today’s date
+                duration: 5,
+                progress: 0,
+                type: "task",
+                priority: 3 // Medium priority
+            });
+
+            gantt.updateTask(newTaskId);
+        });
+
         
         gantt.parse({
-    data: [
-        { 
+            data: [
+            { 
             id: 1, 
             text: "Task 1", 
             start_date: "01-02-2025", 
             duration: 5, 
-            progress: 1, 
+            progress: 5, 
             type: "task",
-            Priority: "medium", 
-            notes: "Initial planning phase"
-        },
-        { 
+            priority: 3, 
+            description: "Initial planning phase"
+            },
+            { 
             id: 2, 
             text: "Milestone 1", 
             start_date: "06-02-2025", 
@@ -153,12 +231,24 @@
             progress: 1, 
             type: "milestone", 
             parent: 1,
-            Priority: "high", 
-            notes: "First project milestone"
-        }
-    ]
-});
+            priority: 5, 
+            description: "First project milestone"
+            },
+            { 
+            id: 3, 
+            text: "23", 
+            start_date: "06-02-2025", 
+            duration: 0, 
+            progress: 1, 
+            type: "task", 
+            priority: 5, 
+            description: "First project milestone"
+            }
+            ]
+        });
         
+
+//zoom 
         let zoomLevels = ["hour", "day", "week", "month"];
         let currentZoom = 1;
         
@@ -204,16 +294,20 @@
             
             gantt.render();
         }
-        
+//view change        
         document.getElementById("view-mode").addEventListener("change", function() {
             let mode = this.value;
             currentZoom = zoomLevels.indexOf(mode);
             applyZoom();
         });
-        
+//Today         
         function goToToday() {
             gantt.showDate(new Date());
         }
+
+
+
+
     </script>
 </body>
 </html>
