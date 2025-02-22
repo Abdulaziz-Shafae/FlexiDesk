@@ -19,7 +19,6 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body.dark-mode {
@@ -111,31 +110,37 @@
 </head>
 <body>
 
-    <!-- Navbar  -->
-    <div class="navbar">
+<!-- Navbar -->
+<div class="navbar">
 
-        <div>
-            <h2 href="#" class="logo">FlexiDesk</h2>  
-        </div>
+    <div>
+        <h2 href="#" class="logo">FlexiDesk</h2>  
+    </div>
 
-        <div>
-            <a href="#" >Home</a>
-            <a href="#" >Features</a>
-            <a href="#" >Pricing</a>
-            <a href="#" >Contact</a>
-        </div>
+    <div>
+        <a href="homePage.html" >Home</a>
+        <a href="about.html" >About</a>
+        <a href="test.html" >Charts</a>
+        <a href="contact.html" >Contact</a>
+    </div>
 
-        <div>
-            <div class="dark-mode">
-                <label for="dark-mode-switch">Dark Mode</label>
-                <div class="switch">
-                    <input type="checkbox" id="dark-mode-switch">
-                    <span class="slider"></span>
-                </div>
+    <div>
+    
+        <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
+        <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
+
+
+    <!--<div class="dark-mode">
+            <label for="dark-mode-switch">Dark Mode</label>
+            <div class="switch">
+                <input type="checkbox" id="dark-mode-switch">
+                <span class="slider"></span>
             </div>
-        </div>
+        </div> -->
 
-    </div> 
+    </div>
+
+</div> 
     
 
     <!-- Main Content -->

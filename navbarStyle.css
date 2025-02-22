@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     background: #f4f4f4;
     margin: 0;
-    padding: 0;
+    padding: 0;  
 }
 
 .main-content {
@@ -141,7 +141,22 @@ input:checked + .slider:before {
 
 
 
+/* Add Task Button */
+.login-signin {
+    position: relative;
+    padding: 8px 15px;
+    font-size: 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    left: -5px;
+}
 
+.login-signin:hover {
+    background: #0056b3;
+}
 
 
 

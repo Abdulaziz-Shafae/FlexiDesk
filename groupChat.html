@@ -4,85 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Chat - FlexiDesk</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="navbarStyle.css">
+
 </head>
+
 <body>
 
 <style>
-/* General Styling */
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 
-/* Navbar */
-.navbar {
-    background-color: #2c3e50;
-    padding: 1rem 2rem;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: bold;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.logo:hover {
-    color: #3498db;
-}
-
-.nav-links {
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-link {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-    color: #3498db;
-}
-
-/* Dropdown Button */
-.project-dropdown {
-    position: relative;
-}
-
+/* Dropdown Menu */   
 .project-btn {
-    background-color: #3498db;
-    color: white;
+    background-color: white;
+    color: #3498db;
     border: none;
     padding: 10px 15px;
     cursor: pointer;
     font-size: 16px;
     border-radius: 5px;
+    position: relative;    
 }
 
 .project-btn:hover {
     background-color: #2980b9;
+    color: white;
 }
 
-/* Dropdown Menu */
 .project-list {
     position: absolute;
-    top: 40px;
-    left: 0;
+    right: 0;  /* Aligns it to the right under the button */
+    top: 100%; /* Places it right below the button */
     background: white;
     width: 200px;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
@@ -90,6 +40,7 @@ body {
     display: none;
     flex-direction: column;
     padding: 10px 0;
+    z-index: 10;
 }
 
 .project-item {
@@ -105,7 +56,6 @@ body {
 
 /* Chat Container */
 .chat-container {
-    margin-top: 20px;
     width: 90%;
     max-width: 800px;
     background: white;
@@ -115,17 +65,24 @@ body {
     flex-direction: column;
     height: 500px;
     overflow: hidden;
+    margin: 80px auto;
 }
 
 /* Chat Header */
 .chat-header {
     background-color: #3498db;
-    color: white;
     padding: 15px;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative; 
+}
+.chat-header a {
+    color: white;
     font-size: 20px;
     font-weight: bold;
 }
+
 
 /* Chat Messages */
 .chat-box {
@@ -214,30 +171,55 @@ body {
 }
 </style>
 
+
 <!-- Navbar -->
-<nav class="navbar">
-    <a href="#" class="logo">FlexiDesk</a>
-    <div class="nav-links">
-        <a href="../FlexiDesk/index.html" class="nav-link">Home</a>
-        <a href="#" class="nav-link">Projects</a>
+<div class="navbar">
+
+    <div>
+        <h2 href="#" class="logo">FlexiDesk</h2>  
+    </div>
+
+    <div>
+        <a href="homePage.html" >Home</a>
+        <a href="about.html" >About</a>
+        <a href="test.html" >Charts</a>
+        <a href="contact.html" >Contact</a>
+    </div>
+
+    <div>
+    
+        <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
+        <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
+
+
+    <!--<div class="dark-mode">
+            <label for="dark-mode-switch">Dark Mode</label>
+            <div class="switch">
+                <input type="checkbox" id="dark-mode-switch">
+                <span class="slider"></span>
+            </div>
+        </div> -->
 
     </div>
 
-    <!-- Project Dropdown -->
-    <div class="project-dropdown">
-        <button class="project-btn" onclick="toggleDropdown()">Select Project</button>
-        <div class="project-list" id="projectList">
-            <div class="project-item" onclick="switchProject('Project Alpha')">Project Alpha</div>
-            <div class="project-item" onclick="switchProject('Project Beta')">Project Beta</div>
-            <div class="project-item" onclick="switchProject('Marketing Plan')">Marketing Plan</div>
-            <div class="project-item" onclick="switchProject('Development Team')">Development Team</div>
-        </div>
-    </div>
-</nav>
+</div> 
+
+
+
 
 <!-- Chat Container -->
-<div class="chat-container">
-    <div class="chat-header" id="chatHeader">Project Alpha Chat</div>
+<div class="main-content">
+<div class="chat-container">     
+    <div class="chat-header" >
+        <a id="chatHeader">Project Alpha Chat</a>
+        <button class="project-btn" onclick="toggleDropdown()">Select Project</button>
+            <div class="project-list" id="projectList">
+                <div class="project-item " onclick="switchProject('Project Alpha')">Project Alpha</div>
+                <div class="project-item " onclick="switchProject('Project Beta')">Project Beta</div>
+                <div class="project-item " onclick="switchProject('Marketing Plan')">Marketing Plan</div>
+                <div class="project-item " onclick="switchProject('Development Team')">Development Team</div>
+            </div>
+    </div>
 
     <div class="chat-box" id="chatBox">
         <!-- Example Messages -->
@@ -254,9 +236,11 @@ body {
 
     <!-- Chat Input -->
     <div class="chat-input">
+        <!-- Project Dropdown -->
         <input type="text" id="messageInput" placeholder="Type a message...">
         <button onclick="sendMessage()">Send</button>
     </div>
+</div>
 </div>
 
 <!-- JavaScript for Dropdown & Chat Switching -->

@@ -10,43 +10,39 @@
 </head>
 <body>
 
-    <div class="navbar">
+    <!-- Navbar -->
+<div class="navbar">
 
-        <div>
-            <h2 href="#" class="logo">FlexiDesk</h2>  
-        </div>
-
-        <div>
-            <a href="#" >Home</a>
-            <a href="#" >Features</a>
-            <a href="#" >Pricing</a>
-            <a href="#" >Contact</a>
-        </div>
-
-        <div>
-            <div class="dark-mode">
-                <label for="dark-mode-switch">Dark Mode</label>
-                <div class="switch">
-                    <input type="checkbox" id="dark-mode-switch">
-                    <span class="slider"></span>
-                </div>
-            </div>
-        </div>
-
-    </div>   
-
-<!--   <div class="navbar">
-        <div class="navbar-left">
-            <a href="#">Home</a> | 
-            <a href="#">Chat</a> |
-            <a href="#">Contact Us</a>
-        </div>
-        <div class="navbar-right">
-            <a href="#">Login</a> | 
-            <a href="#">Sign Up</a>
-        </div>
+    <div>
+        <h2 href="#" class="logo">FlexiDesk</h2>  
     </div>
--->
+
+    <div>
+        <a href="homePage.html" >Home</a>
+        <a href="about.html" >About</a>
+        <a href="test.html" >Charts</a>
+        <a href="contact.html" >Contact</a>
+    </div>
+
+    <div>
+    
+        <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
+        <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
+
+
+    <!--<div class="dark-mode">
+            <label for="dark-mode-switch">Dark Mode</label>
+            <div class="switch">
+                <input type="checkbox" id="dark-mode-switch">
+                <span class="slider"></span>
+            </div>
+        </div> -->
+
+    </div>
+
+</div>   
+
+
     
     <div class="container">
         <h1 style="margin-bottom: 100px; font-size: 3em;">Test page</h1>
@@ -54,3 +50,70 @@
     </div>
 </body>
 </html>
+
+
+
+/* Dropdown Button */
+.project-dropdown {
+    position: relative;
+}
+
+.project-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.project-btn:hover {
+    background-color: #2980b9;
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    
+
+    .project-btn {
+        width: 100%;
+    }
+
+    .project-list {
+        width: 100%;
+    }
+}
+
+
+
+-------------
+
+<!-- Project Dropdown -->
+<div class="project-dropdown">
+    <button class="project-btn" onclick="toggleDropdown()">Select Project</button>
+    <div class="project-list" id="projectList">
+        <div class="project-item" onclick="switchProject('Project Alpha')">Project Alpha</div>
+        <div class="project-item" onclick="switchProject('Project Beta')">Project Beta</div>
+        <div class="project-item" onclick="switchProject('Marketing Plan')">Marketing Plan</div>
+        <div class="project-item" onclick="switchProject('Development Team')">Development Team</div>
+    </div>
+</div>
+
+
+
+-------------
+
+function toggleDropdown() {
+    let dropdown = document.getElementById("projectList");
+    dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+}
+
+
+function switchProject(projectName) {
+    document.getElementById("chatHeader").textContent = projectName + " Chat";
+    document.getElementById("chatBox").innerHTML = ""; // Clear messages when switching
+    toggleDropdown();
+}a b
