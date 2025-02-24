@@ -127,38 +127,7 @@
 <body>
 
 <!-- Navbar -->
-<div class="navbar">
-
-    <div>
-        <h2 href="#" class="logo">FlexiDesk</h2>  
-    </div>
-
-    <div>
-        <a href="homePage.html" >Home</a>
-        <a href="about.html" >About</a>
-        <a href="test.html" >Charts</a>
-        <a href="contact.html" >Contact</a>
-        <a href="groupChat.html" >Chat</a>
-
-    </div>
-
-    <div>
-    
-        <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
-        <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
-
-
-    <!--<div class="dark-mode">
-            <label for="dark-mode-switch">Dark Mode</label>
-            <div class="switch">
-                <input type="checkbox" id="dark-mode-switch">
-                <span class="slider"></span>
-            </div>
-        </div> -->
-
-    </div>
-
-</div> 
+<div id="navbar-placeholder"></div>
 
 
 <!-- Main Content -->
@@ -212,6 +181,14 @@
     function enterProject() {
         window.location.href = "ganttView.html"; // Default entry is the Gantt Chart view
     }
+
+    // Fetch and insert navbar
+ fetch('navbar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('navbar-placeholder').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading navbar:', error));
 </script>
 
 </body>

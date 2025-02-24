@@ -4,64 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Task - FlexiDesk</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="navbarStyle.css">
 </head>
 <body>
 
 <style>
-/* General Styling */
-body {
-    font-family: Arial, sans-serif;
-    background: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Navbar */
-.navbar {
-    background-color: #2c3e50;
-    padding: 1rem 2rem;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo {
-    color: #ffffff;
-    font-size: 1.8rem;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.nav-links {
-    display: flex;
-    gap: 2rem;
-}
-
-.nav-link {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.nav-link:hover {
-    color: #3498db;
-}
-
 /* Task Form Container */
 .task-container {
-    margin-top: 20px;
-    width: 90%;
-    max-width: 600px;
+    width: 80%;
+    max-width: 800px;
     background: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+    margin: 80px auto;
+
 }
 
 /* Form Styles */
@@ -155,15 +112,8 @@ body {
 </style>
 
 <!-- Navbar -->
-<nav class="navbar">
-    <a href="#" class="logo">FlexiDesk</a>
-    <div class="nav-links">
-        <a href="../FlexiDesk/index.html" class="nav-link">Home</a>
-        <a href="#" class="nav-link">Projects</a>
-        <a href="#" class="nav-link">Tasks</a>
-        <a href="#" class="nav-link">Settings</a>
-    </div>
-</nav>
+<div id="navbar-placeholder"></div>
+
 
 <!-- Task Creation Form -->
 <div class="task-container">
@@ -260,6 +210,14 @@ function addSubtask() {
     subtaskDiv.appendChild(removeButton);
     container.appendChild(subtaskDiv);
 }
+
+// Fetch and insert navbar
+fetch('navbar.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('navbar-placeholder').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading navbar:', error));
 </script>
 
 </body>

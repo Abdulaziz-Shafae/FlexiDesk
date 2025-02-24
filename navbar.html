@@ -1,0 +1,51 @@
+<!-- navbar.html -->
+<!-- if the user in not loged in  -->
+<div class="navbar">
+    <div>
+        <h2 class="logo">FlexiDesk</h2>  
+    </div>
+
+    <div>
+        <a href="homePage.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="test.html">Charts</a>
+        <a href="contact.html">Contact</a>
+        <a href="groupChat.html">Chat</a>
+    </div>
+
+    
+    <div>
+         
+        <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
+        <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
+    
+    <!-- 
+    <button class="profile-btn" onclick="dropdownToggle()">Profile</button>
+        <div class="profile-list" id="profileList">
+            <div class="profile-item " onclick="">Profile</div>
+            <div class="profile-item " onclick="">Settings</div>
+            <div class="profile-item " onclick="">Swetch Language</div>
+            <div class="dark-mode">
+                <label for="dark-mode-switch">Dark Mode</label>
+                <div class="switch">
+                    <input type="checkbox" id="dark-mode-switch">
+                    <span class="slider"></span>
+                </div>
+            </div>        
+        </div> 
+    -->
+    </div>
+
+
+    
+    
+</div>
+
+<script>
+
+function dropdownToggle() {
+    let dropdown = document.getElementById("profileList");
+    dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+}
+
+</script>

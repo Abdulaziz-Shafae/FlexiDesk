@@ -141,7 +141,7 @@ input:checked + .slider:before {
 
 
 
-/* Add Task Button */
+/* Sign up log in Button */
 .login-signin {
     position: relative;
     padding: 8px 15px;
@@ -151,7 +151,7 @@ input:checked + .slider:before {
     border: none;
     cursor: pointer;
     border-radius: 5px;
-    left: -5px;
+    left: -10px;
 }
 
 .login-signin:hover {
@@ -160,7 +160,45 @@ input:checked + .slider:before {
 
 
 
+/* Dropdown Menu */   
+.profile-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    position: relative; 
+    left: -10px;   
+}
 
+.profile-btn:hover {
+    background-color: #0056b3;
+}
 
+.profile-list {
+    position: absolute;
+    right: 0;  /* Aligns it to the right under the button */
+    top: 100%; /* Places it right below the button */
+    background: white;
+    width: 200px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    display: none;
+    flex-direction: column;
+    padding: 10px 0;
+    z-index: 10;
+}
 
+.profile-item {
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.profile-item:hover {
+    background: #3498db;
+    color: white;
+}
 
