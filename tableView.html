@@ -61,7 +61,6 @@
             <a href="test.html" class="tab">Gantt test</a>
             <a href="tableView.html" class="tab active">Table</a>
             <a href="calenderView.html" class="tab">Calendar</a>
-            <a href="groupChat.html" >Chat</a>
 
         </div>       
         <div class="viwes-header">
@@ -106,7 +105,6 @@
 </div>
 
 <script>
-
     // Fetch and insert navbar
  fetch('navbar.html')
         .then(response => response.text())
@@ -115,6 +113,7 @@
         })
         .catch(error => console.error('Error loading navbar:', error));
     
+
         // JavaScript for Dark Mode 
     
     const toggleSwitch = document.getElementById("dark-mode-switch");
@@ -130,13 +129,7 @@
         toggleSwitch.checked = true;
     }
 
-    // Fetch and insert navbar
- fetch('navbar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
-        })
-        .catch(error => console.error('Error loading navbar:', error));
+
 </script>
 
 </body>
