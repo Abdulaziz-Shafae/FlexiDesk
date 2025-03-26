@@ -1,53 +1,219 @@
-<div id="taskPopup" class="popup">
-  <div class="popup-content">
-    <span class="close-btn">&times;</span>
-    <h2>New Task</h2>
-    <label for="task-name">Task Name:</label>
-    <input type="text" id="task-name" placeholder="Enter task name" />
-
-    <label for="task-type">Type:</label>
-    <select id="task-type">
-      <option value="task">Task</option>
-      <option value="reminder">Reminder</option>
-    </select>
-
-    <label for="task-priority">Priority:</label>
-    <select id="task-priority">
-      <option value="low">Low</option>
-      <option value="medium">Medium</option>
-      <option value="high">High</option>
-    </select>
-
-    <textarea id="task-desc" placeholder="Enter description"></textarea>
-
-    <button id="save-task">Save</button>
-    <button id="cancel-task">Cancel</button>
-  </div>
-</div>
-
-<script>
-  function attachPopupEvents() {
-    const popup = document.getElementById('taskPopup');
-    const closeButton = document.querySelector('.close-btn');
-    const cancelButton = document.getElementById('cancel-task');
-
-    popup.style.display = 'block'; // Show popup when loaded
-
-    function closePopup() {
-      popup.style.display = 'none';
-    }
-
-    // Attach event listeners to close the popup
-    closeButton.addEventListener('click', closePopup);
-    cancelButton.addEventListener('click', closePopup);
-
-    // Close popup when clicking outside of it
-    window.addEventListener('click', function (event) {
-      if (event.target === popup) {
-        closePopup();
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Popup</title>
+    <style>
+      /* Background overlay */
+      .popup {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3); /* Slightly transparent black */
+        backdrop-filter: blur(4px); /* Adds a blur effect */
       }
-    });
-  }
 
-  attachPopupEvents(); // Run when the popup loads
-</script>
+      /* Popup container */
+      .popup-content {
+        background: white;
+        width: 400px; /* Adjusted width to match the image */
+        padding: 20px;
+        margin: 10% auto;
+        border-radius: 12px; /* Rounded corners */
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        position: relative;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Header with blue background */
+      .popup-content h2 {
+        background-color: #4a90e2; /* Light blue */
+        color: white;
+        padding: 15px;
+        border-radius: 12px 12px 0 0; /* Rounded corners only on top */
+        font-size: 18px;
+        margin: 0;
+        font-weight: bold;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* Close button */
+      .addTask-close-btn {
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Close button hover */
+      .addTask-close-btn:hover {
+        color: #333;
+      }
+
+      /* Labels */
+      .addTask-label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px; /* Spacing between label and input */
+        font-size: 14px;
+      }
+
+      /* Inputs, selects, and textareas */
+      .addTask-input,
+      .addTask-select,
+      .addTask-textarea {
+        width: 100%;
+        padding: 12px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 8px; /* Rounded inputs */
+        font-size: 14px;
+        box-sizing: border-box;
+        background-color: #f9f9f9; /* Light background for input fields */
+      }
+
+      /* Adjust height for description */
+      .addTask-textarea {
+        height: 100px;
+        resize: vertical;
+      }
+
+      /* Buttons */
+      .addTask-save-btn,
+      .addTask-cancel-btn,
+      .addTask-delete-btn {
+        margin-top: 20px;
+        padding: 12px 20px;
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 14px;
+        border: none;
+        width: 100%;
+      }
+
+      /* Save button */
+      .addTask-save-btn {
+        background: #3b82f6; /* Blue */
+        color: white;
+      }
+
+      .addTask-save-btn:hover {
+        background: #2563eb; /* Darker blue */
+      }
+
+      /* Cancel button */
+      .addTask-cancel-btn {
+        background: #f3f4f6; /* Light gray */
+        color: #333;
+      }
+
+      .addTask-cancel-btn:hover {
+        background: #e5e7eb; /* Darker gray */
+      }
+
+      /* Delete button */
+      .addTask-delete-btn {
+        background: transparent;
+        color: red;
+        border: none;
+        font-weight: bold;
+      }
+
+      .addTask-delete-btn:hover {
+        color: darkred;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="taskPopup" class="popup">
+      <div class="popup-content">
+        <span class="addTask-close-btn">&times;</span>
+        <h2>New Task</h2>
+
+        <!-- Task Name -->
+        <label for="task-name" class="addTask-label">Task Name:</label>
+        <input type="text" id="task-name" class="addTask-input" placeholder="Enter task name" />
+
+        <!-- Task Type -->
+        <label for="task-type" class="addTask-label">Type:</label>
+        <select id="task-type" class="addTask-select">
+          <option value="task">Task</option>
+          <option value="milestone">Milestone</option>
+        </select>
+
+        <!-- Task Priority -->
+        <label for="task-priority" class="addTask-label">Priority:</label>
+        <select id="task-priority" class="addTask-select">
+          <option value="1">Low</option>
+          <option value="2">Medium-low</option>
+          <option value="3">Medium</option>
+          <option value="4">High</option>
+          <option value="5">Critical</option>
+        </select>
+
+        <!-- Task Description -->
+        <label for="task-desc" class="addTask-label">Description:</label>
+        <textarea id="task-desc" class="addTask-textarea" placeholder="Enter description"></textarea>
+
+        <!-- Time Period -->
+        <div class="addTask-time-period">
+          <input type="number" min="1" class="addTask-date" placeholder="1" />
+          <select class="addTask-date">
+            <option>January</option>
+            <option>February</option>
+            <option>March</option>
+            <option>April</option>
+          </select>
+          <input type="number" min="2025" class="addTask-date" placeholder="2025" />
+        </div>
+
+        <!-- Buttons -->
+        <button id="save-task" class="addTask-save-btn">Save</button>
+        <button id="cancel-task" class="addTask-cancel-btn">Cancel</button>
+        <button id="delete-task" class="addTask-delete-btn">Delete</button>
+      </div>
+    </div>
+
+    <script>
+      const popup = document.getElementById('taskPopup');
+      const closeButton = document.querySelector('.addTask-close-btn');
+      const cancelButton = document.getElementById('cancel-task');
+
+      // Show popup when needed
+      function openPopup() {
+        popup.style.display = 'block';
+      }
+
+      // Close the popup
+      function closePopup() {
+        popup.style.display = 'none';
+      }
+
+      // Attach events to close buttons
+      closeButton.addEventListener('click', closePopup);
+      cancelButton.addEventListener('click', closePopup);
+
+      // Close popup if user clicks outside
+      window.addEventListener('click', (event) => {
+        if (event.target === popup) {
+          closePopup();
+        }
+      });
+
+      // Open the popup for testing
+      openPopup();
+    </script>
+  </body>
+</html>

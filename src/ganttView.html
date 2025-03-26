@@ -21,11 +21,12 @@
         gap: 10px; /* Space between elements */
         padding: 5px;
         background-color: #f8f9fa; /* Light gray background */
+        justify-content: space-between;
+
       }
 
       .Toolbar-btn,
       .zoom-btn {
-        padding: 8px 15px;
         font-size: 16px;
         background: #2c3e50;
         color: white;
@@ -33,6 +34,9 @@
         cursor: pointer;
         border-radius: 5px;
         height: 35px;
+        width: 80px;
+        margin-top: 3px;
+        margin-bottom: 3px;
         display: inline-block;
       }
 
@@ -50,6 +54,36 @@
       .Toolbar-btn:hover {
         opacity: 0.7;
       }
+
+      .gantt_task_line.gantt_milestone {
+        width: 16px !important;
+        height: 16px !important;
+        background: #2c3e50 !important; /* Dark Blue */
+        border: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        padding: 1px;
+        margin: 4px;
+        transform: translate(120%, -5%);
+      }
+
+      /* Priority Background Colors */
+      .gantt_task_line.low {
+        background-color: #28a745 !important;
+      } /* Green */
+      .gantt_task_line.medium-low {
+        background-color: #17a2b8 !important;
+      } /* Blue */
+      .gantt_task_line.medium {
+        background-color: #ffc107 !important;
+      } /* Yellow */
+      .gantt_task_line.high {
+        background-color: #fd7e14 !important;
+      } /* Orange */
+      .gantt_task_line.critical {
+        background-color: #dc3545 !important;
+      } /* Red */
     </style>
 
     <!-- Navbar -->
@@ -71,33 +105,24 @@
 
         <!-- Toolbar -->
         <div class="toolbar">
+          <div> 
           <button onclick="zoomIn()" class="zoom-btn">
-            <img
-              src="photos\in light.png"
-              alt="Zoom In"
-              width="24"
-              height="24"
-            />
+            <img src="photos/in light.png" alt="Zoom In" />
           </button>
           <button onclick="zoomOut()" class="zoom-btn">
-            <img
-              src="photos\out light.png"
-              alt="Zoom Out"
-              width="24"
-              height="24"
-            />
+            <img src="photos/out light.png" alt="Zoom Out" />
           </button>
+          </div>
 
+          <div>
           <select id="view-mode" class="Toolbar-btn">
             <option value="hour">Hour</option>
             <option value="day" selected>Day</option>
             <option value="week">Week</option>
             <option value="month">Month</option>
           </select>
-
-          <button onclick="goToToday() " class="Toolbar-btn">
-            Go to Today
-          </button>
+          <button onclick="goToToday()"style="width: 150px;" class="Toolbar-btn">Go to Today</button>
+          </div>
         </div>
 
         <!-- Gantt chart -->

@@ -1,10 +1,5 @@
 /* General viwes Container */
 
-.main-content {
-  padding-top: 80px;
-  padding-left: 50px;
-  padding-right: 50px;
-}
 
 .viwes-container {
   position: relative;
@@ -60,19 +55,23 @@
   transition: background 0.3s ease-in-out;
 }
 
+
+
 /* Add Task Button */
 .add-task-btn {
+  white-space: nowrap; /* Prevent text from wrapping */
+  width: 110px;
   position: absolute;
-  top: 100px;
+  top: 140px;
   right: 3%;
   margin-left: auto; /* Moves toolbar to the right */
-  padding: 8px 15px;
   font-size: 16px;
   background: #007bff;
   color: white;
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  padding: 8px ;
 }
 
 .add-task-btn:hover {
@@ -124,112 +123,3 @@
   background: #dc3545;
   color: white;
 } /* Red */
-
-/* Background overlay */
-.popup {
-  display: none;
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3); /* Slightly transparent black */
-  backdrop-filter: blur(4px); /* Adds a blur effect */
-}
-
-/* Popup container */
-.popup-content {
-  background: white;
-  width: 400px; /* Adjusted width */
-  padding: 20px;
-  margin: 10% auto;
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
-  position: relative;
-  font-family: Arial, sans-serif;
-}
-
-/* Close button */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #888;
-  cursor: pointer;
-}
-
-.close-btn:hover {
-  color: #333;
-}
-
-/* Labels */
-label {
-  font-weight: bold;
-  display: block;
-  margin-top: 10px;
-}
-
-/* Inputs and selects */
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-/* Adjust height for description */
-textarea {
-  height: 60px;
-  resize: none;
-}
-
-/* Buttons */
-button {
-  margin-top: 15px;
-  padding: 10px;
-  width: 100px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
-  border: none;
-}
-
-/* Save button */
-button#save-task {
-  background: #3b82f6; /* Blue */
-  color: white;
-  border: none;
-}
-
-button#save-task:hover {
-  background: #2563eb; /* Darker blue */
-}
-
-/* Cancel button */
-button#cancel-task {
-  background: #f3f4f6; /* Light gray */
-  color: #333;
-  border: none;
-}
-
-button#cancel-task:hover {
-  background: #e5e7eb; /* Darker gray */
-}
-
-/* Delete button */
-button#delete-task {
-  background: transparent;
-  color: red;
-  border: none;
-  font-weight: bold;
-}
-
-button#delete-task:hover {
-  color: darkred;
-}

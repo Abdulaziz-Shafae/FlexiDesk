@@ -21,12 +21,12 @@
         gap: 10px; /* Space between elements */
         padding: 5px;
         background-color: #f8f9fa; /* Light gray background */
-        justify-content: flex-end; /* Aligns buttons to the right */
+        justify-content: space-between;
+
       }
 
       .Toolbar-btn,
       .zoom-btn {
-        padding: 8px 15px;
         font-size: 16px;
         background: #2c3e50;
         color: white;
@@ -34,6 +34,7 @@
         cursor: pointer;
         border-radius: 5px;
         height: 35px;
+        width: 80px;
         margin-top: 3px;
         margin-bottom: 3px;
         display: inline-block;
@@ -102,19 +103,24 @@
         </div>
 
         <div class="toolbar">
+          <div> 
           <button onclick="zoomIn()" class="zoom-btn">
             <img src="photos/in light.png" alt="Zoom In" />
           </button>
           <button onclick="zoomOut()" class="zoom-btn">
             <img src="photos/out light.png" alt="Zoom Out" />
           </button>
+          </div>
+
+          <div>
           <select id="view-mode" class="Toolbar-btn">
             <option value="hour">Hour</option>
             <option value="day" selected>Day</option>
             <option value="week">Week</option>
             <option value="month">Month</option>
           </select>
-          <button onclick="goToToday()" class="Toolbar-btn">Go to Today</button>
+          <button onclick="goToToday()"style="width: 150px;" class="Toolbar-btn">Go to Today</button>
+          </div>
         </div>
 
         <div id="gantt_here" style="width: 100%; height: 500px"></div>
