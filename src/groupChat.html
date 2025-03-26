@@ -1,265 +1,277 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Chat - FlexiDesk</title>
-    <link rel="stylesheet" href="navbarStyle.css">
+    <link rel="stylesheet" href="navbarStyle.css" />
     <script src="script.js" defer></script>
+  </head>
 
-</head>
+  <body>
+    <style>
+      /* Dropdown Menu */
+      .project-btn {
+        background-color: white;
+        color: #3498db;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+        position: relative;
+      }
 
-<body>
+      .project-btn:hover {
+        background-color: #2980b9;
+        color: white;
+      }
 
-<style>
-
-/* Dropdown Menu */   
-.project-btn {
-    background-color: white;
-    color: #3498db;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    position: relative;    
-}
-
-.project-btn:hover {
-    background-color: #2980b9;
-    color: white;
-}
-
-.project-list {
-    position: absolute;
-    right: 0;  /* Aligns it to the right under the button */
-    top: 100%; /* Places it right below the button */
-    background: white;
-    width: 200px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    display: none;
-    flex-direction: column;
-    padding: 10px 0;
-    z-index: 10;
-}
-
-.project-item {
-    padding: 10px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.project-item:hover {
-    background: #3498db;
-    color: white;
-}
-
-/* Chat Container */
-.chat-container {
-    width: 90%;
-    max-width: 800px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    overflow: hidden;
-    margin: 80px auto;
-}
-
-/* Chat Header */
-.chat-header {
-    background-color: #3498db;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative; 
-}
-.chat-header a {
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-
-/* Chat Messages */
-.chat-box {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Chat Message */
-.message {
-    max-width: 80%;
-    padding: 10px;
-    border-radius: 10px;
-    margin: 5px 0;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Sender Name */
-.sender {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 3px;
-}
-
-/* Messages Alignment */
-.message.sent {
-    align-self: flex-end;
-    background: #007bff;
-    color: white;
-}
-
-.message.received {
-    align-self: flex-start;
-    background: #f1f1f1;
-    color: black;
-}
-
-/* Chat Input */
-.chat-input {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background: #fff;
-}
-
-.chat-input input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.chat-input button {
-    padding: 10px 15px;
-    background: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-left: 10px;
-    border-radius: 5px;
-}
-
-.chat-input button:hover {
-    background: #0056b3;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .nav-links {
+      .project-list {
+        position: absolute;
+        right: 0; /* Aligns it to the right under the button */
+        top: 100%; /* Places it right below the button */
+        background: white;
+        width: 200px;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+        display: none;
         flex-direction: column;
-        gap: 1rem;
-    }
+        padding: 10px 0;
+        z-index: 10;
+      }
 
-    .project-btn {
-        width: 100%;
-    }
+      .project-item {
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
 
-    .project-list {
-        width: 100%;
-    }
-}
-</style>
+      .project-item:hover {
+        background: #3498db;
+        color: white;
+      }
 
+      /* Chat Container */
+      .chat-container {
+        width: 90%;
+        max-width: 800px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+        overflow: hidden;
+        margin: 80px auto;
+      }
 
-<!-- Navbar -->
-<div id="navbar-placeholder"></div>
+      /* Chat Header */
+      .chat-header {
+        background-color: #3498db;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+      }
+      .chat-header a {
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+      }
 
+      /* Chat Messages */
+      .chat-box {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
 
-<!-- Chat Container -->
-<div class="main-content">
-<div class="chat-container">     
-    <div class="chat-header" >
-        <a id="chatHeader">Project Alpha Chat</a>
-        <button class="project-btn" onclick="toggleDropdown()">Select Project</button>
-            <div class="project-list" id="projectList">
-                <div class="project-item " onclick="switchProject('Project Alpha')">Project Alpha</div>
-                <div class="project-item " onclick="switchProject('Project Beta')">Project Beta</div>
-                <div class="project-item " onclick="switchProject('Marketing Plan')">Marketing Plan</div>
-                <div class="project-item " onclick="switchProject('Development Team')">Development Team</div>
+      /* Chat Message */
+      .message {
+        max-width: 80%;
+        padding: 10px;
+        border-radius: 10px;
+        margin: 5px 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Sender Name */
+      .sender {
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 3px;
+      }
+
+      /* Messages Alignment */
+      .message.sent {
+        align-self: flex-end;
+        background: #007bff;
+        color: white;
+      }
+
+      .message.received {
+        align-self: flex-start;
+        background: #f1f1f1;
+        color: black;
+      }
+
+      /* Chat Input */
+      .chat-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: #fff;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .chat-input button {
+        padding: 10px 15px;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        margin-left: 10px;
+        border-radius: 5px;
+      }
+
+      .chat-input button:hover {
+        background: #0056b3;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav-links {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .project-btn {
+          width: 100%;
+        }
+
+        .project-list {
+          width: 100%;
+        }
+      }
+    </style>
+
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Chat Container -->
+    <div class="main-content">
+      <div class="chat-container">
+        <div class="chat-header">
+          <a id="chatHeader">Project Alpha Chat</a>
+          <button class="project-btn" onclick="toggleDropdown()">
+            Select Project
+          </button>
+          <div class="project-list" id="projectList">
+            <div class="project-item" onclick="switchProject('Project Alpha')">
+              Project Alpha
             </div>
-    </div>
+            <div class="project-item" onclick="switchProject('Project Beta')">
+              Project Beta
+            </div>
+            <div class="project-item" onclick="switchProject('Marketing Plan')">
+              Marketing Plan
+            </div>
+            <div
+              class="project-item"
+              onclick="switchProject('Development Team')"
+            >
+              Development Team
+            </div>
+          </div>
+        </div>
 
-    <div class="chat-box" id="chatBox">
-        <!-- Example Messages -->
-        <div class="message received">
+        <div class="chat-box" id="chatBox">
+          <!-- Example Messages -->
+          <div class="message received">
             <span class="sender">John Doe</span>
             <p>Hey team, let's finalize the project deadline.</p>
-        </div>
-        
-        <div class="message sent">
+          </div>
+
+          <div class="message sent">
             <span class="sender">You</span>
             <p>Sure! I think we should aim for next Monday.</p>
+          </div>
         </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input">
+          <!-- Project Dropdown -->
+          <input
+            type="text"
+            id="messageInput"
+            placeholder="Type a message..."
+          />
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Chat Input -->
-    <div class="chat-input">
-        <!-- Project Dropdown -->
-        <input type="text" id="messageInput" placeholder="Type a message...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</div>
-</div>
+    <!-- JavaScript for Dropdown & Chat Switching -->
+    <script>
+      function toggleDropdown() {
+        let dropdown = document.getElementById('projectList');
+        dropdown.style.display =
+          dropdown.style.display === 'flex' ? 'none' : 'flex';
+      }
 
-<!-- JavaScript for Dropdown & Chat Switching -->
-<script>
-function toggleDropdown() {
-    let dropdown = document.getElementById("projectList");
-    dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
-}
+      function sendMessage() {
+        let input = document.getElementById('messageInput');
+        let messageText = input.value.trim();
 
-function sendMessage() {
-    let input = document.getElementById("messageInput");
-    let messageText = input.value.trim();
+        if (messageText !== '') {
+          let chatBox = document.getElementById('chatBox');
 
-    if (messageText !== "") {
-        let chatBox = document.getElementById("chatBox");
+          let messageDiv = document.createElement('div');
+          messageDiv.classList.add('message', 'sent');
 
-        let messageDiv = document.createElement("div");
-        messageDiv.classList.add("message", "sent");
+          let senderSpan = document.createElement('span');
+          senderSpan.classList.add('sender');
+          senderSpan.textContent = 'You';
 
-        let senderSpan = document.createElement("span");
-        senderSpan.classList.add("sender");
-        senderSpan.textContent = "You";
+          let messageContent = document.createElement('p');
+          messageContent.textContent = messageText;
 
-        let messageContent = document.createElement("p");
-        messageContent.textContent = messageText;
+          messageDiv.appendChild(senderSpan);
+          messageDiv.appendChild(messageContent);
+          chatBox.appendChild(messageDiv);
 
-        messageDiv.appendChild(senderSpan);
-        messageDiv.appendChild(messageContent);
-        chatBox.appendChild(messageDiv);
+          chatBox.scrollTop = chatBox.scrollHeight;
+          input.value = '';
+        }
+      }
 
-        chatBox.scrollTop = chatBox.scrollHeight;
-        input.value = "";
-    }
-}
+      function switchProject(projectName) {
+        document.getElementById('chatHeader').textContent =
+          projectName + ' Chat';
+        document.getElementById('chatBox').innerHTML = ''; // Clear messages when switching
+        toggleDropdown();
+      }
 
-function switchProject(projectName) {
-    document.getElementById("chatHeader").textContent = projectName + " Chat";
-    document.getElementById("chatBox").innerHTML = ""; // Clear messages when switching
-    toggleDropdown();
-}
-
-// Fetch and insert navbar
-fetch('navbar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
+      // Fetch and insert navbar
+      fetch('navbar.html')
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById('navbar-placeholder').innerHTML = data;
         })
-        .catch(error => console.error('Error loading navbar:', error));
-</script>
-
-</body>
+        .catch((error) => console.error('Error loading navbar:', error));
+    </script>
+  </body>
 </html>

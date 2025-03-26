@@ -1,138 +1,126 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Table View - FlexiDesk</title>
-    <link rel="stylesheet" href="navbarStyle.css">
-    <link rel="stylesheet" href="viwesStyle.css">
+    <link rel="stylesheet" href="navbarStyle.css" />
+    <link rel="stylesheet" href="viwesStyle.css" />
     <script src="script.js" defer></script>
-
-    
-</head>
-<body>
+  </head>
+  <body>
     <style>
-        
+      /* Table Container */
+      .table-container {
+        max-width: 900px;
+        margin: 30px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+      }
 
-        /* Table Container */
-        .table-container {
-            max-width: 900px;
-            margin: 30px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+      th {
+        background: #2c3e50;
+        color: white;
+      }
 
-        th {
-            background: #2c3e50;
-            color: white;
-        }
-
-        tr:hover {
-            background: #f1f1f1;
-        }
-
-        
+      tr:hover {
+        background: #f1f1f1;
+      }
     </style>
 
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
 
-
-<!-- Navbar -->
-<div id="navbar-placeholder"></div>
-
-
-
-<!-- Main Content -->
-<div class="main-content">
-    <div class="viwes-container">
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="viwes-container">
         <div class="tabs">
-            <a href="ganttView.html" class="tab">Gantt</a>
-            <a href="test.html" class="tab">Gantt test</a>
-            <a href="tableView.html" class="tab active">Table</a>
-            <a href="calenderView.html" class="tab">Calendar</a>
-
-        </div>       
+          <a href="ganttView.html" class="tab">Gantt</a>
+          <a href="test.html" class="tab">Gantt test</a>
+          <a href="tableView.html" class="tab active">Table</a>
+          <a href="calenderView.html" class="tab">Calendar</a>
+        </div>
         <div class="viwes-header">
-            <h1>Project Name</h1>
-            <button class="add-task-btn">+ Add Task</button>    
+          <h1>Project Name</h1>
+          <button class="add-task-btn">+ Add Task</button>
         </div>
 
-
-        <div style="padding-top: 20px;">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Task Name</th>
-                        <th>Priority</th>
-                        <th>Due Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Finalize Report</td>
-                        <td>High</td>
-                        <td>Feb 25, 2025</td>
-                        <td>In Progress</td>
-                    </tr>
-                    <tr>
-                        <td>Team Meeting</td>
-                        <td>Medium</td>
-                        <td>Feb 20, 2025</td>
-                        <td>Pending</td>
-                    </tr>
-                    <tr>
-                        <td>Bug Fixing</td>
-                        <td>Critical</td>
-                        <td>Feb 18, 2025</td>
-                        <td>Completed</td>
-                   </tr>
-                </tbody>
-            </table>
+        <div style="padding-top: 20px">
+          <table>
+            <thead>
+              <tr>
+                <th>Task Name</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Finalize Report</td>
+                <td>High</td>
+                <td>Feb 25, 2025</td>
+                <td>In Progress</td>
+              </tr>
+              <tr>
+                <td>Team Meeting</td>
+                <td>Medium</td>
+                <td>Feb 20, 2025</td>
+                <td>Pending</td>
+              </tr>
+              <tr>
+                <td>Bug Fixing</td>
+                <td>Critical</td>
+                <td>Feb 18, 2025</td>
+                <td>Completed</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
-</div>
 
-<script>
-    // Fetch and insert navbar
- fetch('navbar.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('navbar-placeholder').innerHTML = data;
+    <script>
+      // Fetch and insert navbar
+      fetch('navbar.html')
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById('navbar-placeholder').innerHTML = data;
         })
-        .catch(error => console.error('Error loading navbar:', error));
-    
+        .catch((error) => console.error('Error loading navbar:', error));
 
-        // JavaScript for Dark Mode 
-    
-    const toggleSwitch = document.getElementById("dark-mode-switch");
-    const body = document.body;
+      // JavaScript for Dark Mode
 
-    toggleSwitch.addEventListener("change", () => {
-        body.classList.toggle("dark-mode");
-        localStorage.setItem("darkMode", body.classList.contains("dark-mode") ? "enabled" : "disabled");
-    });
+      const toggleSwitch = document.getElementById('dark-mode-switch');
+      const body = document.body;
 
-    if (localStorage.getItem("darkMode") === "enabled") {
-        body.classList.add("dark-mode");
+      toggleSwitch.addEventListener('change', () => {
+        body.classList.toggle('dark-mode');
+        localStorage.setItem(
+          'darkMode',
+          body.classList.contains('dark-mode') ? 'enabled' : 'disabled',
+        );
+      });
+
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        body.classList.add('dark-mode');
         toggleSwitch.checked = true;
-    }
-
-
-</script>
-
-</body>
+      }
+    </script>
+  </body>
 </html>

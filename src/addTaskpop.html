@@ -1,53 +1,53 @@
 <div id="taskPopup" class="popup">
-    <div class="popup-content">
-        <span class="close-btn">&times;</span>
-        <h2>New Task</h2>
-        <label for="task-name">Task Name:</label>
-        <input type="text" id="task-name" placeholder="Enter task name">
+  <div class="popup-content">
+    <span class="close-btn">&times;</span>
+    <h2>New Task</h2>
+    <label for="task-name">Task Name:</label>
+    <input type="text" id="task-name" placeholder="Enter task name" />
 
-        <label for="task-type">Type:</label>
-        <select id="task-type">
-            <option value="task">Task</option>
-            <option value="reminder">Reminder</option>
-        </select>
+    <label for="task-type">Type:</label>
+    <select id="task-type">
+      <option value="task">Task</option>
+      <option value="reminder">Reminder</option>
+    </select>
 
-        <label for="task-priority">Priority:</label>
-        <select id="task-priority">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-        </select>
+    <label for="task-priority">Priority:</label>
+    <select id="task-priority">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
 
-        <textarea id="task-desc" placeholder="Enter description"></textarea>
+    <textarea id="task-desc" placeholder="Enter description"></textarea>
 
-        <button id="save-task">Save</button>
-        <button id="cancel-task">Cancel</button>
-    </div>
+    <button id="save-task">Save</button>
+    <button id="cancel-task">Cancel</button>
+  </div>
 </div>
 
 <script>
-    function attachPopupEvents() {
-        const popup = document.getElementById("taskPopup");
-        const closeButton = document.querySelector(".close-btn");
-        const cancelButton = document.getElementById("cancel-task");
+  function attachPopupEvents() {
+    const popup = document.getElementById('taskPopup');
+    const closeButton = document.querySelector('.close-btn');
+    const cancelButton = document.getElementById('cancel-task');
 
-        popup.style.display = "block"; // Show popup when loaded
+    popup.style.display = 'block'; // Show popup when loaded
 
-        function closePopup() {
-            popup.style.display = "none";
-        }
-
-        // Attach event listeners to close the popup
-        closeButton.addEventListener("click", closePopup);
-        cancelButton.addEventListener("click", closePopup);
-
-        // Close popup when clicking outside of it
-        window.addEventListener("click", function (event) {
-            if (event.target === popup) {
-                closePopup();
-            }
-        });
+    function closePopup() {
+      popup.style.display = 'none';
     }
 
-    attachPopupEvents(); // Run when the popup loads
+    // Attach event listeners to close the popup
+    closeButton.addEventListener('click', closePopup);
+    cancelButton.addEventListener('click', closePopup);
+
+    // Close popup when clicking outside of it
+    window.addEventListener('click', function (event) {
+      if (event.target === popup) {
+        closePopup();
+      }
+    });
+  }
+
+  attachPopupEvents(); // Run when the popup loads
 </script>

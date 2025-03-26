@@ -1,13 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Popup Test</title>
-    <link rel="stylesheet" href="viwesStyle.css"> <!-- Updated CSS file -->
-</head>
-<body>
-
+    <link rel="stylesheet" href="viwesStyle.css" />
+    <!-- Updated CSS file -->
+  </head>
+  <body>
     <h1>Popup Test Page</h1>
 
     <!-- Button to trigger the popup -->
@@ -17,23 +17,21 @@
     <div id="popup-container"></div>
 
     <script>
-      
-    function loadPopup() {
-        fetch("addTaskpop.html") // Fetch the popup file
-            .then(response => response.text()) // Convert response to text
-            .then(data => {
-                document.getElementById("popup-container").innerHTML = data; // Insert popup into container
-                
-                // Wait for content to be inserted before attaching events
-                setTimeout(() => {
-                    if (typeof attachPopupEvents === "function") {
-                        attachPopupEvents(); // Run the function from addTaskpop.html
-                    }
-                }, 100);
-            })
-            .catch(error => console.error("Error loading popup:", error));
-    }
-    </script>
+      function loadPopup() {
+        fetch('addTaskpop.html') // Fetch the popup file
+          .then((response) => response.text()) // Convert response to text
+          .then((data) => {
+            document.getElementById('popup-container').innerHTML = data; // Insert popup into container
 
-</body>
+            // Wait for content to be inserted before attaching events
+            setTimeout(() => {
+              if (typeof attachPopupEvents === 'function') {
+                attachPopupEvents(); // Run the function from addTaskpop.html
+              }
+            }, 100);
+          })
+          .catch((error) => console.error('Error loading popup:', error));
+      }
+    </script>
+  </body>
 </html>
