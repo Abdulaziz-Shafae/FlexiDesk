@@ -23,15 +23,14 @@
         width: 520px; /* Adjusted width to match the image */
         padding: 0;
         margin: 10% auto;
-        border-radius: 12px; /* Rounded corners */
         box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
         position: relative;
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 4px;
         border: 2px solid #e0e5f2; /* Light gray border */
-        background-color: #f8f8f8; /* Light gray background */
+        background-color: #ffffff; /* Light gray background */
       }
 
       /* Header with gray background */
@@ -45,7 +44,6 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-radius: 12px 12px 0 0; /* Rounded corners only on top */
       }
 
       /* Close button inside gray box */
@@ -68,20 +66,22 @@
 
       /* Labels */
       .addTask-label {
+        padding-left: 3%;
         font-weight: 600;
         display: block;
         font-size: 16px;
-        margin-bottom: 5px; /* Added gap under labels */
+        margin-bottom: 0px; /* Added gap under labels */
       }
 
       /* Inputs, selects, and textareas */
       .addTask-input,
       .addTask-select,
       .addTask-textarea {
+        margin-left: 3%;
         height: 30px;
-        width: 100%; /* Full width to avoid overflow */
+        width: 94%;
         padding: 1px;
-        margin-top: 5px;
+        margin-top: 0px;
         border: 1px solid #ccc;
         font-size: 16px;
         box-sizing: border-box;
@@ -94,11 +94,24 @@
         resize: vertical;
       }
 
+      /* Time Period Section */
+      .addTask-time-period {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      /* Time Period Inputs */
+      .addTask-date {
+        width: 50px;
+        padding: 10px;
+        border: 1px solid #ccc;
+      }
+
       /* Button container */
       .button-container {
         display: flex;
         justify-content: space-between; /* Align buttons in a row */
-        gap: 10px; /* Space between buttons */
       }
 
       /* Buttons */
@@ -107,36 +120,39 @@
       .addTask-delete-btn {
         padding: 12px 20px;
         cursor: pointer;
-        border-radius: 8px;
+        border-radius: 6px;
         font-size: 14px;
         border: none;
-        width: 30%; /* Buttons take up equal space */
+        width: 90px; /* Buttons take up equal space */
       }
 
       /* Save button */
       .addTask-save-btn {
-        background: #3b82f6; /* Blue */
+        background: #5b7bf3; /* Blue */
         color: white;
       }
 
       .addTask-save-btn:hover {
-        background: #2563eb; /* Darker blue */
+        background: #4463d4; /* Darker blue */
       }
 
       /* Cancel button */
       .addTask-cancel-btn {
-        background: #f3f4f6; /* Light gray */
-        color: #333;
+        background: #ffffff; 
+        border: solid;
+        border-width: 1.5px;
+        border-color: #5b7bf3;
+        color: #5b7bf3;
       }
 
       .addTask-cancel-btn:hover {
-        background: #e5e7eb; /* Darker gray */
+        background: #e0e5f2; /* Darker gray */
       }
 
       /* Delete button */
       .addTask-delete-btn {
         background: transparent;
-        color: red;
+        color: #d03e51;
         border: none;
         font-weight: bold;
       }
@@ -178,6 +194,7 @@
         <textarea id="task-desc" class="addTask-textarea" placeholder="Enter description"></textarea>
 
         <!-- Time Period -->
+        <label for="time-period" class="addTask-label">Time Period</label>
         <div class="addTask-time-period">
           <input type="number" min="1" class="addTask-date" placeholder="1" />
           <select class="addTask-date">
