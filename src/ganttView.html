@@ -100,7 +100,7 @@
         </div>
         <div class="viwes-header">
           <h1>Project Name</h1>
-          <button class="add-task-btn">+ Add Task</button>
+          <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
         </div>
 
         <!-- Toolbar -->
@@ -127,6 +127,9 @@
 
         <!-- Gantt chart -->
         <div id="gantt_here" style="width: 100%; height: 500px"></div>
+        
+        <!-- Popup container -->
+        <div id="popup-container"></div> <!-- Popup content will be dynamically inserted here -->
 
         <script>
           // Initialize Gantt

@@ -99,7 +99,7 @@
         </div>
         <div class="viwes-header">
           <h1>Project Name</h1>
-          <button class="add-task-btn" id="add-task-btn">+ Add Task</button>
+          <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
         </div>
 
         <div class="toolbar">
@@ -126,6 +126,10 @@
         <div id="gantt_here" style="width: 100%; height: 500px"></div>
       </div>
     </div>
+
+
+    <!-- Popup container -->
+    <div id="popup-container"></div> <!-- Popup content will be dynamically inserted here -->
 
     <script>
       // edit this for the start/end of the GAntt chart
@@ -230,22 +234,6 @@
 
       gantt.init('gantt_here');
 
-      // add task button , neeed to make it connected with the dhtmlx
-      document
-        .getElementById('add-task-btn')
-        .addEventListener('click', function () {
-          const newTaskId = gantt.addTask({
-            id: gantt.uid(),
-            text: 'New Task',
-            start_date: gantt.date.date_to_str('%d-%m-%Y')(new Date()), // Today’s date
-            duration: 5,
-            progress: 0,
-            type: 'task',
-            priority: 3, // Medium priority
-          });
-
-          gantt.updateTask(newTaskId);
-        });
 
       gantt.parse({
         data: [

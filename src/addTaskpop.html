@@ -20,14 +20,15 @@
       /* Popup container */
       .popup-content {
         background: white;
-        width: 520px; /* Adjusted width to match the image */
+        width: 560px; 
         padding: 0;
-        margin: 10% auto;
+        margin: 28% auto;
         box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
         position: relative;
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
+        border-radius: 4px;
         gap: 4px;
         border: 2px solid #e0e5f2; /* Light gray border */
         background-color: #ffffff; /* Light gray background */
@@ -37,7 +38,7 @@
       .popup-content h2 {
         background-color: #e0e5f2; /* Light gray */
         color: rgb(0, 0, 0);
-        padding: 15px;
+        padding: 12px;
         font-size: 16px;
         margin: 0;
         text-align: center;
@@ -48,15 +49,14 @@
 
       /* Close button inside gray box */
       .addTask-close-btn {
-        font-size: 18px;
-        font-weight: bold;
+        font-size: 30px;
         color: rgb(171, 171, 171);
         background: none;
         border: none;
         cursor: pointer;
         position: absolute;
         right: 20px;
-        top: 15px;
+        top: 4px;
       }
 
       /* Close button hover */
@@ -66,7 +66,7 @@
 
       /* Labels */
       .addTask-label {
-        padding-left: 3%;
+        padding-left: 2%;
         font-weight: 600;
         display: block;
         font-size: 16px;
@@ -77,7 +77,8 @@
       .addTask-input,
       .addTask-select,
       .addTask-textarea {
-        margin-left: 3%;
+        font-weight: bold;
+        margin-left: 2%;
         height: 30px;
         width: 94%;
         padding: 1px;
@@ -97,37 +98,81 @@
       /* Time Period Section */
       .addTask-time-period {
         display: flex;
-        justify-content: space-between;
-        gap: 10px;
+        gap: 3px;
+        margin-right: 3%;
       }
 
       /* Time Period Inputs */
       .addTask-date {
-        width: 50px;
-        padding: 10px;
+        border-radius: 2px;
+        font-weight: bold;
+        height: 30px;
+        text-align: center;
         border: 1px solid #ccc;
+      }
+
+      /* Time Period Section Container */
+      .time-period-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+      }
+
+      /* End Date */
+      .end-date {
+        font-size: 14px;
+        padding-left: 10px;
+        text-align: left;
+        width: 50%; /* To make sure it doesn't overlap */
+      }
+
+      /* Day Control Buttons */
+      .day-control {
+        display: flex;
+        gap: 20px;
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 5px;
+        border-color: #ccc;
+        align-items: center;
+      }
+
+      .day-button {
+        font-size: 18px;
+        color: #5b7bf3;
+        background-color: white;
+        border-width: 1px;
+        border-color: #ccc;
+        cursor: pointer;
+        height: 30px;
+        width: 30px;
       }
 
       /* Button container */
       .button-container {
         display: flex;
-        justify-content: space-between; /* Align buttons in a row */
-      }
+        display: flex; justify-content: flex-end;
+            }
 
       /* Buttons */
       .addTask-save-btn,
       .addTask-cancel-btn,
       .addTask-delete-btn {
-        padding: 12px 20px;
+        margin: 2%;
+        padding: 6px 20px;
         cursor: pointer;
         border-radius: 6px;
         font-size: 14px;
         border: none;
-        width: 90px; /* Buttons take up equal space */
+        width: 90px;
       }
 
       /* Save button */
       .addTask-save-btn {
+        width: 80px;
+        margin-left: 0;
+
         background: #5b7bf3; /* Blue */
         color: white;
       }
@@ -138,7 +183,9 @@
 
       /* Cancel button */
       .addTask-cancel-btn {
-        background: #ffffff; 
+        width: 90px;
+        margin-right: 1%;
+        background: #ffffff;
         border: solid;
         border-width: 1.5px;
         border-color: #5b7bf3;
@@ -151,6 +198,9 @@
 
       /* Delete button */
       .addTask-delete-btn {
+        position: absolute;
+        left: 0;
+        width: 90px;
         background: transparent;
         color: #d03e51;
         border: none;
@@ -191,19 +241,86 @@
 
         <!-- Task Description -->
         <label for="task-desc" class="addTask-label">Description</label>
-        <textarea id="task-desc" class="addTask-textarea" placeholder="Enter description"></textarea>
+        <textarea id="task-desc" class="addTask-textarea" ></textarea>
 
         <!-- Time Period -->
         <label for="time-period" class="addTask-label">Time Period</label>
-        <div class="addTask-time-period">
-          <input type="number" min="1" class="addTask-date" placeholder="1" />
-          <select class="addTask-date">
-            <option>January</option>
-            <option>February</option>
-            <option>March</option>
-            <option>April</option>
-          </select>
-          <input type="number" min="2025" class="addTask-date" placeholder="2025" />
+        <div class="time-period-container">
+          <div class="addTask-time-period">
+            <!-- Day Drop-down List -->
+            <select id="day" class="addTask-date" style="margin-left: 5.2%; width: 50px;">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+              <option value="24">24</option>
+              <option value="25">25</option>
+              <option value="26">26</option>
+              <option value="27">27</option>
+              <option value="28">28</option>
+              <option value="29">29</option>
+              <option value="30">30</option>
+              <option value="31">31</option>
+            </select>
+
+            <!-- Month Drop-down List -->
+            <select id="month" class="addTask-date" style="width: 110px;">
+              <option>January</option>
+              <option>February</option>
+              <option>March</option>
+              <option>April</option>
+              <option>May</option>
+              <option>June</option>
+              <option>July</option>
+              <option>August</option>
+              <option>September</option>
+              <option>October</option>
+              <option>November</option>
+              <option>December</option>
+            </select>
+
+            <!-- Year Drop-down List -->
+            <select id="year" class="addTask-date" style="width: 70px;">
+              <option>2020</option>
+              <option>2021</option>
+              <option>2022</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option>2025</option>
+              <option>2026</option>
+              <option>2027</option>
+              <option>2028</option>
+              <option>2029</option>
+              <option>2030</option>
+            </select>
+          </div>
+
+          <div class="day-control">
+            <!-- Day increment/decrement buttons -->
+            <button id="decrease-day" class="day-button" style="border-radius: 3px 0 0 3px;">-</button>
+            <span id="days-count">1</span>
+            <button id="increase-day" class="day-button" style="border-radius: 0 3px 3px 0;">+</button>
+          </div>
+          <div class="end-date" id="end-date">Days 02 February 2025</div>
         </div>
 
         <!-- Button Container -->
@@ -238,6 +355,42 @@
       window.addEventListener('click', (event) => {
         if (event.target === popup) {
           closePopup();
+        }
+      });
+
+      // Update the end date based on selected start date and duration
+      function updateEndDate() {
+        const day = parseInt(document.getElementById('day').value);
+        const month = document.getElementById('month').selectedIndex + 1; // Months are 0-based in JS
+        const year = parseInt(document.getElementById('year').value);
+        const duration = parseInt(document.getElementById('days-count').innerText) || 1; // Duration in days
+
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return;
+
+        const startDate = new Date(year, month - 1, day); // Create the start date
+        startDate.setDate(startDate.getDate() + duration); // Add duration to get the end date
+
+        const endDateStr = `${startDate.getDate()} ${startDate.toLocaleString('default', { month: 'long' })} ${startDate.getFullYear()}`;
+        document.getElementById('end-date').textContent = ` Days ${endDateStr}`;
+      }
+
+      // Event listeners for date, month, and year changes
+      document.getElementById('day').addEventListener('change', updateEndDate);
+      document.getElementById('month').addEventListener('change', updateEndDate);
+      document.getElementById('year').addEventListener('change', updateEndDate);
+
+      // Event listeners for increasing/decreasing days
+      document.getElementById('increase-day').addEventListener('click', function() {
+        let days = parseInt(document.getElementById('days-count').innerText);
+        document.getElementById('days-count').innerText = days + 1;
+        updateEndDate();
+      });
+
+      document.getElementById('decrease-day').addEventListener('click', function() {
+        let days = parseInt(document.getElementById('days-count').innerText);
+        if (days > 1) {
+          document.getElementById('days-count').innerText = days - 1;
+          updateEndDate();
         }
       });
 

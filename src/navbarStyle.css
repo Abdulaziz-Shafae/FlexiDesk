@@ -156,22 +156,32 @@ input:checked + .slider:before {
   background: #0056b3;
 }
 
-/* Dropdown Menu */
+/* Profile Button */
 .profile-btn {
-  background-color: #007bff;
-  color: white;
+  width: 50px; /* Set size of the circular button */
+  height: 50px; /* Set size of the circular button */
   border: none;
-  padding: 10px 15px;
   cursor: pointer;
-  font-size: 16px;
-  border-radius: 5px;
+  font-size: 14px;
+  border-radius: 50%; /* Make it circular */
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   left: -10px;
 }
 
-.profile-btn:hover {
-  background-color: #0056b3;
+/* Profile Image */
+.profile-btn img {
+  width: 50px; /* Adjust size of the image */
+  height: 50px; /* Adjust size of the image */
+  border-radius: 50%; /* Makes the image circular */
 }
+
+.profile-btn:hover img{
+filter: brightness(0.7);
+}
+
 
 .profile-list {
   position: absolute;
