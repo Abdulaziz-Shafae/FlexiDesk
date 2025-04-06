@@ -1,32 +1,23 @@
-/* eslint-disable no-unused-vars */
 // Profile dropdown toggle function
 function profiledropdown() {
   let dropdown = document.getElementById('profileList');
   dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
 }
-/* eslint-enable no-unused-vars */
-
-// Popup scripts
 
 // Function to open the popup
 function openPopup() {
-  // Fetch the task popup HTML content
   fetch("addTaskpop.html")
     .then(response => response.text())
     .then(data => {
-      // Insert the popup HTML into the container
       const popupContainer = document.getElementById("popup-container");
       popupContainer.innerHTML = data;
 
-      // Now that the popup is in the container, show it
       const popup = document.getElementById("taskPopup");
-      popup.style.display = "block"; // Show the popup
+      popup.style.display = "block";
 
-      // Add event listeners to close the popup
       const closeButton = document.querySelector(".addTask-close-btn");
       const cancelButton = document.getElementById("cancel-task");
 
-      // Close the popup when clicking the close or cancel button
       closeButton.addEventListener("click", function () {
         popup.style.display = "none";
       });
@@ -34,14 +25,8 @@ function openPopup() {
         popup.style.display = "none";
       });
 
-      // Close popup if clicked outside of it
-      window.addEventListener("click", function (event) {
-        if (event.target === popup) {
-          popup.style.display = "none";
-        }
-      });
+      attachPopupEventListeners();
 
-      // Initialize draggable functionality
       makePopupDraggable(popup);
     })
     .catch(error => {
@@ -49,22 +34,56 @@ function openPopup() {
     });
 }
 
-// Function to make the popup draggable
+// Event listener for the popup button
+const openPopupBtn = document.getElementById("openPopupBtn");
+if (openPopupBtn) {
+  openPopupBtn.addEventListener("click", openPopup);
+}
+
+// Optional: Gantt task creation
+document.getElementById('add-task-btn')?.addEventListener('click', function () {
+  const newTaskId = gantt.addTask({
+    id: gantt.uid(),
+    text: 'New Task',
+    start_date: gantt.date.date_to_str('%d-%m-%Y')(new Date()),
+    duration: 5,
+    progress: 0,
+    type: 'task',
+    priority: 3,
+  });
+  gantt.updateTask(newTaskId);
+});
+
+// ---- Popup-specific logic ----
+
+let isDragging = false;
+
 function makePopupDraggable(popup) {
-  const header = popup.querySelector(".popup-header"); // Assuming the header has the class 'popup-header'
+  const popupContent = popup.querySelector(".popup-content");
+  const header = popupContent.querySelector("h2");
   let offsetX, offsetY;
 
-  header.addEventListener('mousedown', function(e) {
-    offsetX = e.clientX - popup.getBoundingClientRect().left;
-    offsetY = e.clientY - popup.getBoundingClientRect().top;
+  header.addEventListener('mousedown', function (e) {
+    isDragging = false;
+
+    // ✅ FIX: Get current position BEFORE removing transform
+    const rect = popupContent.getBoundingClientRect();
+    popupContent.style.left = `${rect.left}px`;
+    popupContent.style.top = `${rect.top}px`;
+    popupContent.style.transform = 'none'; // Remove centering to prevent jump
+    popupContent.style.position = 'fixed';
+
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
 
     function onMouseMove(e) {
-      popup.style.position = 'absolute';
-      popup.style.left = `${e.clientX - offsetX}px`;
-      popup.style.top = `${e.clientY - offsetY}px`;
+      isDragging = true;
+      popupContent.style.left = `${e.clientX - offsetX}px`;
+      popupContent.style.top = `${e.clientY - offsetY}px`;
     }
 
     function onMouseUp() {
+      setTimeout(() => { isDragging = false }, 100);
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     }
@@ -74,23 +93,50 @@ function makePopupDraggable(popup) {
   });
 }
 
-// Event listener for the button that opens the popup
-const openPopupBtn = document.getElementById("openPopupBtn");
-if (openPopupBtn) {
-  openPopupBtn.addEventListener("click", openPopup);
+
+
+window.addEventListener("click", function (event) {
+  const popupContent = document.querySelector(".popup-content");
+  if (!popupContent?.contains(event.target) && !isDragging) {
+    const popup = document.getElementById("taskPopup");
+    if (popup) popup.style.display = "none";
+  }
+});
+
+// End Date logic
+function updateEndDate() {
+  const day = parseInt(document.getElementById('day')?.value);
+  const month = document.getElementById('month')?.selectedIndex + 1;
+  const year = parseInt(document.getElementById('year')?.value);
+  const duration = parseInt(document.getElementById('days-count')?.innerText) || 1;
+
+  if (isNaN(day) || isNaN(month) || isNaN(year)) return;
+
+  const startDate = new Date(year, month - 1, day);
+  startDate.setDate(startDate.getDate() + duration);
+
+  const endDateStr = `${startDate.getDate()} ${startDate.toLocaleString('default', { month: 'long' })} ${startDate.getFullYear()}`;
+  document.getElementById('end-date').textContent = `End Date ${endDateStr}`;
 }
 
-// Add task for Gantt chart (ensure 'gantt' is defined elsewhere in your code)
-document.getElementById('add-task-btn')?.addEventListener('click', function () {
-  const newTaskId = gantt.addTask({
-    id: gantt.uid(),
-    text: 'New Task',
-    start_date: gantt.date.date_to_str('%d-%m-%Y')(new Date()), // Today’s date
-    duration: 5,
-    progress: 0,
-    type: 'task',
-    priority: 3, // Medium priority
+function attachPopupEventListeners() {
+  document.getElementById('day')?.addEventListener('change', updateEndDate);
+  document.getElementById('month')?.addEventListener('change', updateEndDate);
+  document.getElementById('year')?.addEventListener('change', updateEndDate);
+
+  document.getElementById('increase-day')?.addEventListener('click', function () {
+    let days = parseInt(document.getElementById('days-count').innerText);
+    document.getElementById('days-count').innerText = days + 1;
+    updateEndDate();
   });
 
-  gantt.updateTask(newTaskId);
-});
+  document.getElementById('decrease-day')?.addEventListener('click', function () {
+    let days = parseInt(document.getElementById('days-count').innerText);
+    if (days > 1) {
+      document.getElementById('days-count').innerText = days - 1;
+      updateEndDate();
+    }
+  });
+
+  updateEndDate();
+}
