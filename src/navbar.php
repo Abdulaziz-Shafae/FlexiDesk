@@ -9,7 +9,7 @@ session_start();  // Start the session
   </div>
 
   <div>
-    <a href="homePage.html">Home</a>
+    <a href="homePage.php">Home</a>
     <a href="about.html">About</a>
     <a href="test.html">Charts</a>
     <a href="contact.html">Contact</a>
