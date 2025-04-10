@@ -1,8 +1,9 @@
-// Profile dropdown toggle function
+// Function to toggle profile dropdown
 function profiledropdown() {
-  let dropdown = document.getElementById('profileList');
-  dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+  var profileList = document.getElementById('profileList');
+  profileList.style.display = profileList.style.display === 'block' ? 'none' : 'block';
 }
+
 
 // Function to open the popup
 function openPopup() {
