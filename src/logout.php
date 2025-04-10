@@ -1,5 +1,10 @@
 <?php
-session_start();  // Start the session
-session_destroy();  // Destroy the session
-header('Location: homePage.html');  // Redirect to home page or login page
+session_start();  // Start the session to manage login state
+
+// Destroy the session to log the user out
+session_destroy();
+
+// Redirect to the login page after logout
+header('Location: about.html');
+exit;
 ?>

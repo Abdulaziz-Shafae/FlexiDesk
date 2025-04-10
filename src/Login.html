@@ -149,12 +149,13 @@
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Login to Your Account</h2>
-        <form>
+        <!-- The form now sends data to login.php -->
+        <form method="POST" action="login.php">
           <div class="input-group">
-            <input type="email" placeholder="Email Address" required />
+            <input type="email" name="email" placeholder="Email Address" required />
           </div>
           <div class="input-group">
-            <input type="password" placeholder="Password" required />
+            <input type="password" name="password" placeholder="Password" required />
           </div>
           <button type="submit" class="btn login-btn">Login</button>
         </form>
@@ -165,38 +166,15 @@
         </div>
       </div>
     </div>
-    z
 
     <script>
       // Fetch and insert navbar
-      fetch('navbar.html')
+      fetch('navbar.php')
         .then((response) => response.text())
         .then((data) => {
           document.getElementById('navbar-placeholder').innerHTML = data;
         })
         .catch((error) => console.error('Error loading navbar:', error));
-
-      // Dark Mode Toggle
-      const toggleSwitch = document.getElementById('dark-mode-switch');
-      const body = document.body;
-
-      // Enable or disable dark mode
-      function toggleDarkMode() {
-        body.classList.toggle('dark-mode');
-        localStorage.setItem(
-          'darkMode',
-          body.classList.contains('dark-mode') ? 'enabled' : 'disabled',
-        );
-      }
-
-      // Load saved theme preference
-      if (localStorage.getItem('darkMode') === 'enabled') {
-        body.classList.add('dark-mode');
-        toggleSwitch.checked = true;
-      }
-
-      // Toggle dark mode on switch change
-      toggleSwitch.addEventListener('change', toggleDarkMode);
     </script>
   </body>
 </html>

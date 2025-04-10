@@ -1,5 +1,5 @@
 <?php
-session_start();  // Start the session
+session_start();  // Start the session to check if the user is logged in
 ?>
 
 <!-- Navbar HTML -->
@@ -9,11 +9,16 @@ session_start();  // Start the session
   </div>
 
   <div>
-    <a href="homePage.php">Home</a>
+    <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
+      <!-- If the user is logged in -->
+      <a href="homePage.php">Home</a>
+      <a href="test.php">Charts</a>
+      <a href="groupChat.php">Chat</a>
+    <?php endif; ?>
+    
+    <!-- Links accessible for all users -->
     <a href="about.html">About</a>
-    <a href="test.html">Charts</a>
     <a href="contact.html">Contact</a>
-    <a href="groupChat.html">Chat</a>
   </div>
 
   <div>
@@ -23,9 +28,9 @@ session_start();  // Start the session
         <img src="photos/profile-default-photo.jpeg" alt="Profile">
       </button>
       <div class="profile-list" id="profileList">
-        <div class="profile-item" onclick="window.location.href='userProfile.html'">Profile</div>
-        <div class="profile-item" onclick="window.location.href='settings.html'">Settings</div>
-        <div class="profile-item" onclick="window.location.href='switchLanguage.html'">Switch Language</div>
+        <div class="profile-item" onclick="window.location.href='userProfile.php'">Profile</div>
+        <div class="profile-item" onclick="window.location.href='settings.php'">Settings</div>
+        <div class="profile-item" onclick="window.location.href='switchLanguage.php'">Switch Language</div>
         <div class="dark-mode">
           <label for="dark-mode-switch">Dark Mode</label>
           <div class="switch">
@@ -37,8 +42,8 @@ session_start();  // Start the session
       </div>
     <?php else: ?>
       <!-- If the user is NOT logged in -->
-      <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
-      <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
+      <button class="login-signin" onclick="window.location.href='Login.php'">Log in</button>
+      <button class="login-signin" onclick="window.location.href='createAccount.php'">Sign up</button>
     <?php endif; ?>
   </div>
 </div>
