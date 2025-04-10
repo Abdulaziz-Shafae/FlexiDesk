@@ -1,4 +1,4 @@
--- Create Users Table
+-- Users Table (no changes)
 CREATE TABLE Users (
     userID INT(10) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -8,32 +8,16 @@ CREATE TABLE Users (
     profileImage BLOB
 );
 
--- Insert sample data into Users Table
-INSERT INTO Users (name, email, password, role) 
-VALUES 
-('Alice Manager', 'alice@flexidesk.com', 'password123', 'Manager'),
-('Bob Member', 'bob@flexidesk.com', 'password123', 'Member'),
-('Charlie Member', 'charlie@flexidesk.com', 'password123', 'Member');
-
--- Create Projects Table
+-- Projects Table (no changes)
 CREATE TABLE Projects (
     projectID INT(10) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(4000) NOT NULL,
     startDate DATE NOT NULL,
-    endDate DATE NOT NULL,
-    managerID INT(10),
-    FOREIGN KEY (managerID) REFERENCES Users(userID)
+    endDate DATE NOT NULL
 );
 
--- Insert sample data into Projects Table
-INSERT INTO Projects (title, description, startDate, endDate, managerID) 
-VALUES 
-('Cybersecurity Project', 'A project focused on improving cybersecurity measures.', '2024-01-01', '2024-05-23', 1),
-('AI Research Project', 'Research and development of AI technologies for better decision making.', '2024-03-15', '2024-07-01', 1),
-('Data Protection Project', 'A project dedicated to enhancing data privacy and protection.', '2024-02-01', '2024-06-15', 1);
-
--- Create Tasks Table
+-- Tasks Table (no changes)
 CREATE TABLE Tasks (
     taskID INT(10) AUTO_INCREMENT PRIMARY KEY,
     projectID INT(10),
@@ -45,15 +29,17 @@ CREATE TABLE Tasks (
     FOREIGN KEY (assignedTo) REFERENCES Users(userID)
 );
 
--- Insert sample data into Tasks Table
-INSERT INTO Tasks (projectID, assignedTo, taskName, deadline, status) 
-VALUES
-(1, 2, 'Task 1: Cybersecurity Risk Assessment', '2024-02-15 12:00:00', 'In Progress'),
-(1, 3, 'Task 2: Penetration Testing', '2024-03-01 12:00:00', 'Pending'),
-(2, 2, 'Task 1: AI Model Training', '2024-04-01 12:00:00', 'In Progress'),
-(3, 2, 'Task 1: Data Encryption Implementation', '2024-04-15 12:00:00', 'Pending');
+-- user_projects Table (Junction Table)
+CREATE TABLE user_projects (
+    userID INT(10),
+    projectID INT(10),
+    role ENUM('Manager', 'Member') NOT NULL,
+    PRIMARY KEY (userID, projectID),
+    FOREIGN KEY (userID) REFERENCES Users(userID),
+    FOREIGN KEY (projectID) REFERENCES Projects(projectID)
+);
 
--- Create Notifications Table
+-- Notifications Table (no changes)
 CREATE TABLE Notifications (
     notificationID INT(10) AUTO_INCREMENT PRIMARY KEY,
     recipientID INT(10),
@@ -63,14 +49,7 @@ CREATE TABLE Notifications (
     FOREIGN KEY (recipientID) REFERENCES Users(userID)
 );
 
--- Insert sample data into Notifications Table
-INSERT INTO Notifications (recipientID, type, message) 
-VALUES
-(1, 'Reminder', 'Don\'t forget to review the cybersecurity project.'),
-(2, 'Update', 'The AI research project has been updated with new tasks.'),
-(3, 'Alert', 'New data protection task has been assigned to you.');
-
--- Create Alerts Table
+-- Alerts Table (no changes)
 CREATE TABLE Alerts (
     alertID INT(10) AUTO_INCREMENT PRIMARY KEY,
     recipientID INT(10),
@@ -80,14 +59,7 @@ CREATE TABLE Alerts (
     FOREIGN KEY (recipientID) REFERENCES Users(userID)
 );
 
--- Insert sample data into Alerts Table
-INSERT INTO Alerts (recipientID, priority, details) 
-VALUES
-(1, 'High', 'Security alert: Critical vulnerability discovered in system.'),
-(2, 'Medium', 'Reminder: AI project deadline is approaching.'),
-(3, 'Low', 'Data protection task update: New encryption method available.');
-
--- Create Reports Table
+-- Reports Table (no changes)
 CREATE TABLE Reports (
     reportID INT(10) AUTO_INCREMENT PRIMARY KEY,
     projectID INT(10),
@@ -98,9 +70,53 @@ CREATE TABLE Reports (
     FOREIGN KEY (generatedBy) REFERENCES Users(userID)
 );
 
--- Insert sample data into Reports Table
+
+
+
+-- Sample Data for Users Table
+INSERT INTO Users (name, email, password, role) 
+VALUES 
+('Alice Manager', 'alice@flexidesk.com', 'password123', 'Manager'),
+('Bob Member', 'bob@flexidesk.com', 'password123', 'Member'),
+('Charlie Member', 'charlie@flexidesk.com', 'password123', 'Member');
+
+-- Sample Data for Projects Table
+INSERT INTO Projects (title, description, startDate, endDate) 
+VALUES 
+('Cybersecurity Project', 'A project to enhance security.', '2024-01-01', '2024-05-23'),
+('AI Research Project', 'Develop AI models for data analysis.', '2024-03-15', '2024-07-01');
+
+-- Sample Data for user_projects Table (Associating Users with Projects and Roles)
+INSERT INTO user_projects (userID, projectID, role) 
+VALUES
+(1, 1, 'Manager'),  -- Alice is the manager of the Cybersecurity Project
+(2, 1, 'Member'),   -- Bob is a member of the Cybersecurity Project
+(3, 1, 'Member'),   -- Charlie is a member of the Cybersecurity Project
+(1, 2, 'Manager'),  -- Alice is the manager of the AI Research Project
+(2, 2, 'Member'),   -- Bob is a member of the AI Research Project
+(3, 2, 'Member');   -- Charlie is a member of the AI Research Project
+
+-- Sample Data for Tasks Table
+INSERT INTO Tasks (projectID, assignedTo, taskName, deadline, status) 
+VALUES
+(1, 2, 'Cybersecurity Risk Assessment', '2024-02-01 12:00:00', 'In Progress'),
+(1, 3, 'Penetration Testing', '2024-03-01 12:00:00', 'Pending'),
+(2, 2, 'AI Model Training', '2024-04-01 12:00:00', 'In Progress');
+
+-- Sample Data for Notifications Table
+INSERT INTO Notifications (recipientID, type, message) 
+VALUES
+(1, 'Reminder', 'Review cybersecurity risk assessments.'),
+(2, 'Update', 'AI Research project tasks have been updated.');
+
+-- Sample Data for Alerts Table
+INSERT INTO Alerts (recipientID, priority, details) 
+VALUES
+(1, 'High', 'Security alert: Update required for the Cybersecurity Project.'),
+(2, 'Medium', 'Reminder: Review AI model progress.');
+
+-- Sample Data for Reports Table
 INSERT INTO Reports (projectID, generatedBy, content) 
 VALUES
-(1, 1, 'Project Progress: 30% completed with all cybersecurity measures in progress.'),
-(2, 1, 'AI Research Progress: Initial model training completed, working on data collection.'),
-(3, 1, 'Data Protection: Encryption method research completed, implementation ongoing.');
+(1, 1, 'Cybersecurity Project: 50% completed, focused on risk assessment and testing.'),
+(2, 1, 'AI Research Project: 40% completed, initial model training finished.');

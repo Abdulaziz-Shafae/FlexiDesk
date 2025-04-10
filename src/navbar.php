@@ -30,6 +30,9 @@ session_start();  // Start the session to check if the user is logged in
       <div class="profile-list" id="profileList">
         <div class="profile-item" onclick="window.location.href='userProfile.php'">Profile</div>
         <div class="profile-item" onclick="window.location.href='settings.php'">Settings</div>
+    <!--
+        add on later 
+
         <div class="profile-item" onclick="window.location.href='switchLanguage.php'">Switch Language</div>
         <div class="dark-mode">
           <label for="dark-mode-switch">Dark Mode</label>
@@ -38,6 +41,7 @@ session_start();  // Start the session to check if the user is logged in
             <span class="slider"></span>
           </div>
         </div>
+    -->
         <div class="profile-item" onclick="window.location.href='logout.php'">Logout</div>
       </div>
     <?php else: ?>
