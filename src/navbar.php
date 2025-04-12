@@ -28,8 +28,8 @@ session_start();  // Start the session to check if the user is logged in
         <img src="photos/profile-default-photo.jpeg" alt="Profile">
       </button>
       <div class="profile-list" id="profileList">
-        <div class="profile-item" onclick="window.location.href='userProfile.php'">Profile</div>
-        <div class="profile-item" onclick="window.location.href='settings.php'">Settings</div>
+        <div class="profile-item" onclick="window.location.href='userProfile.html'">Profile</div>
+        <div class="profile-item" onclick="window.location.href='settings.html'">Settings</div>
     <!--
         add on later 
 
@@ -46,8 +46,8 @@ session_start();  // Start the session to check if the user is logged in
       </div>
     <?php else: ?>
       <!-- If the user is NOT logged in -->
-      <button class="login-signin" onclick="window.location.href='Login.php'">Log in</button>
-      <button class="login-signin" onclick="window.location.href='createAccount.php'">Sign up</button>
+      <button class="login-signin" onclick="window.location.href='Login.html'">Log in</button>
+      <button class="login-signin" onclick="window.location.href='createAccount.html'">Sign up</button>
     <?php endif; ?>
   </div>
 </div>

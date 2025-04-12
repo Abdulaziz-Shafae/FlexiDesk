@@ -5,7 +5,7 @@ CREATE TABLE Users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('Manager', 'Member') NOT NULL,
-    profileImage BLOB
+    profileImage VARCHAR(255) DEFAULT NULL
 );
 
 -- Projects Table (no changes)

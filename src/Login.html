@@ -140,6 +140,17 @@
           font-size: 2rem;
         }
       }
+
+      .login-error {
+        background-color: #ffe6e6;
+        color: #e74c3c;
+        padding: 10px;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+        text-align: center;
+        font-weight: bold;
+      }
+
     </style>
   </head>
   <body>
@@ -152,10 +163,13 @@
         <!-- The form now sends data to login.php -->
         <form method="POST" action="login.php">
           <div class="input-group">
-            <input type="email" name="email" placeholder="Email Address" required />
+            <input type="email" id="email" name="email" placeholder="Email Address" required />
           </div>
           <div class="input-group">
-            <input type="password" name="password" placeholder="Password" required />
+            <input type="password" id="password" name="password" placeholder="Password" required />
+          </div>
+          <div id="login-error" class="login-error" style="display: none;">
+            Invalid Email or Password.
           </div>
           <button type="submit" class="btn login-btn">Login</button>
         </form>
@@ -166,6 +180,7 @@
         </div>
       </div>
     </div>
+    z
 
     <script>
       // Fetch and insert navbar
@@ -175,6 +190,14 @@
           document.getElementById('navbar-placeholder').innerHTML = data;
         })
         .catch((error) => console.error('Error loading navbar:', error));
+
+
+      // Show error if login failed
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('error') === '1') {
+        document.getElementById('login-error').style.display = 'block';
+      }
+
     </script>
   </body>
 </html>

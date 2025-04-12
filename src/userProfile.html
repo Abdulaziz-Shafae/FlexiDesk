@@ -230,15 +230,12 @@
 
     <div class="profile-container">
       <div class="profile-header">
-        <div class="profile-pic">
-          <img
-            id="profile-image"
-            src="https://via.placeholder.com/120"
-            alt="Profile Picture"
-          />
-          <div class="change-photo"><i class="fas fa-camera"></i> Change</div>
-          <input type="file" id="profile-pic-upload" style="display: none" />
+        <div class="profile-pic" id="profile-pic-area">
+          <img id="profile-image" src="uploads/default.png" alt="Profile Picture" />
+          <div class="change-photo" id="change-photo-btn"><i class="fas fa-camera"></i> Change</div>
+          <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
         </div>
+        
         <div class="profile-info">
           <h1>Salman Hassan</h1>
           <p><i class="fas fa-envelope"></i> salman.iau@example.com</p>
@@ -260,15 +257,15 @@
         <form id="personal-info-form">
           <div class="form-group">
             <label for="full-name">Full Name</label>
-            <input type="text" id="full-name" value="Salman Hassan" />
+            <input type="text" id="full-name" />
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" value="salman.iau@example.com" />
+            <input type="email" id="email" />
           </div>
           <div class="form-group">
             <label for="job-title">Job Title</label>
-            <input type="text" id="job-title" value="UI/UX Manager" />
+            <input type="text" id="job-title" />
           </div>
           <div class="form-group">
             <label for="department">Department</label>
@@ -283,13 +280,12 @@
           </div>
           <div class="form-group">
             <label for="bio">Bio</label>
-            <textarea id="bio" rows="4">
-Experienced UI/UX with a focus on agile methodologies. I enjoy collaborating with cross-functional teams to deliver high-quality products on time.</textarea
-            >
+            <textarea id="bio" rows="4"></textarea>
           </div>
           <button type="submit" class="save-btn">Save Changes</button>
         </form>
       </div>
+
 
       <!-- My Tasks Tab -->
       <div class="tab-content" id="my-tasks">
@@ -467,35 +463,113 @@ Experienced UI/UX with a focus on agile methodologies. I enjoy collaborating wit
     </div>
 
     <script>
-      // Load the navbar
-      document.addEventListener('DOMContentLoaded', function () {
-        // Typically you would use fetch or some other method to load the navbar HTML
-        // This is a placeholder for that functionality
-        // fetch('navbar.html')
-        //     .then(response => response.text())
-        //     .then(data => {
-        //         document.getElementById('navbar-placeholder').innerHTML = data;
-        //     });
+      // Fetch navbar (optional)
+      fetch('navbar.php')
+        .then(res => res.text())
+        .then(data => document.getElementById('navbar-placeholder').innerHTML = data);
+
+      // Load user data from backend
+      function loadUserProfile() {
+        fetch('getUser.php')
+          .then(res => res.json())
+          .then(user => {
+            if (user.error) return console.error(user.error);
+
+            document.getElementById('full-name').value = user.name;
+            document.getElementById('email').value = user.email;
+            document.getElementById('job-title').value = user.jobTitle;
+            document.getElementById('department').value = user.department;
+            document.getElementById('bio').value = user.bio;
+
+            // Load profile picture
+            const imgPath = user.profilePicture ? `uploads/${user.profilePicture}` : 'uploads/default.png';
+            document.getElementById('profile-image').src = imgPath;
+          });
+      }
+
+
+      // On load
+      document.addEventListener('DOMContentLoaded', loadUserProfile);
+
+      // Save changes
+      document.getElementById('personal-info-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const payload = {
+          name: document.getElementById('full-name').value,
+          email: document.getElementById('email').value,
+          jobTitle: document.getElementById('job-title').value,
+          department: document.getElementById('department').value,
+          bio: document.getElementById('bio').value
+        };
+
+        fetch('updateUser.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              alert('Profile updated successfully!');
+              loadUserProfile(); // Refresh UI
+            } else {
+              alert('Error: ' + data.message);
+            }
+          });
       });
 
-      // Tab functionality
+      // Tab switching
       const tabs = document.querySelectorAll('.tab');
       const tabContents = document.querySelectorAll('.tab-content');
 
       tabs.forEach((tab) => {
         tab.addEventListener('click', () => {
-          // Remove active class from all tabs and tab contents
           tabs.forEach((t) => t.classList.remove('active'));
           tabContents.forEach((content) => content.classList.remove('active'));
 
-          // Add active class to clicked tab
           tab.classList.add('active');
-
-          // Show corresponding tab content
           const tabId = tab.getAttribute('data-tab');
           document.getElementById(tabId).classList.add('active');
         });
       });
+
+
+      // Preview + Upload Profile Picture
+      document.getElementById('change-photo-btn').addEventListener('click', () => {
+        document.getElementById('profile-pic-upload').click();
+      });
+
+      document.getElementById('profile-pic-upload').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Preview image instantly
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById('profile-image').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Upload to server
+        const formData = new FormData();
+        formData.append('profilePic', file);
+
+        fetch('uploadProfilePic.php', {
+          method: 'POST',
+          body: formData
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              console.log('Profile picture updated.');
+            } else {
+              alert('Upload failed: ' + data.message);
+            }
+          });
+      });
+
+
     </script>
   </body>
 </html>

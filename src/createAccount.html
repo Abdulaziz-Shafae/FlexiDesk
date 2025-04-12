@@ -68,7 +68,7 @@
       /* Floating Label Input Styles */
       .wave-group {
         position: relative;
-        margin-bottom: 1.5rem;
+        margin-top: 1.5rem;
         width: 100%;
       }
 
@@ -146,6 +146,34 @@
         color: #e74c3c;
       }
 
+      .signin-section {
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .signin-text {
+        color: var(--text-color);
+        margin-bottom: 1rem;
+      }
+
+      .signin-btn {
+        background-color: #2c3e50;
+        color: white;
+        text-decoration: none;
+        padding: 10px 30px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+
+      .signup-btn:hover {
+        background-color: #34495e;
+      }
+
       /* Button */
       .btn {
         width: 100%;
@@ -176,24 +204,26 @@
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Create Account</h2>
-        <form id="signup-form">
+        <!-- Form submits data to createAccount.php -->
+        <form id="signup-form" method="POST" action="createAccount.php">
           <div class="wave-group">
-            <input type="text" id="first-name" class="input" required />
+            <input type="text" id="first-name" name="first-name" class="input" required />
             <label class="label">First Name</label>
           </div>
 
           <div class="wave-group">
-            <input type="text" id="last-name" class="input" required />
+            <input type="text" id="last-name" name="last-name" class="input" required />
             <label class="label">Last Name</label>
           </div>
 
           <div class="wave-group">
-            <input type="email" id="email" class="input" required />
-            <label class="label">Organization Email</label>
+            <input type="email" id="email" name="email" class="input" required />
+            <label class="label">Email</label>
           </div>
+          <small id="email-error" style="color: red; display: none;">Email is already registered.</small>
 
           <div class="password-container wave-group">
-            <input type="password" id="password" class="input" required />
+            <input type="password" id="password" name="password" class="input" required />
             <label class="label">Password</label>
             <span
               class="password-toggle"
@@ -204,11 +234,7 @@
 
           <div class="password-container wave-group">
             <input
-              type="password"
-              id="confirm-password"
-              class="input"
-              required
-            />
+              type="password" id="confirm-password" name="confirm-password" class="input" required />
             <label class="label">Re-enter Password</label>
             <span
               class="password-toggle"
@@ -216,15 +242,19 @@
               >👁️</span
             >
           </div>
+          <small id="password-match-error" style="color: red; display: none; ">
+            Passwords do not match.
+          </small>
+          
 
           <div class="password-requirements">
-            <p>Password must contain:</p>
+            <p style="margin-top: 1.5rem;">Password must contain:</p>
             <ul>
-              <li id="length" class="invalid">At least 8 characters</li>
-              <li id="lowercase" class="invalid">A lowercase letter</li>
-              <li id="uppercase" class="invalid">An uppercase letter</li>
-              <li id="number" class="invalid">A number</li>
-              <li id="special" class="invalid">A special character</li>
+              <li id="length" >At least 8 characters</li>
+              <li id="lowercase" >A lowercase letter</li>
+              <li id="uppercase" >An uppercase letter</li>
+              <li id="number" >A number</li>
+              <li id="special" >A special character ( !@#$%^&*(),.?":{}|<> )</li>
             </ul>
           </div>
 
@@ -232,39 +262,29 @@
             Create Account
           </button>
         </form>
+        <div class="signin-section">
+          <p class="signin-text">You have an account?</p>
+          <a href="Login.html" class="btn signin-btn">Have Account</a>
+        </div>
       </div>
     </div>
 
     <script>
       // Fetch and insert navbar
-      fetch('navbar.html')
+      fetch('navbar.php')
         .then((response) => response.text())
         .then((data) => {
           document.getElementById('navbar-placeholder').innerHTML = data;
         })
         .catch((error) => console.error('Error loading navbar:', error));
-      // Dark Mode Toggle
-      const darkModeSwitch = document.getElementById('dark-mode-switch');
-      const body = document.body;
-
-      darkModeSwitch.addEventListener('change', () => {
-        body.classList.toggle('dark-mode', darkModeSwitch.checked);
-        localStorage.setItem('dark-mode', darkModeSwitch.checked);
-      });
-
-      // Load dark mode preference from localStorage
-      if (localStorage.getItem('dark-mode') === 'true') {
-        body.classList.add('dark-mode');
-        darkModeSwitch.checked = true;
-      }
-
+     
       // Password Toggle
       function togglePasswordVisibility(inputId, icon) {
         const input = document.getElementById(inputId);
         input.type = input.type === 'password' ? 'text' : 'password';
         icon.textContent = input.type === 'password' ? '👁️' : '🙈';
       }
-
+      
       // Password Validation
       const passwordInput = document.getElementById('password');
       const requirements = {
@@ -277,37 +297,56 @@
 
       passwordInput.addEventListener('input', () => {
         const password = passwordInput.value;
+
         requirements.length.classList.toggle('valid', password.length >= 8);
-        requirements.lowercase.classList.toggle(
-          'valid',
-          /[a-z]/.test(password),
-        );
-        requirements.uppercase.classList.toggle(
-          'valid',
-          /[A-Z]/.test(password),
-        );
+        requirements.length.classList.toggle('invalid', password.length < 8);
+
+        requirements.lowercase.classList.toggle('valid', /[a-z]/.test(password));
+        requirements.lowercase.classList.toggle('invalid', !/[a-z]/.test(password));
+
+        requirements.uppercase.classList.toggle('valid', /[A-Z]/.test(password));
+        requirements.uppercase.classList.toggle('invalid', !/[A-Z]/.test(password));
+
         requirements.number.classList.toggle('valid', /\d/.test(password));
-        requirements.special.classList.toggle(
-          'valid',
-          /[!@#$%^&*(),.?":{}|<>]/.test(password),
-        );
+        requirements.number.classList.toggle('invalid', !/\d/.test(password));
+
+        requirements.special.classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
+        requirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
       });
 
-      // Form Submission
-      document
-        .getElementById('signup-form')
-        .addEventListener('submit', (event) => {
-          event.preventDefault();
-          if (
-            !Object.values(requirements).every((req) =>
-              req.classList.contains('valid'),
-            )
-          ) {
-            alert('Password does not meet all requirements!');
-            return;
+
+      // Form submission with email check
+      document.getElementById('signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const passwordError = document.getElementById('password-match-error');
+
+        if (password !== confirmPassword) {
+          passwordError.style.display = 'inline';
+          return; // stop form submission
+        } else {
+          passwordError.style.display = 'none';
+        }
+        
+        const email = document.getElementById('email').value;
+
+        // Check if email is already in use via AJAX
+        fetch('check_email.php', {
+          method: 'POST',
+          body: JSON.stringify({ email }),
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            document.getElementById('email-error').style.display = 'inline';
+          } else {
+            this.submit();  // Submit the form if email is not in use
           }
-          alert('Account successfully created!');
         });
+      });
     </script>
   </body>
 </html>
