@@ -3,12 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlexiDesk - Create Account</title>
+    <title>FlexiDesk - Create Project</title>
     <link rel="stylesheet" href="navbarStyle.css" />
     <script src="script.js" defer></script>
 
     <style>
-      /* General Styles */
       * {
         margin: 0;
         padding: 0;
@@ -18,9 +17,7 @@
 
       body {
         background-color: #f5f5f5;
-        transition:
-          background-color 0.3s ease,
-          color 0.3s ease;
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
 
       .container {
@@ -38,9 +35,6 @@
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         width: 100%;
         max-width: 400px;
-        transition:
-          background-color 0.3s ease,
-          color 0.3s ease;
       }
 
       .form-title {
@@ -48,10 +42,8 @@
         color: #2c3e50;
         margin-bottom: 2rem;
         font-size: 1.8rem;
-        transition: color 0.3s ease;
       }
 
-      /* Floating Label Input Styles */
       .wave-group {
         position: relative;
         margin-bottom: 1.5rem;
@@ -83,15 +75,14 @@
         transition: 0.2s ease all;
       }
 
-      .wave-group input[type="date"] ~ .label,   /* So the title and place holder dont mix */
-        .wave-group .input:focus ~ .label,
-        .wave-group .input:valid ~ .label {
+      .wave-group input[type="date"] ~ .label,
+      .wave-group .input:focus ~ .label,
+      .wave-group .input:valid ~ .label {
         transform: translateY(-28px);
         font-size: 14px;
         color: #5264ae;
       }
 
-      /* Button */
       .btn {
         width: 100%;
         padding: 12px;
@@ -111,43 +102,27 @@
       }
 
       textarea.input {
-        resize: none; /* Prevent manual resizing */
-        overflow-y: hidden; /* Hide scrollbar */
+        resize: none;
+        overflow-y: hidden;
       }
     </style>
   </head>
   <body>
-    <!-- Navbar  -->
     <div id="navbar-placeholder"></div>
 
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Create Project</h2>
-        <form id="signup-form">
+        <form id="project-form">
           <div class="wave-group">
             <input type="text" id="project-title" class="input" required />
             <label class="label">Project Title</label>
           </div>
 
           <div class="wave-group">
-            <textarea
-              id="project-description"
-              class="input"
-              required
-            ></textarea>
+            <textarea id="project-description" class="input" required></textarea>
             <label class="label">Project Description</label>
           </div>
-
-          <script>
-            document.addEventListener('DOMContentLoaded', function () {
-              const textarea = document.getElementById('project-description');
-
-              textarea.addEventListener('input', function () {
-                this.style.height = 'auto'; // Reset height
-                this.style.height = this.scrollHeight + 'px'; // Set new height
-              });
-            });
-          </script>
 
           <div class="wave-group">
             <input type="date" id="start-date" class="input" required />
@@ -165,13 +140,47 @@
     </div>
 
     <script>
-      // Fetch and insert navbar
-      fetch('navbar.html')
+      // Insert navbar
+      fetch('navbar.php')
         .then((response) => response.text())
         .then((data) => {
           document.getElementById('navbar-placeholder').innerHTML = data;
+        });
+
+      // Expand textarea dynamically
+      document.addEventListener('DOMContentLoaded', function () {
+        const textarea = document.getElementById('project-description');
+        textarea.addEventListener('input', function () {
+          this.style.height = 'auto';
+          this.style.height = this.scrollHeight + 'px';
+        });
+      });
+
+      // Handle form submission
+      document.getElementById('project-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const title = document.getElementById('project-title').value.trim();
+        const description = document.getElementById('project-description').value.trim();
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+
+        fetch('createProject.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, description, startDate, endDate })
         })
-        .catch((error) => console.error('Error loading navbar:', error));
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              alert('✅ Project created successfully!');
+    //          window.location.href = 'projectDetails.html?projectID=' + data.projectID;
+                window.location.href = 'homePage.php';
+            } else {
+              alert('❌ Error: ' + data.message);
+            }
+          });
+      });
     </script>
   </body>
 </html>
