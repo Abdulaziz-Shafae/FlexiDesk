@@ -4,7 +4,6 @@ CREATE TABLE Users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('Manager', 'Member') NOT NULL,
     profileImage VARCHAR(255) DEFAULT NULL,
     jobTitle VARCHAR(100) DEFAULT NULL,
     department VARCHAR(100) DEFAULT NULL,
@@ -73,19 +72,21 @@ CREATE TABLE Reports (
     FOREIGN KEY (generatedBy) REFERENCES Users(userID)
 );
 
--- Departments Table
-CREATE TABLE Departments (
-  departmentID INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(100) NOT NULL UNIQUE
+-- Departments , JobTitles Table
+CREATE TABLE MetaValues (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  type ENUM('Department', 'JobTitle') NOT NULL,
+  value VARCHAR(100) NOT NULL UNIQUE
 );
 
 
+
 -- Sample Data for Users Table
-INSERT INTO Users (name, email, password, role, profileImage, jobTitle, department, bio)
+INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bio)
 VALUES 
-('Alice Manager', 'alice@flexidesk.com', '$2b$12$pg.gexDNvnB/xfYL4/5yTueUFDjt78LsyZkbDRrjy1BGxP6Tuva5y', 'Manager', NULL, 'Project Manager', 'Marketing', 'Experienced project manager with 10+ years leading cross-functional teams.'),
-('Bob Member', 'bob@flexidesk.com', '$2b$12$y9IpzwIXibwmSMpmNj/hM.KWf0DS0ldaRFBn.rdHmbpfW4Wc5Lpsy', 'Member', NULL, 'Frontend Developer', 'Development', 'JavaScript expert who focuses on accessibility and performance.'),
-('Charlie Member', 'charlie@flexidesk.com', '$2b$12$OkKtRdidemN.FbLEwYA0XeDV58g511gJ6tsYWcMiUln3EMm/VwlHO', 'Member', NULL, 'Data Analyst', 'Finance', 'Passionate about numbers and transforming data into actionable insights.');
+('Alice Manager', 'alice@flexidesk.com', '$2b$12$pg.gexDNvnB/xfYL4/5yTueUFDjt78LsyZkbDRrjy1BGxP6Tuva5y', NULL, 'Project Manager', 'Marketing', 'Experienced project manager with 10+ years leading cross-functional teams.'),
+('Bob Member', 'bob@flexidesk.com', '$2b$12$y9IpzwIXibwmSMpmNj/hM.KWf0DS0ldaRFBn.rdHmbpfW4Wc5Lpsy', NULL, 'Frontend Developer', 'Development', 'JavaScript expert who focuses on accessibility and performance.'),
+('Charlie Member', 'charlie@flexidesk.com', '$2b$12$OkKtRdidemN.FbLEwYA0XeDV58g511gJ6tsYWcMiUln3EMm/VwlHO', NULL, 'Data Analyst', 'Finance', 'Passionate about numbers and transforming data into actionable insights.');
 
 -- Sample Data for Projects Table
 INSERT INTO Projects (title, description, startDate, endDate) 
@@ -128,6 +129,20 @@ VALUES
 (1, 1, 'Cybersecurity Project: 50% completed, focused on risk assessment and testing.'),
 (2, 1, 'AI Research Project: 40% completed, initial model training finished.');
 
--- Sample Data for Departments Table
-INSERT INTO Departments (name) VALUES
-('Marketing'), ('Development'), ('Design'), ('Human Resources'), ('Finance'), ('Information Technology');
+-- Sample Data for MetaValues Table
+    -- (Departments)
+    INSERT INTO MetaValues (type, value) VALUES
+    ('Department', 'Marketing'),
+    ('Department', 'Development'),
+    ('Department', 'Design'),
+    ('Department', 'Human Resources'),
+    ('Department', 'Finance'),
+    ('Department', 'Information Technology');
+    -- (Job Titles)
+    INSERT INTO MetaValues (type, value) VALUES
+    ('JobTitle', 'Software Engineer'),
+    ('JobTitle', 'UI/UX Designer'),
+    ('JobTitle', 'Project Manager'),
+    ('JobTitle', 'HR Specialist'),
+    ('JobTitle', 'Financial Analyst'),
+    ('JobTitle', 'IT Support');

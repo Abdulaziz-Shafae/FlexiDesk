@@ -13,15 +13,22 @@
     <script src="script.js" defer></script>
 
     <style>
-      .profile-container {
-        max-width: 1000px;
-        margin: 30px auto;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      .container {
+        margin-top: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
       }
-
+      .form-container {
+        background: white;
+        padding: 2%;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 600px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
       .profile-header {
         display: flex;
         align-items: center;
@@ -85,7 +92,7 @@
       .tab {
         padding: 10px 15px;
         cursor: pointer;
-        margin-right: 5px;
+        margin-right: 10px;
         font-weight: 500;
       }
 
@@ -119,7 +126,7 @@
       input[type='password'],
       select,
       textarea {
-        width: 980px;
+        width: 96%;
         padding: 10px;
         border: 1px solid #ddd;
         border-radius: 4px;
@@ -146,7 +153,7 @@
         margin-bottom: 10px;
       }
 
-      .checkbox-container input {
+      .checkbox-c input {
         margin-right: 10px;
       }
 
@@ -229,29 +236,31 @@
     <div id="navbar-placeholder"></div>
 
 
-    <div class="profile-container">
-      <div class="profile-header">
-        <div class="profile-pic" id="profile-pic-area">
-          <img id="profile-image" src="src/photos/profile-default-photo.jpeg" alt="Profile Picture" />
-          <div class="change-photo" id="change-photo-btn"><i class="fas fa-camera"></i> Change</div>
-          <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
-        </div>
-        
-        <div class="profile-info">
-          <h1>Salman Hassan</h1>
-          <p><i class="fas fa-envelope"></i> salman.iau@example.com</p>
-          <p><i class="fas fa-briefcase"></i> UI/UX Manager</p>
-          <p><i class="fas fa-building"></i> Development Department</p>
-        </div>
-      </div>
+    <div class="container">
+      <div class="form-container">
+          <div class="profile-header">
+            <div class="profile-pic" id="profile-pic-area">
+              <img id="profile-image" src="src/photos/profile-default-photo.jpeg" alt="Profile Picture" />
+              <div class="change-photo" id="change-photo-btn"><i class="fas fa-camera"></i> Change</div>
+              <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
+            </div>
+            
+            <div class="profile-info">
+              <h1 id="profile-name">Loading...</h1>
+              <p><i class="fas fa-envelope"></i> <span id="profile-email">...</span></p>
+              <p><i class="fas fa-briefcase"></i> <span id="profile-job">...</span></p>
+              <p><i class="fas fa-building"></i> <span id="profile-department">...</span></p>
+            </div>
+          </div>
 
-      <div class="profile-tabs">
-        <div class="tab active" data-tab="personal-info">Personal Info</div>
-        <div class="tab" data-tab="my-tasks">My Tasks</div>
-        <div class="tab" data-tab="notifications">Notifications</div>
-        <div class="tab" data-tab="security">Security</div>
-        <div class="tab" data-tab="activity">Activity Log</div>
-      </div>
+
+          <div class="profile-tabs">
+            <div class="tab active" data-tab="personal-info">Personal Info</div>
+            <div class="tab" data-tab="my-tasks">My Tasks</div>
+            <div class="tab" data-tab="notifications">Notifications</div>
+            <div class="tab" data-tab="security">Security</div>
+            <div class="tab" data-tab="activity">Activity Log</div>
+          </div>
 
       <!-- Personal Info Tab -->
       <div class="tab-content active" id="personal-info">
@@ -266,13 +275,13 @@
           </div>
           <div class="form-group">
             <label for="job-title">Job Title</label>
-            <input type="text" id="job-title" disabled/>
+            <input type="text" list="job-title-list" id="job-title" class="input" disabled />
+            <datalist id="job-title-list"></datalist>
           </div>
           <div class="form-group">
             <label for="department">Department</label>
             <input type="text" list="department-list" id="department" disabled/>
-            <datalist id="department-list">
-            </datalist>
+            <datalist id="department-list"></datalist>
           </div>
           
           <div class="form-group">
@@ -403,7 +412,7 @@
       </div>
 
       <!-- Activity Log Tab -->
-      <div class="tab-content" id="activity">
+      <div class="tab-content" id="activity" >
         <div class="activity-item">
           <div class="activity-icon">
             <i class="fas fa-tasks"></i>
@@ -458,9 +467,10 @@
         </div>
       </div>
     </div>
+  </div>
 
     <script>
-      // Fetch navbar (optional)
+      // Fetch navbar 
       fetch('navbar.php')
         .then(res => res.text())
         .then(data => document.getElementById('navbar-placeholder').innerHTML = data);
@@ -471,6 +481,11 @@
           .then(res => res.json())
           .then(user => {
             if (user.error) return console.error(user.error);
+
+            document.getElementById('profile-name').textContent = user.name;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-job').textContent = user.jobTitle;
+            document.getElementById('profile-department').textContent = user.department;
 
             document.getElementById('full-name').value = user.name;
             document.getElementById('email').value = user.email;
@@ -503,11 +518,23 @@
           bio: document.getElementById('bio').value
         };
 
-        // Add department to DB if it's new
-        fetch('addDepartmentIfNew.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ department: payload.department })
+        // Add department if new
+        fetch('getMetaValues.php?type=Department')
+          .then(res => res.json())
+          .then(data => {
+            const datalist = document.getElementById('department-list');
+            if (datalist) {
+              datalist.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
+            }
+         });
+        // Add department if new
+        fetch('getMetaValues.php?type=JobTitle')
+          .then(res => res.json())
+          .then(data => {
+            const datalist = document.getElementById('job-title-list');
+            if (datalist) {
+              datalist.innerHTML = data.map(job => `<option value="${job}">`).join('');
+            }
         });
 
         fetch('updateUser.php', {
@@ -604,12 +631,17 @@
             department: document.getElementById('department').value,
             bio: document.getElementById('bio').value
           };
-
           // Add department if new
-          fetch('addDepartmentIfNew.php', {
+          fetch('addMetaValueIfNew.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ department: payload.department })
+            body: JSON.stringify({ type: 'Department', value: payload.department })
+          });
+          // Add jobTitle if new
+          fetch('addMetaValueIfNew.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'JobTitle', value: payload.jobTitle })
           });
 
           fetch('updateUser.php', {
@@ -640,12 +672,28 @@
 
       document.addEventListener('DOMContentLoaded', function () {
         const tabParam = getQueryParam('tab');
+        fetch('getMetaValues.php?type=Department')
+          .then(res => res.json())
+          .then(data => {
+            const datalist = document.getElementById('department-list');
+            if (datalist) {
+              datalist.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
+            }
+          });
+
+        fetch('getMetaValues.php?type=JobTitle')
+          .then(res => res.json())
+          .then(data => {
+            const datalist = document.getElementById('job-title-list');
+            if (datalist) {
+              datalist.innerHTML = data.map(job => `<option value="${job}">`).join('');
+            }
+          });
+
         if (tabParam) {
-          // إزالة التفعيل عن الكل
           document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
           document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
-          // تفعيل التاب المطلوب
           const tabBtn = document.querySelector(`.tab[data-tab="${tabParam}"]`);
           const tabContent = document.getElementById(tabParam);
 
@@ -656,6 +704,7 @@
         }
       });
 
+      
     </script>
   </body>
 </html>

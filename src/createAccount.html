@@ -259,8 +259,11 @@
           </div>
 
           <div class="wave-group">
-            <input type="text" id="job-title" name="job-title" class="input" required />
+            <input list="job-title-list" id="job-title" name="job-title" class="input" required />
             <label class="label">Job Title</label>
+            <datalist id="job-title-list">
+              <!-- Options will be populated by JS -->
+            </datalist>
           </div>
           
           <div class="wave-group">
@@ -363,22 +366,38 @@
             document.getElementById('email-error').style.display = 'inline';
           } else {
             const department = document.getElementById('department').value;
-            fetch('addDepartmentIfNew.php', {
+            fetch('addMetaValueIfNew.php', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ department })
+              body: JSON.stringify({ type: 'JobTitle', value: document.getElementById('job-title').value })
             });
+            fetch('addMetaValueIfNew.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'Department', value: department })
+            });
+
             this.submit();  // Submit the form if email is not in use
           }
         });
       });
 
-      fetch('getDepartments.php')
+      // Load job titles from MetaValues
+      fetch('getMetaValues.php?type=JobTitle')
         .then(res => res.json())
         .then(data => {
-          const datalist = document.getElementById('department-list');
-          datalist.innerHTML = data.map(d => `<option value="${d}">`).join('');
-      });
+          const jobList = document.getElementById('job-title-list');
+          jobList.innerHTML = data.map(job => `<option value="${job}">`).join('');
+        });
+
+      // Load departments from MetaValues
+      fetch('getMetaValues.php?type=Department')
+        .then(res => res.json())
+        .then(data => {
+          const deptList = document.getElementById('department-list');
+          deptList.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
+        });
+
 
     </script>
   </body>
