@@ -7,17 +7,17 @@ include('db.php');
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form data
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     // Prepare the query to find the user by email
-    $sql = "SELECT * FROM users WHERE email = ?";
+    $sql = $sql = "SELECT userID, name, password FROM Users WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);  // Bind the email parameter to prevent SQL injection
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
+    if ($result && $result->num_rows === 1) {
         // User found, fetch the user data
         $user = $result->fetch_assoc();
 

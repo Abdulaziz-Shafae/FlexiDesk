@@ -258,6 +258,25 @@
             </ul>
           </div>
 
+          <div class="wave-group">
+            <input type="text" id="job-title" name="job-title" class="input" required />
+            <label class="label">Job Title</label>
+          </div>
+          
+          <div class="wave-group">
+            <input list="department-list" id="department" name="department" class="input" required />
+            <label class="label">Department</label>
+            <datalist id="department-list">
+              <!-- Options will be populated by JS -->
+            </datalist>
+          </div>          
+          
+          <div class="wave-group">
+            <textarea id="bio" name="bio" class="input" rows="4" required></textarea>
+            <label class="label">Short Bio</label>
+          </div>
+
+          
           <button type="submit" class="btn create-account-btn">
             Create Account
           </button>
@@ -343,10 +362,24 @@
           if (data.exists) {
             document.getElementById('email-error').style.display = 'inline';
           } else {
+            const department = document.getElementById('department').value;
+            fetch('addDepartmentIfNew.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ department })
+            });
             this.submit();  // Submit the form if email is not in use
           }
         });
       });
+
+      fetch('getDepartments.php')
+        .then(res => res.json())
+        .then(data => {
+          const datalist = document.getElementById('department-list');
+          datalist.innerHTML = data.map(d => `<option value="${d}">`).join('');
+      });
+
     </script>
   </body>
 </html>

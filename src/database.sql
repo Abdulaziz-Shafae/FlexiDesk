@@ -1,14 +1,17 @@
--- Users Table (no changes)
+-- Users Table (UPDATED: added jobTitle, department, bio)
 CREATE TABLE Users (
     userID INT(10) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('Manager', 'Member') NOT NULL,
-    profileImage VARCHAR(255) DEFAULT NULL
+    profileImage VARCHAR(255) DEFAULT NULL,
+    jobTitle VARCHAR(100) DEFAULT NULL,
+    department VARCHAR(100) DEFAULT NULL,
+    bio TEXT DEFAULT NULL
 );
 
--- Projects Table (no changes)
+-- Projects Table
 CREATE TABLE Projects (
     projectID INT(10) AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -17,7 +20,7 @@ CREATE TABLE Projects (
     endDate DATE NOT NULL
 );
 
--- Tasks Table (no changes)
+-- Tasks Table
 CREATE TABLE Tasks (
     taskID INT(10) AUTO_INCREMENT PRIMARY KEY,
     projectID INT(10),
@@ -39,7 +42,7 @@ CREATE TABLE user_projects (
     FOREIGN KEY (projectID) REFERENCES Projects(projectID)
 );
 
--- Notifications Table (no changes)
+-- Notifications Table
 CREATE TABLE Notifications (
     notificationID INT(10) AUTO_INCREMENT PRIMARY KEY,
     recipientID INT(10),
@@ -49,7 +52,7 @@ CREATE TABLE Notifications (
     FOREIGN KEY (recipientID) REFERENCES Users(userID)
 );
 
--- Alerts Table (no changes)
+-- Alerts Table
 CREATE TABLE Alerts (
     alertID INT(10) AUTO_INCREMENT PRIMARY KEY,
     recipientID INT(10),
@@ -59,7 +62,7 @@ CREATE TABLE Alerts (
     FOREIGN KEY (recipientID) REFERENCES Users(userID)
 );
 
--- Reports Table (no changes)
+-- Reports Table
 CREATE TABLE Reports (
     reportID INT(10) AUTO_INCREMENT PRIMARY KEY,
     projectID INT(10),
@@ -70,15 +73,19 @@ CREATE TABLE Reports (
     FOREIGN KEY (generatedBy) REFERENCES Users(userID)
 );
 
-
+-- Departments Table
+CREATE TABLE Departments (
+  departmentID INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE
+);
 
 
 -- Sample Data for Users Table
-INSERT INTO Users (name, email, password, role) 
+INSERT INTO Users (name, email, password, role, profileImage, jobTitle, department, bio)
 VALUES 
-('Alice Manager', 'alice@flexidesk.com', 'password123', 'Manager'),
-('Bob Member', 'bob@flexidesk.com', 'password123', 'Member'),
-('Charlie Member', 'charlie@flexidesk.com', 'password123', 'Member');
+('Alice Manager', 'alice@flexidesk.com', '$2b$12$pg.gexDNvnB/xfYL4/5yTueUFDjt78LsyZkbDRrjy1BGxP6Tuva5y', 'Manager', NULL, 'Project Manager', 'Marketing', 'Experienced project manager with 10+ years leading cross-functional teams.'),
+('Bob Member', 'bob@flexidesk.com', '$2b$12$y9IpzwIXibwmSMpmNj/hM.KWf0DS0ldaRFBn.rdHmbpfW4Wc5Lpsy', 'Member', NULL, 'Frontend Developer', 'Development', 'JavaScript expert who focuses on accessibility and performance.'),
+('Charlie Member', 'charlie@flexidesk.com', '$2b$12$OkKtRdidemN.FbLEwYA0XeDV58g511gJ6tsYWcMiUln3EMm/VwlHO', 'Member', NULL, 'Data Analyst', 'Finance', 'Passionate about numbers and transforming data into actionable insights.');
 
 -- Sample Data for Projects Table
 INSERT INTO Projects (title, description, startDate, endDate) 
@@ -86,15 +93,15 @@ VALUES
 ('Cybersecurity Project', 'A project to enhance security.', '2024-01-01', '2024-05-23'),
 ('AI Research Project', 'Develop AI models for data analysis.', '2024-03-15', '2024-07-01');
 
--- Sample Data for user_projects Table (Associating Users with Projects and Roles)
+-- Sample Data for user_projects Table
 INSERT INTO user_projects (userID, projectID, role) 
 VALUES
-(1, 1, 'Manager'),  -- Alice is the manager of the Cybersecurity Project
-(2, 1, 'Member'),   -- Bob is a member of the Cybersecurity Project
-(3, 1, 'Member'),   -- Charlie is a member of the Cybersecurity Project
-(1, 2, 'Manager'),  -- Alice is the manager of the AI Research Project
-(2, 2, 'Member'),   -- Bob is a member of the AI Research Project
-(3, 2, 'Member');   -- Charlie is a member of the AI Research Project
+(1, 1, 'Manager'),
+(2, 1, 'Member'),
+(3, 1, 'Member'),
+(1, 2, 'Manager'),
+(2, 2, 'Member'),
+(3, 2, 'Member');
 
 -- Sample Data for Tasks Table
 INSERT INTO Tasks (projectID, assignedTo, taskName, deadline, status) 
@@ -120,3 +127,7 @@ INSERT INTO Reports (projectID, generatedBy, content)
 VALUES
 (1, 1, 'Cybersecurity Project: 50% completed, focused on risk assessment and testing.'),
 (2, 1, 'AI Research Project: 40% completed, initial model training finished.');
+
+-- Sample Data for Departments Table
+INSERT INTO Departments (name) VALUES
+('Marketing'), ('Development'), ('Design'), ('Human Resources'), ('Finance'), ('Information Technology');

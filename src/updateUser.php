@@ -13,8 +13,23 @@ $userID = $_SESSION['userID'];
 $name = $data['name'] ?? '';
 $email = $data['email'] ?? '';
 $jobTitle = $data['jobTitle'] ?? '';
-$department = $data['department'] ?? '';
+$department = trim($data['department'] ?? '');
 $bio = $data['bio'] ?? '';
+
+if (!empty($department)) {
+    $checkDep = "SELECT departmentID FROM Departments WHERE name = ?";
+    $stmt = $conn->prepare($checkDep);
+    $stmt->bind_param("s", $department);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows === 0) {
+        $insertDep = "INSERT INTO Departments (name) VALUES (?)";
+        $stmt = $conn->prepare($insertDep);
+        $stmt->bind_param("s", $department);
+        $stmt->execute();
+    }
+}
 
 $sql = "UPDATE users SET name = ?, email = ?, jobTitle = ?, department = ?, bio = ? WHERE userID = ?";
 $stmt = $conn->prepare($sql);
