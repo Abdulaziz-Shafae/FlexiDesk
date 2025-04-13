@@ -257,28 +257,28 @@
         <form id="personal-info-form">
           <div class="form-group">
             <label for="full-name">Full Name</label>
-            <input type="text" id="full-name" />
+            <input type="text" id="full-name" disabled/>
           </div>
           <div class="form-group">
             <label for="email">Email Address</label>
-            <input type="email" id="email" />
+            <input type="email" id="email" disabled/>
           </div>
           <div class="form-group">
             <label for="job-title">Job Title</label>
-            <input type="text" id="job-title" />
+            <input type="text" id="job-title" disabled/>
           </div>
           <div class="form-group">
             <label for="department">Department</label>
-            <input list="department-list" id="department" class="input" />
+            <input type="text" list="department-list" id="department" disabled/>
             <datalist id="department-list">
             </datalist>
           </div>
           
           <div class="form-group">
             <label for="bio">Bio</label>
-            <textarea id="bio" rows="4"></textarea>
+            <textarea id="bio" rows="4" disabled></textarea>
           </div>
-          <button type="submit" class="save-btn">Save Changes</button>
+          <button type="button" id="edit-save-btn" class="save-btn" >Edit</button>
         </form>
       </div>
 
@@ -502,6 +502,13 @@
           bio: document.getElementById('bio').value
         };
 
+        // Add department to DB if it's new
+        fetch('addDepartmentIfNew.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ department: payload.department })
+        });
+
         fetch('updateUser.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -577,6 +584,76 @@
           }
       });
 
+      const form = document.getElementById('personal-info-form');
+      const editBtn = document.getElementById('edit-save-btn');
+      let isEditing = false;
+
+      editBtn.addEventListener('click', () => {
+        if (!isEditing) {
+          // 🔓 Enable fields
+          form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
+          editBtn.textContent = 'Save Changes';
+          isEditing = true;
+        } else {
+          // ✅ Save changes
+          const payload = {
+            name: document.getElementById('full-name').value,
+            email: document.getElementById('email').value,
+            jobTitle: document.getElementById('job-title').value,
+            department: document.getElementById('department').value,
+            bio: document.getElementById('bio').value
+          };
+
+          // Add department if new
+          fetch('addDepartmentIfNew.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ department: payload.department })
+          });
+
+          fetch('updateUser.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.status === 'success') {
+                alert('Profile updated successfully!');
+                loadUserProfile();
+                // 🔒 Disable fields again
+                form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+                editBtn.textContent = 'Edit';
+                isEditing = false;
+              } else {
+                alert('Error: ' + data.message);
+              }
+            });
+        }
+      });
+
+      function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        const tabParam = getQueryParam('tab');
+        if (tabParam) {
+          // إزالة التفعيل عن الكل
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+          // تفعيل التاب المطلوب
+          const tabBtn = document.querySelector(`.tab[data-tab="${tabParam}"]`);
+          const tabContent = document.getElementById(tabParam);
+
+          if (tabBtn && tabContent) {
+            tabBtn.classList.add('active');
+            tabContent.classList.add('active');
+          }
+        }
+      });
 
     </script>
   </body>
