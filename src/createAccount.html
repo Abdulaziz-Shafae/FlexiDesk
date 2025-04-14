@@ -204,7 +204,6 @@
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Create Account</h2>
-        <!-- Form submits data to createAccount.php -->
         <form id="signup-form" method="POST" action="createAccount.php">
           <div class="wave-group">
             <input type="text" id="first-name" name="first-name" class="input" required />
@@ -225,65 +224,49 @@
           <div class="password-container wave-group">
             <input type="password" id="password" name="password" class="input" required />
             <label class="label">Password</label>
-            <span
-              class="password-toggle"
-              onclick="togglePasswordVisibility('password', this)"
-              >👁️</span
-            >
+            <span class="password-toggle" onclick="togglePasswordVisibility('password', this)">👁️</span>
           </div>
 
           <div class="password-container wave-group">
-            <input
-              type="password" id="confirm-password" name="confirm-password" class="input" required />
+            <input type="password" id="confirm-password" name="confirm-password" class="input" required />
             <label class="label">Re-enter Password</label>
-            <span
-              class="password-toggle"
-              onclick="togglePasswordVisibility('confirm-password', this)"
-              >👁️</span
-            >
+            <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">👁️</span>
           </div>
-          <small id="password-match-error" style="color: red; display: none; ">
+          <small id="password-match-error" style="color: red; display: none;">
             Passwords do not match.
           </small>
-          
 
           <div class="password-requirements">
             <p style="margin-top: 1.5rem;">Password must contain:</p>
             <ul>
-              <li id="length" >At least 8 characters</li>
-              <li id="lowercase" >A lowercase letter</li>
-              <li id="uppercase" >An uppercase letter</li>
-              <li id="number" >A number</li>
-              <li id="special" >A special character ( !@#$%^&*(),.?":{}|<> )</li>
+              <li id="length">At least 8 characters</li>
+              <li id="lowercase">A lowercase letter</li>
+              <li id="uppercase">An uppercase letter</li>
+              <li id="number">A number</li>
+              <li id="special">A special character</li>
             </ul>
           </div>
 
           <div class="wave-group">
             <input list="job-title-list" id="job-title" name="job-title" class="input" required />
             <label class="label">Job Title</label>
-            <datalist id="job-title-list">
-              <!-- Options will be populated by JS -->
-            </datalist>
+            <datalist id="job-title-list"></datalist>
           </div>
-          
+
           <div class="wave-group">
             <input list="department-list" id="department" name="department" class="input" required />
             <label class="label">Department</label>
-            <datalist id="department-list">
-              <!-- Options will be populated by JS -->
-            </datalist>
-          </div>          
-          
+            <datalist id="department-list"></datalist>
+          </div>
+
           <div class="wave-group">
             <textarea id="bio" name="bio" class="input" rows="4" required></textarea>
             <label class="label">Short Bio</label>
           </div>
 
-          
-          <button type="submit" class="btn create-account-btn">
-            Create Account
-          </button>
+          <button type="submit" class="btn create-account-btn">Create Account</button>
         </form>
+
         <div class="signin-section">
           <p class="signin-text">You have an account?</p>
           <a href="Login.html" class="btn signin-btn">Have Account</a>
@@ -292,22 +275,14 @@
     </div>
 
     <script>
-      // Fetch and insert navbar
-      fetch('navbar.php')
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById('navbar-placeholder').innerHTML = data;
-        })
-        .catch((error) => console.error('Error loading navbar:', error));
-     
-      // Password Toggle
+      // Toggle password visibility
       function togglePasswordVisibility(inputId, icon) {
         const input = document.getElementById(inputId);
         input.type = input.type === 'password' ? 'text' : 'password';
         icon.textContent = input.type === 'password' ? '👁️' : '🙈';
       }
-      
-      // Password Validation
+
+      // Password validation
       const passwordInput = document.getElementById('password');
       const requirements = {
         length: document.getElementById('length'),
@@ -319,42 +294,28 @@
 
       passwordInput.addEventListener('input', () => {
         const password = passwordInput.value;
-
         requirements.length.classList.toggle('valid', password.length >= 8);
-        requirements.length.classList.toggle('invalid', password.length < 8);
-
         requirements.lowercase.classList.toggle('valid', /[a-z]/.test(password));
-        requirements.lowercase.classList.toggle('invalid', !/[a-z]/.test(password));
-
         requirements.uppercase.classList.toggle('valid', /[A-Z]/.test(password));
-        requirements.uppercase.classList.toggle('invalid', !/[A-Z]/.test(password));
-
         requirements.number.classList.toggle('valid', /\d/.test(password));
-        requirements.number.classList.toggle('invalid', !/\d/.test(password));
-
         requirements.special.classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
-        requirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
       });
-
 
       // Form submission with email check
       document.getElementById('signup-form').addEventListener('submit', function(e) {
         e.preventDefault();
-
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
         const passwordError = document.getElementById('password-match-error');
 
         if (password !== confirmPassword) {
           passwordError.style.display = 'inline';
-          return; // stop form submission
+          return;
         } else {
           passwordError.style.display = 'none';
         }
-        
-        const email = document.getElementById('email').value;
 
-        // Check if email is already in use via AJAX
+        const email = document.getElementById('email').value;
         fetch('check_email.php', {
           method: 'POST',
           body: JSON.stringify({ email }),
@@ -377,12 +338,12 @@
               body: JSON.stringify({ type: 'Department', value: department })
             });
 
-            this.submit();  // Submit the form if email is not in use
+            this.submit(); // Default submit (will reload)
           }
         });
       });
 
-      // Load job titles from MetaValues
+      // Load job titles and departments
       fetch('getMetaValues.php?type=JobTitle')
         .then(res => res.json())
         .then(data => {
@@ -390,7 +351,6 @@
           jobList.innerHTML = data.map(job => `<option value="${job}">`).join('');
         });
 
-      // Load departments from MetaValues
       fetch('getMetaValues.php?type=Department')
         .then(res => res.json())
         .then(data => {
@@ -398,6 +358,16 @@
           deptList.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
         });
 
+      // Load navbar
+      fetch('navbar.php')
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById('navbar-placeholder').innerHTML = data;
+        });
+        fetch('verifyPopup.html')
+          .then(res => res.text())
+          .then(html => document.body.insertAdjacentHTML('beforeend', html)
+        );
 
     </script>
   </body>
