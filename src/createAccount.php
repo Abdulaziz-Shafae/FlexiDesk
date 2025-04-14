@@ -1,45 +1,50 @@
 <?php
 session_start();
-require 'vendor/autoload.php';
-use Resend\Resend;
+include('db.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $firstName = trim($_POST['first-name']);
+    $lastName = trim($_POST['last-name']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirm-password'];
+    $jobTitle = trim($_POST['job-title']);
+    $department = trim($_POST['department']);
+    $bio = trim($_POST['bio']);
 
-    if (isset($_POST['verification_code'])) {
-        if ($_POST['verification_code'] == $_SESSION['verification_code']) {
-            $user = $_SESSION['user_data'];
-
-            include('db.php');
-
-            $fullName = $user['first-name'] . ' ' . $user['last-name'];
-            $hashedPassword = password_hash($user['password'], PASSWORD_DEFAULT);
-
-            $stmt = $conn->prepare("INSERT INTO Users (name, email, password, jobTitle, department, bio) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssss", $fullName, $user['email'], $hashedPassword, $user['job-title'], $user['department'], $user['bio']);
-            $stmt->execute();
-            $stmt->close();
-            $conn->close();
-
-            echo json_encode(["success" => true]);
-            exit;
-        } else {
-            echo json_encode(["error" => "Invalid code"]);
-            exit;
-        }
+    if ($password !== $confirmPassword) {
+        echo "Passwords do not match!";
+        exit;
     }
 
-    $code = random_int(100000, 999999);
-    $_SESSION['verification_code'] = $code;
-    $_SESSION['user_data'] = $_POST;
+    $checkQuery = "SELECT userID FROM Users WHERE email = ?";
+    $stmt = $conn->prepare($checkQuery);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+    
+    if ($stmt->num_rows > 0) {
+        echo "This email is already registered!";
+        exit;
+    }
 
-    $resend = Resend::client('re_eTvg2rQf_9nF72SBnbL9UECUSAXjCNz2K'); 
-    $resend->emails->send([
-        'from' => 'FlexiDesk <noreply@flexidesk.com>',
-        'to' => [$_POST['email']],
-        'subject' => 'FlexiDesk Email Verification',
-        'html' => "<p>Your verification code is <strong>{$code}</strong></p>"
-    ]);
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $fullName = $firstName . ' ' . $lastName;
 
-    echo json_encode(["code_sent" => true]);
+    $insertQuery = "INSERT INTO Users (name, email, password, role, jobTitle, department, bio)
+                    VALUES (?, ?, ?, 'Member', ?, ?, ?)";
+    $stmt = $conn->prepare($insertQuery);
+    $stmt->bind_param("ssssss", $fullName, $email, $hashedPassword, $jobTitle, $department, $bio);
+
+    if ($stmt->execute()) {
+        $_SESSION['loggedin'] = true;
+        $_SESSION['userID'] = $stmt->insert_id;
+        $_SESSION['username'] = $fullName;
+
+        header('Location: homePage.php');
+        exit;
+    } else {
+        echo "Error: " . $stmt->error;
+    }
 }
 ?>
