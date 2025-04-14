@@ -1,0 +1,39 @@
+<div id="verify-popup" style="display: none; text-align: center; padding: 2rem;">
+  <p>Please enter the code sent to your email</p>
+  <div style="display: flex; justify-content: center; gap: 0.5rem;">
+    <input maxlength="1" class="code-digit" type="text">
+    <input maxlength="1" class="code-digit" type="text">
+    <input maxlength="1" class="code-digit" type="text">
+    <input maxlength="1" class="code-digit" type="text">
+    <input maxlength="1" class="code-digit" type="text">
+    <input maxlength="1" class="code-digit" type="text">
+  </div>
+  <br>
+  <button onclick="submitCode()">Verify</button>
+  <p><a href="#" onclick="resendCode()">Resend Code</a></p>
+</div>
+
+<script>
+function submitCode() {
+  const digits = Array.from(document.querySelectorAll('.code-digit')).map(i => i.value).join('');
+  fetch('createAccount.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: 'verification_code=' + digits
+  }).then(res => res.json()).then(data => {
+    if (data.success) {
+      alert('Account created! Redirecting...');
+      window.location.href = 'Login.html';
+    } else {
+      alert('Invalid code. Please try again.');
+    }
+  });
+}
+
+function resendCode() {
+  fetch('createAccount.php', {
+    method: 'POST',
+    body: new URLSearchParams({ resend: true })
+  }).then(() => alert('Code resent!'));
+}
+</script>

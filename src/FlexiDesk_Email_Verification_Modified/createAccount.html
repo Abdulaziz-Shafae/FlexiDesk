@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlexiDesk - Create Account</title>
+    <link rel="stylesheet" href="navbarStyle.css" />
+    <script src="script.js" defer></script>
+
+    <style>
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+
+      .container {
+        margin-top: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .form-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      body.dark-mode .form-container {
+        background-color: #1e1e1e;
+        color: #ffffff;
+      }
+
+      .form-title {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        font-size: 1.8rem;
+        transition: color 0.3s ease;
+      }
+
+      body.dark-mode .form-title {
+        color: #ffffff;
+      }
+
+      /* Floating Label Input Styles */
+      .wave-group {
+        position: relative;
+        margin-top: 1.5rem;
+        width: 100%;
+      }
+
+      .wave-group .input {
+        font-size: 16px;
+        padding: 10px 10px 10px 5px;
+        display: block;
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #515151;
+        background: transparent;
+        color: inherit;
+      }
+
+      .wave-group .input:focus {
+        outline: none;
+      }
+
+      .wave-group .label {
+        color: #999;
+        font-size: 18px;
+        position: absolute;
+        pointer-events: none;
+        left: 5px;
+        top: 10px;
+        transition: 0.2s ease all;
+      }
+
+      .wave-group .input:focus ~ .label,
+      .wave-group .input:valid ~ .label {
+        transform: translateY(-20px);
+        font-size: 14px;
+        color: #5264ae;
+      }
+
+      body.dark-mode .wave-group .label {
+        color: #666;
+      }
+
+      /* Password Toggle Eye Icon */
+      .password-container {
+        position: relative;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #3498db;
+      }
+
+      .password-toggle:hover {
+        opacity: 0.8;
+      }
+
+      /* Password Requirements */
+      .password-requirements {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+      }
+
+      .password-requirements li {
+        margin-bottom: 0.5rem;
+      }
+
+      .password-requirements li.valid {
+        color: #27ae60;
+      }
+
+      .password-requirements li.invalid {
+        color: #e74c3c;
+      }
+
+      .signin-section {
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .signin-text {
+        color: var(--text-color);
+        margin-bottom: 1rem;
+      }
+
+      .signin-btn {
+        background-color: #2c3e50;
+        color: white;
+        text-decoration: none;
+        padding: 10px 30px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+
+      .signup-btn:hover {
+        background-color: #34495e;
+      }
+
+      /* Button */
+      .btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .create-account-btn {
+        background-color: #3498db;
+        color: white;
+      }
+
+      .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div id="navbar-placeholder"></div>
+
+    <div class="container">
+      <div class="form-container">
+        <h2 class="form-title">Create Account</h2>
+        <!-- Form submits data to createAccount.php -->
+        <form id="signup-form" method="POST" action="createAccount.php">
+          <div class="wave-group">
+            <input type="text" id="first-name" name="first-name" class="input" required />
+            <label class="label">First Name</label>
+          </div>
+
+          <div class="wave-group">
+            <input type="text" id="last-name" name="last-name" class="input" required />
+            <label class="label">Last Name</label>
+          </div>
+
+          <div class="wave-group">
+            <input type="email" id="email" name="email" class="input" required />
+            <label class="label">Email</label>
+          </div>
+          <small id="email-error" style="color: red; display: none;">Email is already registered.</small>
+
+          <div class="password-container wave-group">
+            <input type="password" id="password" name="password" class="input" required />
+            <label class="label">Password</label>
+            <span
+              class="password-toggle"
+              onclick="togglePasswordVisibility('password', this)"
+              >👁️</span
+            >
+          </div>
+
+          <div class="password-container wave-group">
+            <input
+              type="password" id="confirm-password" name="confirm-password" class="input" required />
+            <label class="label">Re-enter Password</label>
+            <span
+              class="password-toggle"
+              onclick="togglePasswordVisibility('confirm-password', this)"
+              >👁️</span
+            >
+          </div>
+          <small id="password-match-error" style="color: red; display: none; ">
+            Passwords do not match.
+          </small>
+          
+
+          <div class="password-requirements">
+            <p style="margin-top: 1.5rem;">Password must contain:</p>
+            <ul>
+              <li id="length" >At least 8 characters</li>
+              <li id="lowercase" >A lowercase letter</li>
+              <li id="uppercase" >An uppercase letter</li>
+              <li id="number" >A number</li>
+              <li id="special" >A special character ( !@#$%^&*(),.?":{}|<> )</li>
+            </ul>
+          </div>
+
+          <div class="wave-group">
+            <input list="job-title-list" id="job-title" name="job-title" class="input" required />
+            <label class="label">Job Title</label>
+            <datalist id="job-title-list">
+              <!-- Options will be populated by JS -->
+            </datalist>
+          </div>
+          
+          <div class="wave-group">
+            <input list="department-list" id="department" name="department" class="input" required />
+            <label class="label">Department</label>
+            <datalist id="department-list">
+              <!-- Options will be populated by JS -->
+            </datalist>
+          </div>          
+          
+          <div class="wave-group">
+            <textarea id="bio" name="bio" class="input" rows="4" required></textarea>
+            <label class="label">Short Bio</label>
+          </div>
+
+          
+          <button type="submit" class="btn create-account-btn">
+            Create Account
+          </button>
+        </form>
+        <div class="signin-section">
+          <p class="signin-text">You have an account?</p>
+          <a href="Login.html" class="btn signin-btn">Have Account</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Fetch and insert navbar
+      fetch('navbar.php')
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById('navbar-placeholder').innerHTML = data;
+        })
+        .catch((error) => console.error('Error loading navbar:', error));
+     
+      // Password Toggle
+      function togglePasswordVisibility(inputId, icon) {
+        const input = document.getElementById(inputId);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.textContent = input.type === 'password' ? '👁️' : '🙈';
+      }
+      
+      // Password Validation
+      const passwordInput = document.getElementById('password');
+      const requirements = {
+        length: document.getElementById('length'),
+        lowercase: document.getElementById('lowercase'),
+        uppercase: document.getElementById('uppercase'),
+        number: document.getElementById('number'),
+        special: document.getElementById('special'),
+      };
+
+      passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+
+        requirements.length.classList.toggle('valid', password.length >= 8);
+        requirements.length.classList.toggle('invalid', password.length < 8);
+
+        requirements.lowercase.classList.toggle('valid', /[a-z]/.test(password));
+        requirements.lowercase.classList.toggle('invalid', !/[a-z]/.test(password));
+
+        requirements.uppercase.classList.toggle('valid', /[A-Z]/.test(password));
+        requirements.uppercase.classList.toggle('invalid', !/[A-Z]/.test(password));
+
+        requirements.number.classList.toggle('valid', /\d/.test(password));
+        requirements.number.classList.toggle('invalid', !/\d/.test(password));
+
+        requirements.special.classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
+        requirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
+      });
+
+
+      // Form submission with email check
+      document.getElementById('signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const passwordError = document.getElementById('password-match-error');
+
+        if (password !== confirmPassword) {
+          passwordError.style.display = 'inline';
+          return; // stop form submission
+        } else {
+          passwordError.style.display = 'none';
+        }
+        
+        const email = document.getElementById('email').value;
+
+        // Check if email is already in use via AJAX
+        fetch('check_email.php', {
+          method: 'POST',
+          body: JSON.stringify({ email }),
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            document.getElementById('email-error').style.display = 'inline';
+          } else {
+            const department = document.getElementById('department').value;
+            fetch('addMetaValueIfNew.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'JobTitle', value: document.getElementById('job-title').value })
+            });
+            fetch('addMetaValueIfNew.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'Department', value: department })
+            });
+
+            this.submit();  // Submit the form if email is not in use
+          }
+        });
+      });
+
+      // Load job titles from MetaValues
+      fetch('getMetaValues.php?type=JobTitle')
+        .then(res => res.json())
+        .then(data => {
+          const jobList = document.getElementById('job-title-list');
+          jobList.innerHTML = data.map(job => `<option value="${job}">`).join('');
+        });
+
+      // Load departments from MetaValues
+      fetch('getMetaValues.php?type=Department')
+        .then(res => res.json())
+        .then(data => {
+          const deptList = document.getElementById('department-list');
+          deptList.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
+        });
+
+
+    </script>
+  </body>
+</html>

@@ -1,5 +1,4 @@
--- Users Table (UPDATED: added jobTitle, department, bio)
-CREATE TABLE Users (
+-- Users Table CREATE TABLE Users (
     userID INT(10) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,

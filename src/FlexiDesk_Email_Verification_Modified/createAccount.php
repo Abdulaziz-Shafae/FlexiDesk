@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
             }
-            $stmt = $conn->prepare("INSERT INTO Users (name, email, password, jobTitle, department, bio) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO Users (name, email, password, role, jobTitle, department, bio) VALUES (?, ?, ?, 'Member', ?, ?, ?)");
             $fullName = $user['first-name'] . ' ' . $user['last-name'];
             $stmt->bind_param("ssssss", $fullName, $user['email'], $user['password'], $user['job-title'], $user['department'], $user['bio']);
             $stmt->execute();
@@ -29,9 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['verification_code'] = $code;
     $_SESSION['user_data'] = $_POST;
 
-    $resend = Resend::client('re_QZ5KdNoD_AGGtHbz2GwsCZcmrTiwxpDFh');
+    $resend = Resend::client('your_resend_api_key_here');
     $resend->emails->send([
-        'from' => 'FlexiDesk <FlexiDesk@hotmail.com>',
+        'from' => 'FlexiDesk <noreply@yourdomain.com>',
         'to' => [$_POST['email']],
         'subject' => 'FlexiDesk Email Verification',
         'html' => "<p>Your verification code is <strong>{$code}</strong></p>"
