@@ -1,42 +1,38 @@
 <?php
 session_start();
-require 'vendor/autoload.php';
-use Resend\Resend;
+include('db.php');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['verification_code'])) {
-        if ($_POST['verification_code'] == $_SESSION['verification_code']) {
-            $user = $_SESSION['user_data'];
-            $conn = new mysqli("localhost", "root", "", "flexidesk");
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-            $stmt = $conn->prepare("INSERT INTO Users (name, email, password, jobTitle, department, bio) VALUES (?, ?, ?, ?, ?, ?)");
-            $fullName = $user['first-name'] . ' ' . $user['last-name'];
-            $stmt->bind_param("ssssss", $fullName, $user['email'], $user['password'], $user['job-title'], $user['department'], $user['bio']);
-            $stmt->execute();
-            $stmt->close();
-            $conn->close();
-            echo json_encode(["success" => true]);
-            exit;
-        } else {
-            echo json_encode(["error" => "Invalid code"]);
-            exit;
-        }
-    }
+if (!isset($_SESSION['userID'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Not logged in']);
+    exit;
+}
 
-    $code = random_int(100000, 999999);
-    $_SESSION['verification_code'] = $code;
-    $_SESSION['user_data'] = $_POST;
+$data = json_decode(file_get_contents('php://input'), true);
+$title = trim($data['title'] ?? '');
+$description = trim($data['description'] ?? '');
+$startDate = $data['startDate'] ?? '';
+$endDate = $data['endDate'] ?? '';
+$userID = $_SESSION['userID'];
 
-    $resend = Resend::client('re_QZ5KdNoD_AGGtHbz2GwsCZcmrTiwxpDFh');
-    $resend->emails->send([
-        'from' => 'FlexiDesk <FlexiDesk@hotmail.com>',
-        'to' => [$_POST['email']],
-        'subject' => 'FlexiDesk Email Verification',
-        'html' => "<p>Your verification code is <strong>{$code}</strong></p>"
-    ]);
+if (!$title || !$description || !$startDate || !$endDate) {
+    echo json_encode(['status' => 'error', 'message' => 'Missing required fields']);
+    exit;
+}
 
-    echo json_encode(["code_sent" => true]);
+$sql = "INSERT INTO Projects (title, description, startDate, endDate) VALUES (?, ?, ?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ssss", $title, $description, $startDate, $endDate);
+
+if ($stmt->execute()) {
+    $projectID = $stmt->insert_id;
+
+    $role = 'Manager';
+    $link = $conn->prepare("INSERT INTO user_projects (userID, projectID, role) VALUES (?, ?, ?)");
+    $link->bind_param("iis", $userID, $projectID, $role);
+    $link->execute();
+
+    echo json_encode(['status' => 'success', 'projectID' => $projectID]);
+} else {
+    echo json_encode(['status' => 'error', 'message' => $stmt->error]);
 }
 ?>
