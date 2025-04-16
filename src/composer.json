@@ -1,5 +1,0 @@
-{
-    "require": {
-        "resend/resend-php": "^0.16.0"
-    }
-}

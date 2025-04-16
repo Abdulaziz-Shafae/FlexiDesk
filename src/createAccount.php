@@ -1,59 +1,50 @@
 <?php
 session_start();
-require 'vendor/autoload.php';
+include('db.php');
 
-use Resend\Resend;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $firstName = trim($_POST['first-name']);
+    $lastName = trim($_POST['last-name']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirmPassword = $_POST['confirm-password'];
+    $jobTitle = trim($_POST['job-title']);
+    $department = trim($_POST['department']);
+    $bio = trim($_POST['bio']);
 
-header('Content-Type: application/json');
+    if ($password !== $confirmPassword) {
+        echo "Passwords do not match!";
+        exit;
+    }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(["status" => "error", "message" => "Invalid request"]);
-    exit;
-}
-
-$data = json_decode(file_get_contents("php://input"), true);
-
-// STEP 1: Send Code
-if ($data['step'] === 'send_code') {
-    $user = $data['user'];
-    $_SESSION['pending_user'] = $user;
+    $checkQuery = "SELECT userID FROM Users WHERE email = ?";
+    $stmt = $conn->prepare($checkQuery);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
     
-    $code = rand(100000, 999999);
-    $_SESSION['verification_code'] = $code;
+    if ($stmt->num_rows > 0) {
+        echo "This email is already registered!";
+        exit;
+    }
 
-    $resend = Resend::client('YOUR_RESEND_API_KEY_HERE');
-    $resend->emails->send([
-        'from' => 'FlexiDesk@hotmil.com',
-        'to' => $user['email'],
-        'subject' => 'Verify your email',
-        'html' => "<h1>Your code: $code</h1>"
-    ]);
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $fullName = $firstName . ' ' . $lastName;
 
-    echo json_encode(["status" => "ok"]);
-    exit;
-}
+    $insertQuery = "INSERT INTO Users (name, email, password, role, jobTitle, department, bio)
+                    VALUES (?, ?, ?, 'Member', ?, ?, ?)";
+    $stmt = $conn->prepare($insertQuery);
+    $stmt->bind_param("ssssss", $fullName, $email, $hashedPassword, $jobTitle, $department, $bio);
 
-// STEP 2: Verify Code
-if ($data['step'] === 'verify_code') {
-    $entered = $data['code'];
-    if ($entered == $_SESSION['verification_code']) {
-        $user = $_SESSION['pending_user'];
-        include 'db.php';
+    if ($stmt->execute()) {
+        $_SESSION['loggedin'] = true;
+        $_SESSION['userID'] = $stmt->insert_id;
+        $_SESSION['username'] = $fullName;
 
-        $hashedPassword = password_hash($user['password'], PASSWORD_BCRYPT);
-
-        $stmt = $conn->prepare("INSERT INTO users (name, email, password, role, jobTitle, department, bio) VALUES (?, ?, ?, 'Member', ?, ?, ?)");
-        $stmt->bind_param("ssssss", $user['name'], $user['email'], $hashedPassword, $user['jobTitle'], $user['department'], $user['bio']);
-
-        if ($stmt->execute()) {
-            unset($_SESSION['verification_code']);
-            unset($_SESSION['pending_user']);
-            echo json_encode(["status" => "success"]);
-        } else {
-            echo json_encode(["status" => "error", "message" => "Database insert failed"]);
-        }
+        header('Location: homePage.php');
+        exit;
     } else {
-        echo json_encode(["status" => "error", "message" => "Incorrect code"]);
+        echo "Error: " . $stmt->error;
     }
 }
 ?>

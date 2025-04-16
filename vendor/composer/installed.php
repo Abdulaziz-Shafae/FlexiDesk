@@ -1,20 +1,20 @@
 <?php return array(
     'root' => array(
-        'name' => '__root__',
+        'name' => 'flexidesk/email-verification',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7622fc878f9039ef767b570597bfd9eef0cc41d1',
-        'type' => 'library',
+        'reference' => 'a47c651f92dc825ba6be65ef644db4c9fe6241bf',
+        'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        '__root__' => array(
+        'flexidesk/email-verification' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7622fc878f9039ef767b570597bfd9eef0cc41d1',
-            'type' => 'library',
+            'reference' => 'a47c651f92dc825ba6be65ef644db4c9fe6241bf',
+            'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
