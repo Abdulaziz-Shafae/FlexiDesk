@@ -284,6 +284,24 @@
             Create Account
           </button>
         </form>
+
+        <!-- Email Verification Popup -->
+        <div id="verification-popup" style="display: none; background-color: rgba(0,0,0,0.6); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; justify-content: center; align-items: center;">
+          <div style="background: white; padding: 30px; border-radius: 10px; text-align: center;">
+            <h3>Please enter the code sent to your email</h3>
+            <div style="display: flex; justify-content: center; gap: 10px; margin: 20px 0;">
+              <input type="text" maxlength="1" class="code-input" style="width: 40px; text-align: center; font-size: 20px;" />
+              <input type="text" maxlength="1" class="code-input" />
+              <input type="text" maxlength="1" class="code-input" />
+              <input type="text" maxlength="1" class="code-input" />
+              <input type="text" maxlength="1" class="code-input" />
+              <input type="text" maxlength="1" class="code-input" />
+            </div>
+            <button id="resend-code" style="margin-bottom: 10px;">Resend Code</button><br>
+            <button id="verify-code" class="btn">Verify</button>
+          </div>
+        </div>
+
         <div class="signin-section">
           <p class="signin-text">You have an account?</p>
           <a href="Login.html" class="btn signin-btn">Have Account</a>
@@ -337,8 +355,8 @@
       });
 
 
-      // Form submission with email check
-      document.getElementById('signup-form').addEventListener('submit', function(e) {
+        // Form submission with email check and verification popup
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const password = document.getElementById('password').value;
@@ -347,39 +365,79 @@
 
         if (password !== confirmPassword) {
           passwordError.style.display = 'inline';
-          return; // stop form submission
+          return;
         } else {
           passwordError.style.display = 'none';
         }
-        
+
         const email = document.getElementById('email').value;
 
-        // Check if email is already in use via AJAX
-        fetch('check_email.php', {
+        // Check if email already exists
+        const emailCheck = await fetch('check_email.php', {
           method: 'POST',
           body: JSON.stringify({ email }),
           headers: { 'Content-Type': 'application/json' },
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.exists) {
-            document.getElementById('email-error').style.display = 'inline';
-          } else {
-            const department = document.getElementById('department').value;
-            fetch('addMetaValueIfNew.php', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'JobTitle', value: document.getElementById('job-title').value })
-            });
-            fetch('addMetaValueIfNew.php', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ type: 'Department', value: department })
-            });
-
-            this.submit();  // Submit the form if email is not in use
-          }
         });
+        const emailData = await emailCheck.json();
+        if (emailData.exists) {
+          document.getElementById('email-error').style.display = 'inline';
+          return;
+        }
+
+        // Add new job title & department to MetaValues table
+        const department = document.getElementById('department').value;
+        const jobTitle = document.getElementById('job-title').value;
+
+        fetch('addMetaValueIfNew.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'JobTitle', value: jobTitle })
+        });
+
+        fetch('addMetaValueIfNew.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'Department', value: department })
+        });
+
+        // Build user object to send to backend
+        const form = e.target;
+        const formData = new FormData(form);
+        const user = Object.fromEntries(formData.entries());
+
+        // Send email verification code
+        const response = await fetch("createAccount.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: "send_code", user })
+        });
+
+        const result = await response.json();
+        if (result.status === "sent") {
+          document.getElementById('popup-overlay').style.display = "flex";
+        } else {
+          alert("Failed to send verification email.");
+        }
+      });
+
+      // Handle Verify Code button
+      document.getElementById("verify-btn").addEventListener("click", async () => {
+        const digits = document.querySelectorAll(".code-input");
+        const code = Array.from(digits).map(d => d.value).join('');
+
+        const verifyRes = await fetch("createAccount.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ step: "verify_code", code })
+        });
+
+        const verifyData = await verifyRes.json();
+        if (verifyData.status === "success") {
+          alert("Account created successfully!");
+          window.location.href = "Login.html";
+        } else {
+          alert("Invalid code. Try again.");
+        }
       });
 
       // Load job titles from MetaValues
