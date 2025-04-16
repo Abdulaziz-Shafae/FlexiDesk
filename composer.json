@@ -3,7 +3,7 @@
     "description": "FlexiDesk - User email verification with Resend",
     "type": "project",
     "require": {
-      "resend/resend-php": "^0.16.0"
+      "resend/resend-php": "^0.16"
     },
     "autoload": {
       "psr-4": {
@@ -13,3 +13,4 @@
     "minimum-stability": "stable",
     "license": "MIT"
   }
+  
