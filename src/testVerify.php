@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/vendor/autoload.php'; // عدّل المسار حسب موقع الملف
+require __DIR__ . '/vendor/autoload.php';
 
 use Resend\Resend;
 
