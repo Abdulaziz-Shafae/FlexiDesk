@@ -244,7 +244,44 @@
         color: #e74c3c;
       }
 
+      /* Password Toggle Eye Icon */
+      .password-container {
+        position: relative;
+      }
 
+      .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #3498db;
+      }
+
+      .password-toggle:hover {
+        opacity: 0.8;
+      }
+
+      /* Password Requirements */
+      .password-requirements {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+      }
+
+      .password-requirements li {
+        margin-bottom: 0.5rem;
+      }
+
+      .password-requirements li.valid {
+        color: #27ae60;
+      }
+
+      .password-requirements li.invalid {
+        color: #e74c3c;
+      }
+      
     </style>
   </head>
   <body>
@@ -299,16 +336,32 @@
                 <label class="label">Verification Code</label>
               </div>
         
-              <div class="wave-group">
+              <div class="password-container wave-group">
                 <input type="password" id="new-password" class="input" required />
                 <label class="label">New Password</label>
+                <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">👁️</span>
               </div>
-        
-              <div class="wave-group">
+              
+              <div class="password-container wave-group">
                 <input type="password" id="confirm-new-password" class="input" required />
                 <label class="label">Confirm Password</label>
+                <span class="password-toggle" onclick="togglePasswordVisibility('confirm-new-password', this)">👁️</span>
               </div>
-        
+              <small id="reset-password-match-error" style="color: red; display: none;">
+                Passwords do not match.
+              </small>
+              
+              <div class="password-requirements">
+                <p style="margin-top: 1rem;">Password must contain:</p>
+                <ul>
+                  <li id="reset-length">At least 8 characters</li>
+                  <li id="reset-lowercase">A lowercase letter</li>
+                  <li id="reset-uppercase">An uppercase letter</li>
+                  <li id="reset-number">A number</li>
+                  <li id="reset-special" >A special character ( !@#$%^&*(),.?":{}|<> )</li>
+                </ul>
+              </div>
+
               <div class="button-container" style="margin-top: 20px; display: flex; gap: 10px;">
                 <button onclick="closeResetPopup()" class="popup-btn cancel">Cancel</button>
                 <button onclick="confirmResetPassword()" class="popup-btn">Confirm</button>
@@ -383,7 +436,10 @@
         }
 
         if (newPassword !== confirmPassword) {
-          return alert("Passwords do not match.");
+          document.getElementById('reset-password-match-error').style.display = 'block';
+          return;
+        } else {
+          document.getElementById('reset-password-match-error').style.display = 'none';
         }
 
         fetch('verifyCodeOnly.php', {
@@ -391,28 +447,28 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ code })
         })
-          .then(res => res.json())
-          .then(res => {
-            if (res.status !== 'success') {
-              alert(res.message || "Code verification failed.");
-            } else {
-              // Now update password in the backend
-              fetch('updatePassword.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, newPassword })
-              })
-                .then(res => res.json())
-                .then(data => {
-                  if (data.status === 'success') {
-                    alert("Password updated successfully.");
-                    closeResetPopup();
-                  } else {
-                    alert(data.message || "Update failed.");
-                  }
-                });
-            }
-          });
+        .then(res => res.json())
+        .then(res => {
+          if (res.status !== 'success') {
+            alert(res.message || "Invalid verification code.");
+          } else {
+            // ✅ Step 2: Update the password
+            fetch('updatePassword.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, newPassword })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.status === 'success') {
+                alert("Password updated successfully.");
+                closeResetPopup();
+              } else {
+                alert(data.message || "Failed to update password.");
+              }
+            });
+          }
+        });
       }
       
       document.getElementById('reset-email').addEventListener('focus', () => {
@@ -424,6 +480,43 @@
           document.getElementById('login-error').style.display = 'none';
         });
       });
+
+      // Password toggle
+      function togglePasswordVisibility(inputId, icon) {
+        const input = document.getElementById(inputId);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.textContent = input.type === 'password' ? '👁️' : '🙈';
+      }
+
+      // Password Validation
+      const resetPasswordInput = document.getElementById('new-password');
+      const resetRequirements = {
+        length: document.getElementById('reset-length'),
+        lowercase: document.getElementById('reset-lowercase'),
+        uppercase: document.getElementById('reset-uppercase'),
+        number: document.getElementById('reset-number'),
+        special: document.getElementById('reset-special'),
+      };
+
+      resetPasswordInput.addEventListener('input', () => {
+        const password = resetPasswordInput.value;
+
+        resetRequirements.length.classList.toggle('valid', password.length >= 8);
+        resetRequirements.length.classList.toggle('invalid', password.length < 8);
+
+        resetRequirements.lowercase.classList.toggle('valid', /[a-z]/.test(password));
+        resetRequirements.lowercase.classList.toggle('invalid', !/[a-z]/.test(password));
+
+        resetRequirements.uppercase.classList.toggle('valid', /[A-Z]/.test(password));
+        resetRequirements.uppercase.classList.toggle('invalid', !/[A-Z]/.test(password));
+
+        resetRequirements.number.classList.toggle('valid', /\d/.test(password));
+        resetRequirements.number.classList.toggle('invalid', !/\d/.test(password));
+
+        resetRequirements.special.classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
+        resetRequirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
+      });
+
 
     </script>
   </body>
