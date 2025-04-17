@@ -258,6 +258,19 @@
         background-color: #777;
       }
 
+      .addTask-close-btn {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        font-size: 22px;
+        color: #444;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .addTask-close-btn:hover {
+        color: #e74c3c;
+      }
 
     </style>
   </head>
@@ -350,9 +363,11 @@
         </form>
 
         <div id="verificationPopup" class="popup">
-          <div class="popup-content" style="width: 400px;">
+          <div class="popup-content" style="width: 400px; position: relative;">
             <h2 class="popup-header">Email Verification</h2>
-            <span class="addTask-close-btn" onclick="closeVerificationPopup()">&times;</span>
+        
+            <span class="addTask-close-btn" onclick="closeVerificationPopup()"
+                  style="position: absolute; top: 10px; right: 12px; font-size: 20px; cursor: pointer;">&times;</span>
         
             <div style="padding: 20px;">
               <div class="wave-group">
@@ -363,17 +378,17 @@
               <div class="button-container" style="margin-top: 20px; display: flex; gap: 10px;">
                 <button onclick="closeVerificationPopup()" class="popup-btn cancel">Cancel</button>
                 <button onclick="verifyEmailCode()" class="popup-btn">Verify</button>
-              </div>              
+              </div>
+        
+              <div style="text-align: center; margin-top: 15px;">
+                <button onclick="resendVerificationCode()" style="background: none; border: none; color: #3498db; cursor: pointer;">
+                  Resend Code
+                </button>
+              </div>
             </div>
           </div>
-        </div>     
-
-        <div class="signin-section">
-          <p class="signin-text">You have an account?</p>
-          <a href="Login.html" class="btn signin-btn">Have Account</a>
         </div>
-      </div>
-    </div>
+        
 
     <script>
       // Fetch and insert navbar
@@ -533,6 +548,33 @@
         function closeVerificationPopup() {
           document.getElementById('verificationPopup').style.display = 'none';
         }
+
+        function resendVerificationCode() {
+          const email = document.getElementById('email').value;
+          if (!email) {
+            alert("Email is required to resend the code.");
+            return;
+          }
+
+          fetch('sendVerificationCode.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+          })
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'success') {
+              alert("Verification code resent successfully.");
+            } else {
+              alert("Failed to resend code.\n" + (res.message || ''));
+            }
+          })
+          .catch(err => {
+            console.error('Resend error:', err);
+            alert("Something went wrong.");
+          });
+        }
+
 
     </script>
   </body>
