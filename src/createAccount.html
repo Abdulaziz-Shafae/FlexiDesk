@@ -478,7 +478,7 @@
             fetch('sendVerificationCode.php', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email })
+              body: JSON.stringify({ email, purpose: 'signup' })
             })
             .then(res => res.json())
             .then(res => {
@@ -575,6 +575,13 @@
           });
         }
 
+        document.getElementById('confirm-password').addEventListener('focus', () => {
+          document.getElementById('password-match-error').style.display = 'none';
+        });
+
+        document.getElementById('email').addEventListener('focus', () => {
+          document.getElementById('email-error').style.display = 'none'; 
+        });
 
     </script>
   </body>

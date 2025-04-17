@@ -71,21 +71,6 @@
         font-size: 1.8rem;
       }
 
-      .input-group {
-        margin-bottom: 1.5rem;
-      }
-
-      input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--input-border);
-        border-radius: 5px;
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        background-color: var(--input-bg);
-        color: var(--text-color);
-      }
-
       .btn {
         width: 100%;
         padding: 12px;
@@ -135,10 +120,6 @@
           margin: 1rem;
           padding: 1.5rem;
         }
-
-        .logo {
-          font-size: 2rem;
-        }
       }
 
       .login-error {
@@ -151,6 +132,119 @@
         font-weight: bold;
       }
 
+      /* ✅ wave-group (حقول عائمة) */
+      .wave-group {
+        position: relative;
+        margin-top: 1.5rem;
+        width: 100%;
+      }
+      .wave-group .input {
+        font-size: 16px;
+        padding: 10px 10px 10px 5px;
+        display: block;
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #515151;
+        background: transparent;
+        color: inherit;
+      }
+      .wave-group .input:focus {
+        outline: none;
+      }
+      .wave-group .label {
+        color: #999;
+        font-size: 18px;
+        position: absolute;
+        pointer-events: none;
+        left: 5px;
+        top: 10px;
+        transition: 0.2s ease all;
+      }
+      .wave-group .input:focus ~ .label,
+      .wave-group .input:valid ~ .label {
+        transform: translateY(-20px);
+        font-size: 14px;
+        color: #5264ae;
+      }
+      body.dark-mode .wave-group .label {
+        color: #666;
+      }
+
+      /* ✅ popup */
+      .popup {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+      }
+      .popup-content {
+        background: white;
+        width: 400px;
+        padding: 0;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        border-radius: 4px;
+        border: 2px solid #e0e5f2;
+      }
+      .popup-content h2 {
+        background-color: #e0e5f2;
+        color: black;
+        padding: 12px;
+        font-size: 16px;
+        margin: 0;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: default;
+      }
+      .popup-btn {
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px 20px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .popup-btn:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+      .popup-btn.cancel {
+        background-color: #888;
+      }
+      .popup-btn.cancel:hover {
+        background-color: #777;
+      }
+      .addTask-close-btn {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        font-size: 22px;
+        color: #444;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+      .addTask-close-btn:hover {
+        color: #e74c3c;
+      }
+
+
     </style>
   </head>
   <body>
@@ -162,17 +256,66 @@
         <h2 class="form-title">Login to Your Account</h2>
         <!-- The form now sends data to login.php -->
         <form method="POST" action="login.php">
-          <div class="input-group">
-            <input type="email" id="email" name="email" placeholder="Email Address" required />
+          <div class="wave-group">
+            <input type="email" id="email" name="email" class="input" required />
+            <label class="label">Email</label>
           </div>
-          <div class="input-group">
-            <input type="password" id="password" name="password" placeholder="Password" required />
+        
+          <div class="wave-group">
+            <input type="password" id="password" name="password" class="input" required />
+            <label class="label">Password</label>
           </div>
+        
           <div id="login-error" class="login-error" style="display: none;">
             Invalid Email or Password.
           </div>
+        
+          <p style="text-align: right; margin-bottom: 1rem;">
+            <a href="#" onclick="showResetPopup()" style="color: #3498db; text-decoration: underline; font-size: 0.9rem;">Forgot Password?</a>
+          </p>
+        
           <button type="submit" class="btn login-btn">Login</button>
         </form>
+        
+
+        <div id="resetPopup" class="popup">
+          <div class="popup-content" style="width: 400px; position: relative;">
+            <h2 class="popup-header">Reset Password</h2>
+            <span class="addTask-close-btn" onclick="closeResetPopup()">&times;</span>
+        
+            <div style="padding: 20px;">
+              <div class="wave-group">
+                <input type="email" id="reset-email" class="input" required />
+                <label class="label">Email</label>
+              </div>
+
+              <small id="email-error" style="color: red; display: none;">
+                 No account found with this email.
+              </small>
+              <button onclick="sendResetCode()" class="popup-btn" style="margin-top: 10px;">Send Code</button>
+        
+              <div class="wave-group">
+                <input type="text" id="reset-code" class="input" maxlength="6" required />
+                <label class="label">Verification Code</label>
+              </div>
+        
+              <div class="wave-group">
+                <input type="password" id="new-password" class="input" required />
+                <label class="label">New Password</label>
+              </div>
+        
+              <div class="wave-group">
+                <input type="password" id="confirm-new-password" class="input" required />
+                <label class="label">Confirm Password</label>
+              </div>
+        
+              <div class="button-container" style="margin-top: 20px; display: flex; gap: 10px;">
+                <button onclick="closeResetPopup()" class="popup-btn cancel">Cancel</button>
+                <button onclick="confirmResetPassword()" class="popup-btn">Confirm</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="signup-section">
           <p class="signup-text">Don't have an account?</p>
@@ -180,7 +323,6 @@
         </div>
       </div>
     </div>
-    z
 
     <script>
       // Fetch and insert navbar
@@ -196,7 +338,92 @@
       const params = new URLSearchParams(window.location.search);
       if (params.get('error') === '1') {
         document.getElementById('login-error').style.display = 'block';
+        
+        const url = new URL(window.location);
+        url.searchParams.delete('error');
+        window.history.replaceState({}, document.title, url);
       }
+
+      function showResetPopup() {
+        document.getElementById('resetPopup').style.display = 'block';
+      }
+      function closeResetPopup() {
+        document.getElementById('resetPopup').style.display = 'none';
+      }
+
+      function sendResetCode() {
+        const email = document.getElementById('reset-email').value;
+        if (!email) return alert("Enter your email.");
+
+        fetch('sendVerificationCode.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, purpose: 'reset' })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'success') {
+              alert("Verification code sent.");
+            } else {
+              const errorBox = document.getElementById('email-error');
+              errorBox.textContent = res.message || "No account found with this email.";
+              errorBox.style.display = 'block';
+            }
+          });
+      }
+
+      function confirmResetPassword() {
+        const email = document.getElementById('reset-email').value;
+        const code = document.getElementById('reset-code').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-new-password').value;
+
+        if (!email || !code || !newPassword || !confirmPassword) {
+          return alert("Please fill in all fields.");
+        }
+
+        if (newPassword !== confirmPassword) {
+          return alert("Passwords do not match.");
+        }
+
+        fetch('verifyCodeOnly.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        })
+          .then(res => res.json())
+          .then(res => {
+            if (res.status !== 'success') {
+              alert(res.message || "Code verification failed.");
+            } else {
+              // Now update password in the backend
+              fetch('updatePassword.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, newPassword })
+              })
+                .then(res => res.json())
+                .then(data => {
+                  if (data.status === 'success') {
+                    alert("Password updated successfully.");
+                    closeResetPopup();
+                  } else {
+                    alert(data.message || "Update failed.");
+                  }
+                });
+            }
+          });
+      }
+      
+      document.getElementById('reset-email').addEventListener('focus', () => {
+        document.getElementById('email-error').style.display = 'none';
+      });
+
+      ['email', 'password'].forEach(id => {
+        document.getElementById(id).addEventListener('focus', () => {
+          document.getElementById('login-error').style.display = 'none';
+        });
+      });
 
     </script>
   </body>
