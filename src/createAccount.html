@@ -165,11 +165,6 @@
         transition: all 0.3s ease;
       }
 
-      .btn:hover {
-        opacity: 0.9;
-        transform: translateY(-2px);
-      }
-
       .signup-btn:hover {
         background-color: #34495e;
       }
@@ -185,16 +180,85 @@
         cursor: pointer;
         transition: all 0.3s ease;
       }
+      .btn:hover {
+              opacity: 0.9;
+              transform: translateY(-2px);
+            }
+
 
       .create-account-btn {
         background-color: #3498db;
         color: white;
       }
 
-      .btn:hover {
-        opacity: 0.9;
-        transform: translateY(-2px);
+
+      .popup {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
       }
+
+      .popup-content {
+        background: white;
+        width: 400px;
+        padding: 0;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        border-radius: 4px;
+        border: 2px solid #e0e5f2;
+      }
+
+      .popup-content h2 {
+        background-color: #e0e5f2;
+        color: black;
+        padding: 12px;
+        font-size: 16px;
+        margin: 0;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: default;
+      }
+
+      .popup-btn {
+        background-color: #2c3e50;
+        color: white;
+        padding: 10px 20px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .popup-btn:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        opacity: 0.9;
+      }
+
+      .popup-btn.cancel {
+        background-color: #888;
+      }
+
+      .popup-btn.cancel:hover {
+        background-color: #777;
+      }
+
+
     </style>
   </head>
   <body>
@@ -280,10 +344,30 @@
           </div>
 
           
-          <button type="submit" class="btn create-account-btn">
+          <button type="submit" style="margin-top: 1.5rem;" class="btn create-account-btn">
             Create Account
           </button>
         </form>
+
+        <div id="verificationPopup" class="popup">
+          <div class="popup-content" style="width: 400px;">
+            <h2 class="popup-header">Email Verification</h2>
+            <span class="addTask-close-btn" onclick="closeVerificationPopup()">&times;</span>
+        
+            <div style="padding: 20px;">
+              <div class="wave-group">
+                <input type="text" id="verificationCodeInput" class="input" maxlength="6" required />
+                <label class="label">6-digit Code</label>
+              </div>
+        
+              <div class="button-container" style="margin-top: 20px; display: flex; gap: 10px;">
+                <button onclick="closeVerificationPopup()" class="popup-btn cancel">Cancel</button>
+                <button onclick="verifyEmailCode()" class="popup-btn">Verify</button>
+              </div>              
+            </div>
+          </div>
+        </div>     
+
         <div class="signin-section">
           <p class="signin-text">You have an account?</p>
           <a href="Login.html" class="btn signin-btn">Have Account</a>
@@ -354,7 +438,6 @@
         
         const email = document.getElementById('email').value;
 
-        // Check if email is already in use via AJAX
         fetch('check_email.php', {
           method: 'POST',
           body: JSON.stringify({ email }),
@@ -377,7 +460,24 @@
               body: JSON.stringify({ type: 'Department', value: department })
             });
 
-            this.submit();  // Submit the form if email is not in use
+            fetch('sendVerificationCode.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: email })
+            })
+            .then(res => res.json())
+            .then(res => {
+              console.log("SERVER RESPONSE:", res); 
+              if (res.status === 'success') {
+                showVerificationPopup();
+              } else {
+                alert('Failed to send verification code.\n' + (res.message || ''));
+              }
+            })
+            .catch(err => {
+              console.error('Fetch failed:', err);
+              alert('Could not reach the server.');
+            });
           }
         });
       });
@@ -398,6 +498,41 @@
           deptList.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
         });
 
+        function verifyEmailCode() {
+          const code = document.getElementById('verificationCodeInput').value;
+          if (!code) return alert("Please enter the code");
+
+          fetch('verifyCodeOnly.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: code })
+          })
+          .then(async res => {
+            const text = await res.text();
+            try {
+              const data = JSON.parse(text);
+              console.log(data); // Optional: Debug
+              if (data.status === 'success') {
+                closeVerificationPopup();
+                document.getElementById('signup-form').submit();
+              } else {
+                alert(data.message);
+              }
+            } catch (err) {
+              console.error('JSON Parse Error:', err);
+              console.error('Raw response:', text);
+              alert('Unexpected server error:\n' + text);
+            }
+          });
+        }
+
+
+        function showVerificationPopup() {
+          document.getElementById('verificationPopup').style.display = 'block';
+        }
+        function closeVerificationPopup() {
+          document.getElementById('verificationPopup').style.display = 'none';
+        }
 
     </script>
   </body>

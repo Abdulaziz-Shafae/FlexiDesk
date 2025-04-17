@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+if (!isset($_SESSION['verified']) || $_SESSION['verified'] !== true) {
+  echo "You must verify your email first.";
+  exit;
+}
+unset($_SESSION['verified']);
+
 include('db.php');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -31,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $fullName = $firstName . ' ' . $lastName;
 
-    $insertQuery = "INSERT INTO Users (name, email, password, role, jobTitle, department, bio)
-                    VALUES (?, ?, ?, 'Member', ?, ?, ?)";
+    $insertQuery = "INSERT INTO Users (name, email, password, jobTitle, department, bio)
+                    VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insertQuery);
     $stmt->bind_param("ssssss", $fullName, $email, $hashedPassword, $jobTitle, $department, $bio);
 
