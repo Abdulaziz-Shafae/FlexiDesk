@@ -28,11 +28,11 @@ session_start();  // Start the session to check if the user is logged in
         <img src="photos/profile-default-photo.jpeg" alt="Profile">
       </button>
       <div class="profile-list" id="profileList">
-      <div class="profile-item" onclick="window.location.href='userProfile.html?tab=personal-info'">Personal Info</div>
+      <div class="profile-item" onclick="window.location.href='userProfile.html?tab=settings'">Settings</div>
       <div class="profile-item" onclick="window.location.href='userProfile.html?tab=my-tasks'">My Tasks</div>
       <div class="profile-item" onclick="window.location.href='userProfile.html?tab=notifications'">Notifications</div>
-      <div class="profile-item" onclick="window.location.href='userProfile.html?tab=security'">Security</div>
-      <div class="profile-item" onclick="window.location.href='userProfile.html?tab=activity'">Activity Log</div>    <!--
+      
+      <!--
         add on later 
 
         <div class="profile-item" onclick="window.location.href='switchLanguage.php'">Switch Language</div>
