@@ -10,8 +10,10 @@ if (!isset($_SESSION['userID'])) {
 }
 
 $userID = $_SESSION['userID'];
-$priority = $_GET['priority'] ?? '';
-$status = $_GET['status'] ?? '';
+$data = json_decode(file_get_contents('php://input'), true);
+$priority = $data['priority'] ?? '';
+$status = $data['status'] ?? '';
+
 
 // Base query: fetch tasks assigned to the logged-in user
 $query = "

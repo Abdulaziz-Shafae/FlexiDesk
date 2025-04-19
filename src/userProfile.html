@@ -420,30 +420,36 @@
       </div>
 
       <!-- My Tasks Tab -->
-      <div id="task-filters" style="  margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
-        <label for="filter-priority">Priority:</label>
-        <select id="filter-priority">
-          <option value="">All</option>
-          <option value="low">Low</option>
-          <option value="medium-low">Medium-Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="critical">Critical</option>
-        </select>
+      <div id="task-filters" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin-bottom: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label for="filter-priority">Priority:</label>
+          <select id="filter-priority">
+            <option value="">All</option>
+            <option value="low">Low</option>
+            <option value="medium-low">Medium-Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="critical">Critical</option>
+          </select>
+        </div>
       
-        <label for="filter-status">Status:</label>
-        <select id="filter-status">
-          <option value="">All</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
-        
-        <h4 id="task-count" style="white-space: nowrap;"></h4>
-
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label for="filter-status">Status:</label>
+          <select id="filter-status">
+            <option value="">All</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+      
+        <h4 id="task-count" style="margin-left: auto; white-space: nowrap;"></h4>
       </div>
       
-      <div class="tab-content" id="my-tasks"> </div>
+      <!-- Cards go here -->
+      <div id="task-results"></div>
+      
+      
 
       <!-- Notifications Tab -->
       <div class="tab-content" id="notifications" >
@@ -825,46 +831,52 @@
         const priority = document.getElementById('filter-priority').value;
         const status = document.getElementById('filter-status').value;
 
-        const url = new URL('getMyTasks.php', window.location.origin);
-        if (priority) url.searchParams.append('priority', priority);
-        if (status) url.searchParams.append('status', status);
-
-        fetch('getMyTasks.php')
-          .then(res => res.json())
-          .then(tasks => {
-            const container = document.getElementById('my-tasks');
-            const taskCountEl = document.getElementById('task-count');
-            container.innerHTML = '';
-
-            if (!tasks.length) {
-              taskCountEl.textContent = "No tasks match the current filter.";
-              container.innerHTML = "<p>No tasks found.</p>";
-              return;
-            }
-
-            taskCountEl.textContent = `You have ${tasks.length} task(s).`;
-
-            tasks.forEach(task => {
-              const card = document.createElement('div');
-              card.classList.add('task-card');
-
-              card.innerHTML = `
-                <h4>${task.taskName}</h4>
-                <p>${task.description || 'No description available.'}</p>
-                <div class="task-info">
-                  <span>Project: ${task.projectTitle}</span>
-                  <span>Due: ${new Date(task.deadline).toLocaleDateString()}</span>
-                  <span class="priority ${getPriorityClass(task.priority)}">${formatPriority(task.priority)} Priority</span>
-                </div>
-              `;
-              container.appendChild(card);
-            });
+        fetch('getMyTasks.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            priority: priority,
+            status: status
           })
-          .catch(err => {
-            console.error("Error loading tasks:", err);
-            document.getElementById('my-tasks').innerHTML = "<p>Error loading tasks.</p>";
+        })
+        .then(res => res.json())
+        .then(tasks => {
+          const container = document.getElementById('task-results');
+          const taskCountEl = document.getElementById('task-count');
+          container.innerHTML = '';
+
+          if (!tasks.length) {
+            taskCountEl.textContent = "No tasks match the current filter.";
+            container.innerHTML = "<p>No tasks found.</p>";
+            return;
+          }
+
+          taskCountEl.textContent = `You have ${tasks.length} task(s).`;
+
+          tasks.forEach(task => {
+            const card = document.createElement('div');
+            card.classList.add('task-card');
+
+            card.innerHTML = `
+              <h4>${task.taskName}</h4>
+              <p>${task.description || 'No description available.'}</p>
+              <div class="task-info">
+                <span>Project: ${task.projectTitle}</span>
+                <span>Due: ${new Date(task.deadline).toLocaleDateString()}</span>
+                <span class="priority ${getPriorityClass(task.priority)}">${formatPriority(task.priority)} Priority</span>
+              </div>
+            `;
+            container.appendChild(card);
           });
+        })
+        .catch(err => {
+          console.error("Error loading tasks:", err);
+          document.getElementById('my-tasks').innerHTML = "<p>Error loading tasks.</p>";
+        });
       }
+
 
 
       function getPriorityClass(priority) {
@@ -884,13 +896,13 @@
 
       // Run when tab is clicked or on load
       document.addEventListener('DOMContentLoaded', () => {
-        // optional: auto-load if tab is active initially
-        if (document.getElementById('my-tasks').classList.contains('active')) {
-          loadMyTasks();
-        }
+        loadMyTasks();
 
-        document.querySelector('[data-tab="my-tasks"]').addEventListener('click', loadMyTasks);
+        document.querySelector('[data-tab="my-tasks"]').addEventListener('click', () => {
+          loadMyTasks();
+        });
       });
+
 
     </script>
   </body>
