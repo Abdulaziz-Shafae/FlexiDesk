@@ -1,9 +1,10 @@
 <?php
 session_start();
+header('Content-Type: application/json');
+
 include 'db.php';
 
 if (!isset($_SESSION['userID'])) {
-    http_response_code(403);
     echo json_encode(['error' => 'User not logged in']);
     exit;
 }

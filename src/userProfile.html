@@ -420,7 +420,7 @@
       </div>
 
       <!-- My Tasks Tab -->
-      <div id="task-filters" style="margin-bottom: 20px; display: flex; gap: 20px; align-items: center; width: 75%;">
+      <div id="task-filters" style="  margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
         <label for="filter-priority">Priority:</label>
         <select id="filter-priority">
           <option value="">All</option>
@@ -439,7 +439,7 @@
           <option value="Completed">Completed</option>
         </select>
         
-        <h3 id="task-count" ></h3>
+        <h4 id="task-count" style="white-space: nowrap;"></h4>
 
       </div>
       
@@ -829,7 +829,7 @@
         if (priority) url.searchParams.append('priority', priority);
         if (status) url.searchParams.append('status', status);
 
-        fetch(url)
+        fetch('getMyTasks.php')
           .then(res => res.json())
           .then(tasks => {
             const container = document.getElementById('my-tasks');
@@ -842,7 +842,7 @@
               return;
             }
 
-            taskCountEl.textContent = `You have ${tasks.length} task(s) matching the filter.`;
+            taskCountEl.textContent = `You have ${tasks.length} task(s).`;
 
             tasks.forEach(task => {
               const card = document.createElement('div');

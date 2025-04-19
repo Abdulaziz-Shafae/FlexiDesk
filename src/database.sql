@@ -111,7 +111,14 @@ INSERT INTO user_projects (userID, projectID, role) VALUES
 INSERT INTO Tasks (projectID, taskName, description, startDate, deadline, priority, assignedTo, filePath, status) VALUES
 (1, 'Create wireframes', 'Design initial wireframes for homepage.', '2024-04-03', '2024-04-10 17:00:00', 'medium', 1, NULL, 'Pending'),
 (1, 'Setup hosting', 'Configure server and deployment pipeline.', '2024-04-05', '2024-04-15 15:00:00', 'high', 2, NULL, 'In Progress'),
-(2, 'Write test cases', 'Prepare unit and integration test plans.', '2024-05-02', '2024-05-12 12:00:00', 'medium-low', 3, NULL, 'Completed');
+(2, 'Write test cases', 'Prepare unit and integration test plans.', '2024-05-02', '2024-05-12 12:00:00', 'medium-low', 3, NULL, 'Completed'),
+(1, 'Design logo concepts', 'Create several logo drafts for branding.', '2024-04-06', '2024-04-13 14:00:00', 'medium-low', 1, NULL, 'Pending'),
+(1, 'Conduct usability testing', 'Gather user feedback on new layout.', '2024-04-10', '2024-04-20 17:30:00', 'medium', 3, NULL, 'Pending'),
+(1, 'Write homepage content', 'Draft engaging content for the homepage.', '2024-04-12', '2024-04-22 11:00:00', 'low', 1, NULL, 'In Progress'),
+(1, 'Review SEO strategy', 'Analyze keywords and improve visibility.', '2024-04-14', '2024-04-25 10:00:00', 'high', 2, NULL, 'Pending'),
+(2, 'Create onboarding screens', 'Design and implement app welcome flow.', '2024-05-03', '2024-05-13 16:00:00', 'medium', 1, NULL, 'In Progress'),
+(2, 'Set up Firebase analytics', 'Integrate Firebase for user tracking.', '2024-05-04', '2024-05-16 13:00:00', 'high', 2, NULL, 'Pending'),
+(2, 'Bug regression testing', 'Retest fixed bugs to confirm stability.', '2024-05-07', '2024-05-17 12:00:00', 'medium', 3, NULL, 'Pending');
 
 -- Sample Data for MetaValues Table
     -- (Departments)
