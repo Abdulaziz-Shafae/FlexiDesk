@@ -294,191 +294,159 @@
 
 
           <div class="profile-tabs">
-            <div class="tab active" data-tab="personal-info">Personal Info</div>
+            <div class="tab active" data-tab="settings">Settings</div>
             <div class="tab" data-tab="my-tasks">My Tasks</div>
             <div class="tab" data-tab="notifications">Notifications</div>
-            <div class="tab" data-tab="security">Security</div>
-            <div class="tab" data-tab="activity">Activity Log</div>
           </div>
 
-      <!-- Personal Info Tab -->
-      <div class="tab-content active" id="personal-info">
-        <form id="personal-info-form">
-          <div class="form-group">
-            <label for="full-name">Full Name</label>
-            <input type="text" id="full-name" disabled/>
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" disabled/>
-          </div>
-          <div class="form-group">
-            <label for="job-title">Job Title</label>
-            <input type="text" list="job-title-list" id="job-title" class="input" disabled />
-            <datalist id="job-title-list"></datalist>
-          </div>
-          <div class="form-group">
-            <label for="department">Department</label>
-            <input type="text" list="department-list" id="department" disabled/>
-            <datalist id="department-list"></datalist>
-          </div>
+      <!-- Settings Tab -->
+      <div class="tab-content active" id="settings">
           
-          <div class="form-group">
-            <label for="bio">Bio</label>
-            <textarea id="bio" rows="4" disabled></textarea>
-          </div>
-          <button type="button" id="edit-save-btn" class="save-btn" >Edit</button>
+        <!-- Personal Info -->
+        <form id="personal-info-form">
+            <h2>Personal Info</h2>
+            <div class="form-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" disabled/>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" disabled/>
+            </div>
+            <div class="form-group">
+                <label for="job-title">Job Title</label>
+                <input type="text" list="job-title-list" id="job-title" class="input" disabled />
+                <datalist id="job-title-list"></datalist>
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" list="department-list" id="department" disabled/>
+                <datalist id="department-list"></datalist>
+            </div>
+            
+            <div class="form-group">
+                <label for="bio">Bio</label>
+                <textarea id="bio" rows="4" disabled></textarea>
+            </div>
+            <button type="button" id="edit-save-btn" class="save-btn" >Edit</button>
         </form>
-      </div>
-
-
-      <!-- My Tasks Tab -->
-      <div class="tab-content" id="my-tasks">
-        <div class="task-card">
-          <h4>Redesign Landing Page</h4>
-          <p>
-            Create wireframes and mockups for the new landing page based on
-            client feedback.
-          </p>
-          <div class="task-info">
-            <span>Project: Website Redesign</span>
-            <span>Due: May 15, 2023</span>
-            <span class="priority high">High Priority</span>
-          </div>
-        </div>
-        <div class="task-card">
-          <h4>Update Content Strategy</h4>
-          <p>Review and update the content strategy document for Q2.</p>
-          <div class="task-info">
-            <span>Project: Content Marketing</span>
-            <span>Due: May 20, 2023</span>
-            <span class="priority medium">Medium Priority</span>
-          </div>
-        </div>
-        <div class="task-card">
-          <h4>Team Progress Report</h4>
-          <p>Compile the monthly progress report for the marketing team.</p>
-          <div class="task-info">
-            <span>Project: Monthly Reporting</span>
-            <span>Due: May 31, 2023</span>
-            <span class="priority low">Low Priority</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notifications Tab -->
-      <div class="tab-content" id="notifications">
+        
+        <!-- Notifications Settings -->
         <div class="form-group">
-          <h3>Email Notifications</h3>
-          <div class="checkbox-container">
+            <h2>Notifications Settings</h2>
+            <h3>Email Notifications</h3>
+            <div class="checkbox-container">
             <input type="checkbox" id="task-assigned" checked />
             <label for="task-assigned">When a task is assigned to me</label>
-          </div>
-          <div class="checkbox-container">
+            </div>
+            <div class="checkbox-container">
             <input type="checkbox" id="task-completed" checked />
             <label for="task-completed"
-              >When a task I created is completed</label
+                >When a task I created is completed</label
             >
-          </div>
-          <div class="checkbox-container">
+            </div>
+            <div class="checkbox-container">
             <input type="checkbox" id="task-due" checked />
             <label for="task-due">Task due date reminders</label>
-          </div>
-          <div class="checkbox-container">
+            </div>
+            <div class="checkbox-container">
             <input type="checkbox" id="project-updates" />
             <label for="project-updates">Project updates</label>
-          </div>
-          <div class="checkbox-container">
+            </div>
+            <div class="checkbox-container">
             <input type="checkbox" id="team-messages" checked />
             <label for="team-messages">Team messages</label>
-          </div>
+            </div>
+            <button type="submit" class="save-btn">Save Preferences</button>
         </div>
-        <div class="form-group">
-          <h3>In-App Notifications</h3>
-          <div class="checkbox-container">
-            <input type="checkbox" id="in-app-task-assigned" checked />
-            <label for="in-app-task-assigned"
-              >When a task is assigned to me</label
-            >
-          </div>
-          <div class="checkbox-container">
-            <input type="checkbox" id="in-app-task-completed" checked />
-            <label for="in-app-task-completed"
-              >When a task I created is completed</label
-            >
-          </div>
-          <div class="checkbox-container">
-            <input type="checkbox" id="in-app-mentions" checked />
-            <label for="in-app-mentions">When I'm mentioned</label>
-          </div>
-          <div class="checkbox-container">
-            <input type="checkbox" id="in-app-project-updates" checked />
-            <label for="in-app-project-updates">Project updates</label>
-          </div>
-        </div>
-        <button type="submit" class="save-btn">Save Preferences</button>
-      </div>
 
-      <!-- Security Tab -->
-      <div class="tab-content" id="security">
+        <!-- Security Settings -->
         <div class="form-group">
-          <h3>Change Password</h3>
-          <div class="form-group">
+            <h2>Security Settings</h2>
+            <h3>Change Password</h3>
+            <div class="form-group">
             <label for="current-password">Current Password</label>
             <div class="password-container">
-              <input type="password" id="current-password" />
-              <span class="password-toggle" onclick="togglePasswordVisibility('current-password', this)">👁️</span>
+                <input type="password" id="current-password" />
+                <span class="password-toggle" onclick="togglePasswordVisibility('current-password', this)">👁️</span>
             </div>
-          </div>
-          
-          <div class="form-group">
+            </div>
+            
+            <div class="form-group">
             <label for="new-password">New Password</label>
             <div class="password-container">
-              <input type="password" id="new-password" />
-              <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">👁️</span>
+                <input type="password" id="new-password" />
+                <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">👁️</span>
             </div>
-          </div>
-          
-          <div class="form-group">
+            </div>
+            
+            <div class="form-group">
             <label for="confirm-password">Confirm New Password</label>
             <div class="password-container">
-              <input type="password" id="confirm-password" />
-              <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">👁️</span>
+                <input type="password" id="confirm-password" />
+                <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">👁️</span>
             </div>
-          </div>
-          
-          <small id="security-password-match-error" style="color: red; display: none;">
+            </div>
+            
+            <small id="security-password-match-error" style="color: red; display: none;">
             Passwords do not match.
-          </small>
-          
-          <div class="password-requirements">
+            </small>
+            
+            <div class="password-requirements">
             <p style="margin-top: 1rem;">Password must contain:</p>
             <ul>
-              <li id="sec-length">At least 8 characters</li>
-              <li id="sec-lowercase">A lowercase letter</li>
-              <li id="sec-uppercase">An uppercase letter</li>
-              <li id="sec-number">A number</li>
-              <li id="sec-special">A special character ( !@#$%^&*(),.?":{}|<> )</li>
+                <li id="sec-length">At least 8 characters</li>
+                <li id="sec-lowercase">A lowercase letter</li>
+                <li id="sec-uppercase">An uppercase letter</li>
+                <li id="sec-number">A number</li>
+                <li id="sec-special">A special character ( !@#$%^&*(),.?":{}|<> )</li>
             </ul>
-          </div>
-          
+            </div>
+            
+            <div class="form-group">
+                <h3>Two-Factor Authentication</h3>
+                <div class="checkbox-container">
+                <input type="checkbox" id="two-factor" />
+                <label for="two-factor">Enable Two-Factor Authentication</label>
+                </div>
+                <p style="color: #666; font-size: 14px">
+                Adding a second layer of security to your account helps protect your
+                data.
+                </p>
+            </div>
+            <button onclick="handlePasswordUpdate()" class="save-btn">Save Security Settings</button>
         </div>
-        <div class="form-group">
-          <h3>Two-Factor Authentication</h3>
-          <div class="checkbox-container">
-            <input type="checkbox" id="two-factor" />
-            <label for="two-factor">Enable Two-Factor Authentication</label>
-          </div>
-          <p style="color: #666; font-size: 14px">
-            Adding a second layer of security to your account helps protect your
-            data.
-          </p>
-        </div>
-        <button onclick="handlePasswordUpdate()" class="save-btn">Save Security Settings</button>
+
       </div>
 
-      <!-- Activity Log Tab -->
-      <div class="tab-content" id="activity" >
+      <!-- My Tasks Tab -->
+      <div id="task-filters" style="margin-bottom: 20px; display: flex; gap: 20px; align-items: center; width: 75%;">
+        <label for="filter-priority">Priority:</label>
+        <select id="filter-priority">
+          <option value="">All</option>
+          <option value="low">Low</option>
+          <option value="medium-low">Medium-Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+      
+        <label for="filter-status">Status:</label>
+        <select id="filter-status">
+          <option value="">All</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+        
+        <h3 id="task-count" ></h3>
+
+      </div>
+      
+      <div class="tab-content" id="my-tasks"> </div>
+
+      <!-- Notifications Tab -->
+      <div class="tab-content" id="notifications" >
         <div class="activity-item">
           <div class="activity-icon">
             <i class="fas fa-tasks"></i>
@@ -532,6 +500,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -849,6 +818,79 @@
           });
       }
 
+      document.getElementById('filter-priority').addEventListener('change', loadMyTasks);
+      document.getElementById('filter-status').addEventListener('change', loadMyTasks);
+
+      function loadMyTasks() {
+        const priority = document.getElementById('filter-priority').value;
+        const status = document.getElementById('filter-status').value;
+
+        const url = new URL('getMyTasks.php', window.location.origin);
+        if (priority) url.searchParams.append('priority', priority);
+        if (status) url.searchParams.append('status', status);
+
+        fetch(url)
+          .then(res => res.json())
+          .then(tasks => {
+            const container = document.getElementById('my-tasks');
+            const taskCountEl = document.getElementById('task-count');
+            container.innerHTML = '';
+
+            if (!tasks.length) {
+              taskCountEl.textContent = "No tasks match the current filter.";
+              container.innerHTML = "<p>No tasks found.</p>";
+              return;
+            }
+
+            taskCountEl.textContent = `You have ${tasks.length} task(s) matching the filter.`;
+
+            tasks.forEach(task => {
+              const card = document.createElement('div');
+              card.classList.add('task-card');
+
+              card.innerHTML = `
+                <h4>${task.taskName}</h4>
+                <p>${task.description || 'No description available.'}</p>
+                <div class="task-info">
+                  <span>Project: ${task.projectTitle}</span>
+                  <span>Due: ${new Date(task.deadline).toLocaleDateString()}</span>
+                  <span class="priority ${getPriorityClass(task.priority)}">${formatPriority(task.priority)} Priority</span>
+                </div>
+              `;
+              container.appendChild(card);
+            });
+          })
+          .catch(err => {
+            console.error("Error loading tasks:", err);
+            document.getElementById('my-tasks').innerHTML = "<p>Error loading tasks.</p>";
+          });
+      }
+
+
+      function getPriorityClass(priority) {
+        switch (priority) {
+          case 'low': return 'low';
+          case 'medium-low': return 'medium';
+          case 'medium': return 'medium';
+          case 'high': return 'high';
+          case 'critical': return 'high';
+          default: return 'medium';
+        }
+      }
+
+      function formatPriority(priority) {
+        return priority.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
+      }
+
+      // Run when tab is clicked or on load
+      document.addEventListener('DOMContentLoaded', () => {
+        // optional: auto-load if tab is active initially
+        if (document.getElementById('my-tasks').classList.contains('active')) {
+          loadMyTasks();
+        }
+
+        document.querySelector('[data-tab="my-tasks"]').addEventListener('click', loadMyTasks);
+      });
 
     </script>
   </body>

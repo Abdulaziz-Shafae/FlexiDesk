@@ -1,34 +1,41 @@
--- Users Table (UPDATED: added jobTitle, department, bio)
+-- Deletes all tables (order matters due to foreign keys)
+DROP TABLE IF EXISTS Reports, Alerts, Notifications, user_projects, Tasks, Projects, Users, MetaValues;
+
+-- Users Table 
 CREATE TABLE Users (
-    userID INT(10) AUTO_INCREMENT PRIMARY KEY,
+    userID INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    profileImage VARCHAR(255) DEFAULT NULL,
-    jobTitle VARCHAR(100) DEFAULT NULL,
-    department VARCHAR(100) DEFAULT NULL,
-    bio TEXT DEFAULT NULL
+    profileImage VARCHAR(255),
+    jobTitle VARCHAR(100),
+    department VARCHAR(100),
+    bio TEXT
 );
 
 -- Projects Table
 CREATE TABLE Projects (
-    projectID INT(10) AUTO_INCREMENT PRIMARY KEY,
+    projectID INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    description VARCHAR(4000) NOT NULL,
+    description TEXT NOT NULL,
     startDate DATE NOT NULL,
     endDate DATE NOT NULL
 );
 
 -- Tasks Table
 CREATE TABLE Tasks (
-    taskID INT(10) AUTO_INCREMENT PRIMARY KEY,
-    projectID INT(10),
-    assignedTo INT(10),
+    taskID INT AUTO_INCREMENT PRIMARY KEY,
+    projectID INT NOT NULL,
     taskName VARCHAR(255) NOT NULL,
+    description TEXT DEFAULT NULL,
+    startDate DATE DEFAULT NULL,
     deadline DATETIME NOT NULL,
-    status ENUM('Pending', 'Completed', 'In Progress') NOT NULL,
-    FOREIGN KEY (projectID) REFERENCES Projects(projectID),
-    FOREIGN KEY (assignedTo) REFERENCES Users(userID)
+    priority ENUM('low', 'medium-low', 'medium', 'high', 'critical') DEFAULT 'medium',
+    assignedTo INT,
+    filePath VARCHAR(255),
+    status ENUM('Pending', 'In Progress', 'Completed') NOT NULL DEFAULT 'Pending',
+    FOREIGN KEY (projectID) REFERENCES Projects(projectID) ON DELETE CASCADE,
+    FOREIGN KEY (assignedTo) REFERENCES Users(userID) ON DELETE SET NULL
 );
 
 -- user_projects Table (Junction Table)
@@ -80,54 +87,31 @@ CREATE TABLE MetaValues (
 );
 
 
+-- Sample Data user
+INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bio) VALUES
+('Alice Johnson', 'alice@example.com', 'hashed_password_1', NULL, 'Developer', 'IT', 'Frontend specialist.'),
+('Bob Smith', 'bob@example.com', 'hashed_password_2', NULL, 'Project Manager', 'Management', 'Team leader.'),
+('Charlie Lee', 'charlie@example.com', 'hashed_password_3', NULL, 'QA Tester', 'QA', 'Bug hunter.');
 
--- Sample Data for Users Table
-INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bio)
-VALUES 
-('Alice Manager', 'alice@flexidesk.com', '$2b$12$pg.gexDNvnB/xfYL4/5yTueUFDjt78LsyZkbDRrjy1BGxP6Tuva5y', NULL, 'Project Manager', 'Marketing', 'Experienced project manager with 10+ years leading cross-functional teams.'),
-('Bob Member', 'bob@flexidesk.com', '$2b$12$y9IpzwIXibwmSMpmNj/hM.KWf0DS0ldaRFBn.rdHmbpfW4Wc5Lpsy', NULL, 'Frontend Developer', 'Development', 'JavaScript expert who focuses on accessibility and performance.'),
-('Charlie Member', 'charlie@flexidesk.com', '$2b$12$OkKtRdidemN.FbLEwYA0XeDV58g511gJ6tsYWcMiUln3EMm/VwlHO', NULL, 'Data Analyst', 'Finance', 'Passionate about numbers and transforming data into actionable insights.');
+-- Sample Data project
+INSERT INTO Projects (title, description, startDate, endDate) VALUES
+('Website Redesign', 'Update the corporate website for modern look.', '2024-04-01', '2024-06-01'),
+('Mobile App Launch', 'Release Android/iOS app for customers.', '2024-05-01', '2024-07-30');
 
--- Sample Data for Projects Table
-INSERT INTO Projects (title, description, startDate, endDate) 
-VALUES 
-('Cybersecurity Project', 'A project to enhance security.', '2024-01-01', '2024-05-23'),
-('AI Research Project', 'Develop AI models for data analysis.', '2024-03-15', '2024-07-01');
-
--- Sample Data for user_projects Table
-INSERT INTO user_projects (userID, projectID, role) 
-VALUES
-(1, 1, 'Manager'),
-(2, 1, 'Member'),
-(3, 1, 'Member'),
-(1, 2, 'Manager'),
-(2, 2, 'Member'),
+-- Sample Data user_projects
+-- Bob is Manager for both projects
+-- Alice and Charlie are Members
+INSERT INTO user_projects (userID, projectID, role) VALUES
+(2, 1, 'Manager'),
+(2, 2, 'Manager'),
+(1, 1, 'Member'),
 (3, 2, 'Member');
 
--- Sample Data for Tasks Table
-INSERT INTO Tasks (projectID, assignedTo, taskName, deadline, status) 
-VALUES
-(1, 2, 'Cybersecurity Risk Assessment', '2024-02-01 12:00:00', 'In Progress'),
-(1, 3, 'Penetration Testing', '2024-03-01 12:00:00', 'Pending'),
-(2, 2, 'AI Model Training', '2024-04-01 12:00:00', 'In Progress');
-
--- Sample Data for Notifications Table
-INSERT INTO Notifications (recipientID, type, message) 
-VALUES
-(1, 'Reminder', 'Review cybersecurity risk assessments.'),
-(2, 'Update', 'AI Research project tasks have been updated.');
-
--- Sample Data for Alerts Table
-INSERT INTO Alerts (recipientID, priority, details) 
-VALUES
-(1, 'High', 'Security alert: Update required for the Cybersecurity Project.'),
-(2, 'Medium', 'Reminder: Review AI model progress.');
-
--- Sample Data for Reports Table
-INSERT INTO Reports (projectID, generatedBy, content) 
-VALUES
-(1, 1, 'Cybersecurity Project: 50% completed, focused on risk assessment and testing.'),
-(2, 1, 'AI Research Project: 40% completed, initial model training finished.');
+-- Sample Data tasks
+INSERT INTO Tasks (projectID, taskName, description, startDate, deadline, priority, assignedTo, filePath, status) VALUES
+(1, 'Create wireframes', 'Design initial wireframes for homepage.', '2024-04-03', '2024-04-10 17:00:00', 'medium', 1, NULL, 'Pending'),
+(1, 'Setup hosting', 'Configure server and deployment pipeline.', '2024-04-05', '2024-04-15 15:00:00', 'high', 2, NULL, 'In Progress'),
+(2, 'Write test cases', 'Prepare unit and integration test plans.', '2024-05-02', '2024-05-12 12:00:00', 'medium-low', 3, NULL, 'Completed');
 
 -- Sample Data for MetaValues Table
     -- (Departments)
@@ -146,3 +130,12 @@ VALUES
     ('JobTitle', 'HR Specialist'),
     ('JobTitle', 'Financial Analyst'),
     ('JobTitle', 'IT Support');
+
+-- Sample Data Notifications
+INSERT INTO Notifications (recipientID, type, message) VALUES
+(1, 'Reminder', 'Your task "Create wireframes" is due in 2 days.'),
+(3, 'Update', 'The task "Write test cases" was marked as completed.');
+
+-- Sample Data Alerts
+INSERT INTO Alerts (recipientID, priority, details) VALUES
+(2, 'High', 'Project deadline approaching: Website Redesign ends in 7 days.');

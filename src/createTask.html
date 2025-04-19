@@ -117,7 +117,14 @@
     <div class="task-container">
       <h2>Create a New Task</h2>
       <form class="task-form">
-        <label for="taskName">Task Name *</label>
+
+        <!-- Project Selection -->
+        <label for="projectID">Project *</label>
+        <select id="projectID" required>
+        </select>
+
+        <!-- Task Name -->
+        <label for="taskName">Task Name</label>
         <input
           type="text"
           id="taskName"
@@ -125,16 +132,23 @@
           required
         />
 
+        <!-- Task Description -->
         <label for="taskDescription">Task Description</label>
         <textarea
           id="taskDescription"
           placeholder="Describe the task..."
         ></textarea>
 
-        <label for="dueDate">Due Date *</label>
-        <input type="date" id="dueDate" required />
+        <!-- Task start Date -->
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" required />
 
-        <label for="priority">Priority *</label>
+        <!-- Task end Date -->
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" required />
+
+        <!-- Priority -->
+        <label for="priority">Priority </label>
         <select id="priority" required>
           <option value="low">🟢 Low</option>
           <option value="medium-low">🔵 Medium-Low</option>
@@ -143,23 +157,9 @@
           <option value="critical">🔴 Critical</option>
         </select>
 
-        <label for="assignTo">Assign to *</label>
+        <!-- Assign to -->
+        <label for="assignTo">Assign to </label>
         <select id="assignTo" required>
-          <option value="">Select a team member</option>
-          <option value="Salman">Salman Hassan</option>
-          <option value="Ammar">Ammar Abdo</option>
-          <option value="Abdulrahaman">Abdulrahman Kateb</option>
-          <option value="Saud">Saud Al-Ruzaiqi</option>
-          <option value="Abdulaziz">Abdulaziz Al-Shafee</option>
-        </select>
-
-        <!-- Task Dependencies -->
-        <label for="relatedTask">Is this task related to another task?</label>
-        <select id="relatedTask">
-          <option value="">No related task</option>
-          <option value="task1">Task 1</option>
-          <option value="task2">Task 2</option>
-          <option value="task3">Task 3</option>
         </select>
 
         <!-- File Requirement -->
@@ -172,15 +172,10 @@
           <label for="fileRequired">Does this task require a file?</label>
         </div>
 
+        <!-- fileUpload -->
         <div class="file-upload" id="fileUpload">
           <label for="taskFile">Upload File</label>
           <input type="file" id="taskFile" />
-        </div>
-
-        <!-- Subtasks -->
-        <label for="subtasks">Does this task have subtasks?</label>
-        <div class="subtask-container" id="subtaskContainer">
-          <button type="button" onclick="addSubtask()">+ Add Subtask</button>
         </div>
 
         <button type="submit" class="submit-btn">Create Task</button>
@@ -200,27 +195,6 @@
         }
       }
 
-      function addSubtask() {
-        let container = document.getElementById('subtaskContainer');
-        let subtaskDiv = document.createElement('div');
-        subtaskDiv.classList.add('subtask');
-
-        let subtaskInput = document.createElement('input');
-        subtaskInput.type = 'text';
-        subtaskInput.placeholder = 'Enter subtask';
-        subtaskDiv.appendChild(subtaskInput);
-
-        let removeButton = document.createElement('button');
-        removeButton.textContent = 'X';
-        removeButton.classList.add('remove-subtask');
-        removeButton.onclick = function () {
-          container.removeChild(subtaskDiv);
-        };
-
-        subtaskDiv.appendChild(removeButton);
-        container.appendChild(subtaskDiv);
-      }
-
       // Fetch and insert navbar
       fetch('navbar.html')
         .then((response) => response.text())
@@ -228,6 +202,80 @@
           document.getElementById('navbar-placeholder').innerHTML = data;
         })
         .catch((error) => console.error('Error loading navbar:', error));
+
+// Run after DOM loads
+document.addEventListener("DOMContentLoaded", function () {
+  const projectSelect = document.getElementById("projectID");
+  const assignToSelect = document.getElementById("assignTo");
+  const startDateInput = document.getElementById("startDate");
+  const endDateInput = document.getElementById("endDate");
+
+  // Fetch projects where user is manager
+  fetch("loadDataTaskCreate.php?projects")
+    .then((res) => res.json())
+    .then((projects) => {
+      projects.forEach((project) => {
+        const option = document.createElement("option");
+        option.value = project.projectID;
+        option.textContent = project.title;
+        option.dataset.start = project.startDate;
+        option.dataset.end = project.endDate;
+        projectSelect.appendChild(option);
+      });
+    })
+    .catch((err) => console.error("Error loading projects:", err));
+
+    // When a project is selected, fetch its team members & update date limits
+      projectSelect.addEventListener("change", function () {
+        const selectedProjectID = this.value;
+        assignToSelect.innerHTML = "";
+
+        const selectedOption = this.options[this.selectedIndex];
+        const projStart = selectedOption.dataset.start;
+        const projEnd = selectedOption.dataset.end;
+
+        startDateInput.setAttribute("min", projStart);
+        startDateInput.setAttribute("max", projEnd);
+        endDateInput.setAttribute("min", projStart);
+        endDateInput.setAttribute("max", projEnd);
+
+        if (!selectedProjectID) {
+          const warning = document.createElement("option");
+          warning.textContent = "Please select a project first";
+          assignToSelect.appendChild(warning);
+          return;
+        }
+
+        fetch(`loadDataTaskCreate.php?members&projectID=${selectedProjectID}`)
+          .then((res) => res.json())
+          .then((members) => {
+            if (members.length === 0) {
+              const noMembers = document.createElement("option");
+              noMembers.textContent = "No members found for this project";
+              assignToSelect.appendChild(noMembers);
+              return;
+            }
+
+            const defaultOption = document.createElement("option");
+            defaultOption.textContent = "Select a team member";
+            defaultOption.value = "";
+            assignToSelect.appendChild(defaultOption);
+
+            members.forEach((member) => {
+              const option = document.createElement("option");
+              option.value = member.userID;
+              option.textContent = member.name;
+              assignToSelect.appendChild(option);
+            });
+          })
+          .catch((err) => {
+            console.error("Error loading team members:", err);
+            const errorOption = document.createElement("option");
+            errorOption.textContent = "Failed to load members";
+            assignToSelect.appendChild(errorOption);
+          });
+      });
+    });
     </script>
   </body>
 </html>
