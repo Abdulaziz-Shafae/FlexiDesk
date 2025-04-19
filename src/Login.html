@@ -456,7 +456,7 @@
             fetch('updatePassword.php', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, newPassword })
+              body: JSON.stringify({ email, newPassword, mode: 'reset' })
             })
             .then(res => res.json())
             .then(data => {

@@ -799,7 +799,7 @@
         fetch('updatePassword.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, newPassword, currentPassword})
+          body: JSON.stringify({ email, currentPassword, newPassword, mode: 'profile' })
         })
           .then(res => res.json())
           .then(data => {
