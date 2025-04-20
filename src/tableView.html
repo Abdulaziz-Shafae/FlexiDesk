@@ -7,12 +7,9 @@
     <link rel="stylesheet" href="navbarStyle.css" />
     <link rel="stylesheet" href="viwesStyle.css" />
     <script src="script.js" defer></script>
-  </head>
-  <body>
     <style>
-      /* Table Container */
       .table-container {
-        max-width: 900px;
+        max-width: 1000px;
         margin: 30px auto;
         background: white;
         padding: 20px;
@@ -31,6 +28,7 @@
         padding: 10px;
         text-align: left;
         border-bottom: 1px solid #ddd;
+        position: relative;
       }
 
       th {
@@ -41,90 +39,212 @@
       tr:hover {
         background: #f1f1f1;
       }
-    </style>
 
-    <!-- Navbar -->
+      /* Toolbar copied from Gantt view */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+        background-color: #f8f9fa;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+
+      .Toolbar-btn {
+        font-size: 16px;
+        background: #2c3e50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        height: 35px;
+        width: 120px;
+        margin-top: 3px;
+        margin-bottom: 3px;
+      }
+
+      .Toolbar-btn:hover {
+        opacity: 0.8;
+      }
+
+      .popup {
+        position: absolute;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 10;
+        width: 300px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+
+      .popup strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+    </style>
+  </head>
+  <body>
     <div id="navbar-placeholder"></div>
 
     <!-- Main Content -->
     <div class="main-content">
-      <div class="viwes-container">
-        <div class="tabs">
-          <a href="ganttView.html" class="tab">Gantt</a>
-          <a href="test.html" class="tab">Gantt test</a>
-          <a href="tableView.html" class="tab active">Table</a>
-          <a href="calenderView.html" class="tab">Calendar</a>
-        </div>
-        <div class="viwes-header">
-          <h1>Project Name</h1>
-          <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
+    <div class="viwes-container">      
+      <div class="tabs">
+        <a href="ganttView.html" class="tab ">Gantt</a>
+        <a href="test.html" class="tab">Gantt test</a>
+        <a href="tableView.html" class="tab active">Table</a>
+        <a href="calenderView.html" class="tab">Calendar</a>
+      </div>
+      <div class="viwes-header">
+        <h1>Project Name</h1>
+        <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
+      </div>
+
+      <!-- Gantt-style Toolbar -->
+      <div class="toolbar">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <label>
+            <select id="status-filter" class="Toolbar-btn">
+              <option value="">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </label>
+
+          <label>
+            <select id="priority-filter" class="Toolbar-btn">
+              <option value="">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="medium-low">Medium-Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </label>
         </div>
 
-        <div style="padding-top: 20px">
-          <table>
-            <thead>
-              <tr>
-                <th>Task Name</th>
-                <th>Priority</th>
-                <th>Due Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Finalize Report</td>
-                <td>High</td>
-                <td>Feb 25, 2025</td>
-                <td>In Progress</td>
-              </tr>
-              <tr>
-                <td>Team Meeting</td>
-                <td>Medium</td>
-                <td>Feb 20, 2025</td>
-                <td>Pending</td>
-              </tr>
-              <tr>
-                <td>Bug Fixing</td>
-                <td>Critical</td>
-                <td>Feb 18, 2025</td>
-                <td>Completed</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="checkbox-container">
+          <input type="checkbox" id="assigned-to-me" />
+          <label for="assigned-to-me">Show only my tasks</label>
         </div>
       </div>
+
+      <!-- Task Table -->
+      <table id="task-table">
+        <thead>
+          <tr>
+            <th>Task Name</th>
+            <th>Assigned To</th>
+            <th>Priority</th>
+            <th>Due Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div id="task-popup" class="popup"></div>
+    </div>
     </div>
 
-    <!-- Popup container --> 
-    <div id="popup-container"></div> <!-- Popup content will be dynamically inserted here -->
-
-
     <script>
-      // Fetch and insert navbar
-      fetch('navbar.html')
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById('navbar-placeholder').innerHTML = data;
+      const statusFilter = document.getElementById("status-filter");
+      const priorityFilter = document.getElementById("priority-filter");
+      const assignedCheckbox = document.getElementById("assigned-to-me");
+      const taskTableBody = document.querySelector("#task-table tbody");
+      const popup = document.getElementById("task-popup");
+
+      const projectID = sessionStorage.getItem("selectedProjectID");
+
+      function getTasks() {
+        const payload = {
+          projectID,
+          priority: priorityFilter.value,
+          status: statusFilter.value,
+          onlyMine: assignedCheckbox.checked
+        };
+
+        fetch("getProjectTask.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         })
-        .catch((error) => console.error('Error loading navbar:', error));
+          .then((res) => res.json())
+          .then((tasks) => {
+            taskTableBody.innerHTML = "";
+            tasks.forEach((task) => {
+              const tr = document.createElement("tr");
 
-      // JavaScript for Dark Mode
+              tr.innerHTML = `
+                <td>${task.taskName}</td>
+                <td>${task.assignedToName || 'Unassigned'}</td>
+                <td>${task.priority}</td>
+                <td>${new Date(task.deadline).toLocaleDateString()}</td>
+                <td>${task.status}</td>
+              `;
 
-      const toggleSwitch = document.getElementById('dark-mode-switch');
-      const body = document.body;
+              tr.addEventListener("mouseenter", (e) => {
+                popup.innerHTML = `
+                  <strong>Task:</strong> ${task.taskName}<br>
+                  <strong>Description:</strong> ${task.description}<br>
+                  <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
+                  <strong>Start Date:</strong> ${task.startDate}<br>
+                  <strong>Priority:</strong> ${task.priority}<br>
+                  <strong>Status:</strong> ${task.status}<br>
+                  <strong>Deadline:</strong> ${task.deadline}<br>
+                `;
+                const rect = e.target.getBoundingClientRect();
+                popup.style.top = `${rect.top + window.scrollY + 30}px`;
+                popup.style.left = `${rect.left + 20}px`;
+                popup.style.display = "block";
+              });
 
-      toggleSwitch.addEventListener('change', () => {
-        body.classList.toggle('dark-mode');
-        localStorage.setItem(
-          'darkMode',
-          body.classList.contains('dark-mode') ? 'enabled' : 'disabled',
-        );
+              tr.addEventListener("mouseleave", () => {
+                popup.style.display = "none";
+              });
+
+              taskTableBody.appendChild(tr);
+            });
+          })
+          .catch((err) => {
+            console.error("Error loading tasks:", err);
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const projectName = sessionStorage.getItem("selectedProjectName");
+        const projectRole = sessionStorage.getItem("selectedProjectRole");
+
+        if (!projectID) {
+          alert("No project selected.");
+          return;
+        }
+
+        document.querySelector(".viwes-header h1").textContent = projectName || "Project";
+
+        if (projectRole !== "Manager") {
+          document.getElementById("openPopupBtn").style.display = "none";
+        }
+
+        getTasks();
+        statusFilter.addEventListener("change", getTasks);
+        priorityFilter.addEventListener("change", getTasks);
+        assignedCheckbox.addEventListener("change", getTasks);
       });
 
-      if (localStorage.getItem('darkMode') === 'enabled') {
-        body.classList.add('dark-mode');
-        toggleSwitch.checked = true;
-      }
+      fetch("navbar.php")
+        .then((res) => res.text())
+        .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
     </script>
   </body>
 </html>

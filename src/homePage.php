@@ -184,8 +184,8 @@ while ($row = $result->fetch_assoc()) {
                         <div class="progress-bar" style="width: <?php echo (int)$project['progress']; ?>%"></div>
                     </div>
                     <a href="#" class="btn download-btn">Download Report</a>
-                    <button onclick="enterProject(<?php echo $project['projectID']; ?>)" class="btn enter-btn">
-                        Enter Project
+                    <button onclick="enterProject(<?= $project['projectID'] ?>, '<?= addslashes($project['title']) ?>', '<?= $project['role'] ?>')" class="btn enter-btn">
+                      Enter Project
                     </button>
                     <p class="deadline">Deadline: <?php echo $project['endDate']; ?> | <?php echo $project['role']; ?></p>
                 </div>
@@ -195,8 +195,12 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
   <script>
-    function enterProject(projectID) {
-      window.location.href = 'projectDetails.php?id=' + projectID;
+
+    function enterProject(projectID, projectName, role) {
+      sessionStorage.setItem('selectedProjectID', projectID);
+      sessionStorage.setItem('selectedProjectName', projectName);
+      sessionStorage.setItem('selectedProjectRole', role);
+      window.location.href = 'tableView.html';
     }
 
     fetch('navbar.php')
