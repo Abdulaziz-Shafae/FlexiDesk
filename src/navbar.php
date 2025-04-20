@@ -12,7 +12,6 @@ session_start();  // Start the session to check if the user is logged in
     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
       <!-- If the user is logged in -->
       <a href="homePage.php">Home</a>
-      <a href="test.php">Charts</a>
       <a href="groupChat.php">Chat</a>
     <?php endif; ?>
     
