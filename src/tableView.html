@@ -204,8 +204,8 @@
                   <strong>endDate:</strong> ${task.endDate}<br>
                 `;
                 const rect = e.target.getBoundingClientRect();
-                popup.style.top = `${rect.top + window.scrollY + 30}px`;
-                popup.style.left = `${rect.left + 20}px`;
+                popup.style.top = `${rect.bottom + window.scrollY + 5}px`; // بدل rect.top + 30
+                popup.style.left = `${rect.left}px`;                 
                 popup.style.display = "block";
               });
 

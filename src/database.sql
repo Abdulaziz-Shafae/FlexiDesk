@@ -117,7 +117,7 @@ INSERT INTO user_projects (userID, projectID, role) VALUES
 (1, 5, 'Member');
 
 -- Sample Data tasks
-INSERT INTO Tasks (projectID, taskName, description, startDate, deadline, priority, assignedTo, filePath, status) VALUES
+INSERT INTO Tasks (projectID, taskName, description, startDate, endDate, priority, assignedTo, filePath, status) VALUES
 -- Website Redesign (Project 1)
 (1, 'Create wireframes', 'Design homepage wireframes.', '2024-04-03', '2024-04-10 17:00:00', 'medium', 1, NULL, 'Pending'),
 (1, 'Design logo concepts', 'Draft logo ideas.', '2024-04-06', '2024-04-13 14:00:00', 'medium-low', 1, NULL, 'Pending'),
