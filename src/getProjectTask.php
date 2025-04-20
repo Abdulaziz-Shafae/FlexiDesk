@@ -23,7 +23,7 @@ if (!$projectID) {
 
 // Base query
 $query = "
-    SELECT t.taskID, t.taskName, t.description, t.deadline, t.priority, t.status, t.startDate,
+    SELECT t.taskID, t.taskName, t.description, t.endDate, t.priority, t.status, t.startDate,
            p.title AS projectTitle, u.name AS assignedToName
     FROM Tasks t
     JOIN Projects p ON t.projectID = p.projectID
@@ -53,7 +53,7 @@ if ($onlyMine) {
     $params[] = $userID;
 }
 
-$query .= " ORDER BY t.deadline ASC";
+$query .= " ORDER BY t.endDate ASC";
 
 $stmt = $conn->prepare($query);
 $stmt->bind_param($types, ...$params);

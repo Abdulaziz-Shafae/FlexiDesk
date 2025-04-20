@@ -64,9 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert task
-    $stmt = $conn->prepare("INSERT INTO Tasks (projectID, assignedTo, taskName, description, priority, startDate, deadline, filePath, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-    $deadline = $endDate . " 23:59:59";
-    $stmt->bind_param("iissssss", $projectID, $assignedTo, $taskName, $taskDescription, $priority, $startDate, $deadline, $filePath);
+    $stmt = $conn->prepare("INSERT INTO Tasks (projectID, assignedTo, taskName, description, priority, startDate, endDate, filePath, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+    $stmt->bind_param("iissssss", $projectID, $assignedTo, $taskName, $taskDescription, $priority, $startDate, $endDate, $filePath);    
     $stmt->execute();
 
     echo "Task created successfully!";

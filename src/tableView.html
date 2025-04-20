@@ -189,7 +189,7 @@
                 <td>${task.taskName}</td>
                 <td>${task.assignedToName || 'Unassigned'}</td>
                 <td>${task.priority}</td>
-                <td>${new Date(task.deadline).toLocaleDateString()}</td>
+                <td>${new Date(task.endDate).toLocaleDateString()}</td>
                 <td>${task.status}</td>
               `;
 
@@ -201,7 +201,7 @@
                   <strong>Start Date:</strong> ${task.startDate}<br>
                   <strong>Priority:</strong> ${task.priority}<br>
                   <strong>Status:</strong> ${task.status}<br>
-                  <strong>Deadline:</strong> ${task.deadline}<br>
+                  <strong>endDate:</strong> ${task.endDate}<br>
                 `;
                 const rect = e.target.getBoundingClientRect();
                 popup.style.top = `${rect.top + window.scrollY + 30}px`;

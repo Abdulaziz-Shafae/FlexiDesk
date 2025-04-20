@@ -864,7 +864,7 @@
               <p>${task.description || 'No description available.'}</p>
               <div class="task-info">
                 <span>Project: ${task.projectTitle}</span>
-                <span>Due: ${new Date(task.deadline).toLocaleDateString()}</span>
+                <span>Due: ${new Date(task.endDate).toLocaleDateString()}</span>
                 <span class="priority ${getPriorityClass(task.priority)}">${formatPriority(task.priority)} Priority</span>
               </div>
             `;

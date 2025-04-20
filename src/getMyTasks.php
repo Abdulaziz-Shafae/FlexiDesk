@@ -17,7 +17,7 @@ $status = $data['status'] ?? '';
 
 // Base query: fetch tasks assigned to the logged-in user
 $query = "
-    SELECT t.taskName, t.description, t.deadline, t.priority, t.status, p.title AS projectTitle
+    SELECT t.taskName, t.description, t.endDate, t.priority, t.status, p.title AS projectTitle
     FROM Tasks t
     JOIN Projects p ON t.projectID = p.projectID
     WHERE t.assignedTo = ?
@@ -39,7 +39,7 @@ if ($status !== '') {
     $params[] = $status;
 }
 
-$query .= " ORDER BY t.deadline ASC";
+$query .= " ORDER BY t.endDate ASC";
 
 // Prepare and execute the query
 $stmt = $conn->prepare($query);
