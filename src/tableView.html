@@ -71,18 +71,26 @@
 
       .popup {
         position: absolute;
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 10px;
-        z-index: 10;
-        width: 300px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff;
+        color: #333;
+        border-radius: 10px;
+        padding: 15px 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        width: 280px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        border: 1px solid #ddd;
         display: none;
+        transition: all 0.2s ease-in-out;
       }
 
       .popup strong {
-        display: block;
-        margin-bottom: 5px;
+        color: #2c3e50;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 8px;
       }
 
       .checkbox-container {
@@ -198,13 +206,13 @@
                   <strong>Task:</strong> ${task.taskName}<br>
                   <strong>Description:</strong> ${task.description}<br>
                   <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
-                  <strong>Start Date:</strong> ${task.startDate}<br>
                   <strong>Priority:</strong> ${task.priority}<br>
                   <strong>Status:</strong> ${task.status}<br>
+                   <strong>Start Date:</strong> ${task.startDate}<br>
                   <strong>endDate:</strong> ${task.endDate}<br>
                 `;
                 const rect = e.target.getBoundingClientRect();
-                popup.style.top = `${rect.bottom + window.scrollY + 5}px`; // بدل rect.top + 30
+                popup.style.top = `${rect.bottom + window.scrollY + -110}px`;
                 popup.style.left = `${rect.left}px`;                 
                 popup.style.display = "block";
               });
