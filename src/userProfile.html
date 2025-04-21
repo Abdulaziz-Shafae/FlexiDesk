@@ -279,7 +279,7 @@
       <div class="form-container">
           <div class="profile-header">
             <div class="profile-pic" id="profile-pic-area">
-              <img id="profile-image" src="src/photos/profile-default-photo.jpeg" alt="Profile Picture" />
+              <img id="profile-image" src="photos/profile-default-photo.jpeg" alt="Profile image" />
               <div class="change-photo" id="change-photo-btn"><i class="fas fa-camera"></i> Change</div>
               <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;" />
             </div>
@@ -536,11 +536,8 @@
             document.getElementById('bio').value = user.bio;
 
             // Load profile picture
-            const imgPath = user.profilePicture && user.profilePicture !== ''
-            ? `uploads/${user.profilePicture}`
-            : 'src/photos/profile-default-photo.jpeg';
-            
-            document.getElementById('profile-image').src = imgPath;
+            document.getElementById('profile-image').src = user.profileImage;
+
           });
       }
 
@@ -618,8 +615,10 @@
 
       document.getElementById('profile-pic-upload').addEventListener('change', function () {
         const file = this.files[0];
-        if (!file) return;
-
+        if (!file) {
+          alert("No file selected");
+        return;
+}
         // Preview image instantly
         const reader = new FileReader();
         reader.onload = function (e) {

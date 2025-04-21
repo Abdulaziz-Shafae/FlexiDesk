@@ -1,5 +1,6 @@
 <?php
 session_start();
+header('Content-Type: application/json');
 include('db.php');
 
 if (!isset($_SESSION['userID'])) {
@@ -20,15 +21,12 @@ $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
 $newFileName = "profile_" . $userID . "." . strtolower($extension);
 $targetPath = $targetDir . $newFileName;
 
-// Create uploads folder if not exists
 if (!file_exists($targetDir)) {
     mkdir($targetDir, 0755, true);
 }
 
-// Move file
 if (move_uploaded_file($file['tmp_name'], $targetPath)) {
-    // Save filename in DB
-    $sql = "UPDATE users SET profilePicture = ? WHERE userID = ?";
+    $sql = "UPDATE users SET profileImage = ? WHERE userID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $newFileName, $userID);
     $stmt->execute();

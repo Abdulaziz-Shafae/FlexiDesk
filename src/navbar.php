@@ -1,6 +1,27 @@
 <?php
-session_start();  // Start the session to check if the user is logged in
+session_start();
+include 'db.php';
+
+$profileImage = 'photos/profile-default-photo.jpeg'; // Default image
+
+if (isset($_SESSION['userID'])) {
+    $userID = $_SESSION['userID'];
+
+    $stmt = $conn->prepare("SELECT profileImage FROM Users WHERE userID = ?");
+    $stmt->bind_param("i", $userID);
+    $stmt->execute();
+    $stmt->bind_result($imgPath);
+    
+    if ($stmt->fetch()) {
+        if (!empty($imgPath) && file_exists($imgPath)) {
+            $profileImage = $imgPath;
+        }
+    }
+    
+    $stmt->close();
+}
 ?>
+
 
 <!-- Navbar HTML -->
 <div class="navbar">
@@ -24,7 +45,7 @@ session_start();  // Start the session to check if the user is logged in
     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
       <!-- If the user is logged in -->
       <button class="profile-btn" onclick="profiledropdown()">
-        <img src="photos/profile-default-photo.jpeg" alt="Profile">
+        <img src="<?= htmlspecialchars($profileImage) ?>" alt="Profile">
       </button>
       <div class="profile-list" id="profileList">
       <div class="profile-item" onclick="window.location.href='userProfile.html?tab=settings'">Settings</div>
