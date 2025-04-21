@@ -158,30 +158,25 @@ input:checked + .slider:before {
 
 /* Profile Button */
 .profile-btn {
-  width: 50px; /* Set size of the circular button */
-  height: 50px; /* Set size of the circular button */
+  width: 50px;
+  height: 50px;
   border: none;
   cursor: pointer;
-  font-size: 14px;
-  border-radius: 50%; /* Make it circular */
-  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  left: -10px;
+  margin-left: 10px;
 }
 
-/* Profile Image */
 .profile-btn img {
-  width: 50px; /* Adjust size of the image */
-  height: 50px; /* Adjust size of the image */
-  border-radius: 50%; /* Makes the image circular */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #ccc;
 }
-
-.profile-btn:hover img{
-filter: brightness(0.7);
-}
-
 
 .profile-list {
   position: absolute;
@@ -207,3 +202,4 @@ filter: brightness(0.7);
   background: #3498db;
   color: white;
 }
+

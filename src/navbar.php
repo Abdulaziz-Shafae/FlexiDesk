@@ -13,9 +13,9 @@ if (isset($_SESSION['userID'])) {
     $stmt->bind_result($imgPath);
     
     if ($stmt->fetch()) {
-        if (!empty($imgPath) && file_exists($imgPath)) {
-            $profileImage = $imgPath;
-        }
+      if (!empty($imgPath) && file_exists("uploads/" . $imgPath)) {
+          $profileImage = "uploads/" . $imgPath;
+      }
     }
     
     $stmt->close();
@@ -45,8 +45,9 @@ if (isset($_SESSION['userID'])) {
     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
       <!-- If the user is logged in -->
       <button class="profile-btn" onclick="profiledropdown()">
-        <img src="<?= htmlspecialchars($profileImage) ?>" alt="Profile">
+      <img src="<?= htmlspecialchars($profileImage) . '?t=' . time() ?>" alt="Profile">
       </button>
+      
       <div class="profile-list" id="profileList">
       <div class="profile-item" onclick="window.location.href='userProfile.html?tab=settings'">Settings</div>
       <div class="profile-item" onclick="window.location.href='userProfile.html?tab=my-tasks'">My Tasks</div>

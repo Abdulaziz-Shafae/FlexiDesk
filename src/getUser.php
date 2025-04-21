@@ -18,9 +18,10 @@ $result = $stmt->get_result();
 if ($result->num_rows === 1) {
     $user = $result->fetch_assoc();
 
-    $user['profileImage'] = ($user['profileImage'] && file_exists("uploads/" . $user['profileImage']))
+    $user['profileImage'] = !empty($user['profileImage']) && file_exists("uploads/" . $user['profileImage'])
         ? "uploads/" . $user['profileImage']
         : "photos/profile-default-photo.jpeg";
+
 
     echo json_encode($user);
 } else {

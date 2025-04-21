@@ -536,7 +536,7 @@
             document.getElementById('bio').value = user.bio;
 
             // Load profile picture
-            document.getElementById('profile-image').src = user.profileImage;
+            document.getElementById('profile-image').src = user.profileImage + "?t=" + new Date().getTime();
 
           });
       }
@@ -638,6 +638,12 @@
           .then(data => {
             if (data.status === 'success') {
               console.log('Profile picture updated.');
+              fetch('navbar.php')
+                .then(res => res.text())
+                .then(data => {
+                  document.getElementById('navbar-placeholder').innerHTML = data;
+                });
+
             } else {
               alert('Upload failed: ' + data.message);
             }
