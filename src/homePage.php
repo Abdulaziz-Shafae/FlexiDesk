@@ -104,7 +104,7 @@ while ($row = $result->fetch_assoc()) {
 
     .btn {
       display: block;
-      width: 90%;
+      width: 100%;
       padding: 12px;
       margin-top: 10px;
       color: white;
@@ -183,7 +183,8 @@ while ($row = $result->fetch_assoc()) {
                     <div class="progress-bar-container">
                         <div class="progress-bar" style="width: <?php echo (int)$project['progress']; ?>%"></div>
                     </div>
-                    <a href="#" class="btn download-btn">Download Report</a>
+                    <button onclick="" class="btn download-btn">Download Report</button>
+
                     <button onclick="enterProject(<?= $project['projectID'] ?>, '<?= addslashes($project['title']) ?>', '<?= $project['role'] ?>')" class="btn enter-btn">
                       Enter Project
                     </button>
