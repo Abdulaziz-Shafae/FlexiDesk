@@ -63,19 +63,6 @@
         color: #2c3e50;
       }
 
-      .popup {
-        position: absolute;
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 10px;
-        z-index: 100;
-        width: 260px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-        display: none;
-        font-size: 14px;
-        line-height: 1.5;
-      }
-
       /* Responsive Design */
       @media (max-width: 768px) {
         .calendar-grid {
@@ -87,24 +74,6 @@
         height: 35px;
         font-size: 16px;
         padding: 0 10px;
-      }
-
-      .checkbox-container {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .checkbox-container input[type="checkbox"] {
-        height: 35px;
-        width: 20px;
-      }
-      .checkbox-container label {
-        font-size: 16px;
-      }
-
-      .Toolbar-btn {
-        height: 35px;
-        font-size: 16px;
       }
 
       .calendar-header h2 {
@@ -170,7 +139,7 @@
           
           <div id="calendar-grid" class="calendar-grid"></div>
           
-          <div id="task-popup" class="popup"></div>
+          <div id="task-popup" class="popup_tasks"></div>
 
           
       <!-- Popup add task container -->
@@ -274,7 +243,7 @@
             const popupWidth = 260;
             let left = rect.left;
             if (left + popupWidth > window.innerWidth) {
-              left = window.innerWidth - popupWidth - 80;
+              left = window.innerWidth - popupWidth - 115;
             }
             popup.style.top = `${rect.bottom + window.scrollY + -110}px`;
             popup.style.left = `${left}px`;

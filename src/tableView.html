@@ -9,10 +9,8 @@
     <script src="script.js" defer></script>
     <style>
       .table-container {
-        max-width: 1000px;
-        margin: 30px auto;
+        width: 100%;
         background: white;
-        padding: 20px;
         border-radius: 10px;
         box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
         overflow-x: auto;
@@ -40,35 +38,6 @@
         background: #f1f1f1;
       }
 
-      .popup {
-        position: absolute;
-        background-color: #ffffff;
-        color: #333;
-        border-radius: 10px;
-        padding: 15px 20px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        width: 280px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-        line-height: 1.5;
-        border: 1px solid #ddd;
-        display: none;
-        transition: all 0.2s ease-in-out;
-      }
-
-      .popup strong {
-        color: #2c3e50;
-        font-weight: bold;
-        display: inline-block;
-        margin-top: 8px;
-      }
-
-      .checkbox-container {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
     </style>
   </head>
   <body>
@@ -119,20 +88,23 @@
         </div>
 
         <!-- Task Table -->
-        <table id="task-table">
-          <thead>
-            <tr>
-              <th>Task Name</th>
-              <th>Assigned To</th>
-              <th>Priority</th>
-              <th>Due Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        <div class="table-container">
+          <table id="task-table">
+            <thead>
+              <tr>
+                <th>Task Name</th>
+                <th>Assigned To</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
 
-        <div id="task-popup" class="popup"></div>
+
+        <div id="task-popup" class="popup_tasks"></div>
       </div>
     </div>
 
