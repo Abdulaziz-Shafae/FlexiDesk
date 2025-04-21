@@ -40,35 +40,6 @@
         background: #f1f1f1;
       }
 
-      /* Toolbar copied from Gantt view */
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 5px;
-        background-color: #f8f9fa;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-      }
-
-      .Toolbar-btn {
-        font-size: 16px;
-        background: #2c3e50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-        height: 35px;
-        width: 120px;
-        margin-top: 3px;
-        margin-bottom: 3px;
-      }
-
-      .Toolbar-btn:hover {
-        opacity: 0.8;
-      }
-
       .popup {
         position: absolute;
         background-color: #ffffff;
@@ -105,65 +76,68 @@
 
     <!-- Main Content -->
     <div class="main-content">
-    <div class="viwes-container">      
-      <div class="tabs">
-        <a href="ganttView.html" class="tab ">Gantt</a>
-        <a href="test.html" class="tab">Gantt test</a>
-        <a href="tableView.html" class="tab active">Table</a>
-        <a href="calenderView.html" class="tab">Calendar</a>
-      </div>
-      <div class="viwes-header">
-        <h1>Project Name</h1>
-        <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
-      </div>
-
-      <!-- Gantt-style Toolbar -->
-      <div class="toolbar">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <label>
-            <select id="status-filter" class="Toolbar-btn">
-              <option value="">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </label>
-
-          <label>
-            <select id="priority-filter" class="Toolbar-btn">
-              <option value="">All Priorities</option>
-              <option value="low">Low</option>
-              <option value="medium-low">Medium-Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="critical">Critical</option>
-            </select>
-          </label>
+      <div class="viwes-container">      
+        <div class="tabs">
+          <a href="ganttView.html" class="tab ">Gantt</a>
+          <a href="test.html" class="tab">Gantt test</a>
+          <a href="tableView.html" class="tab active">Table</a>
+          <a href="calenderView.html" class="tab">Calendar</a>
+        </div>
+        <div class="viwes-header">
+          <h1>Project Name</h1>
+          <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
         </div>
 
-        <div class="checkbox-container">
-          <input type="checkbox" id="assigned-to-me" />
-          <label for="assigned-to-me">Show only my tasks</label>
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <label>
+              <select id="status-filter" class="Toolbar-btn">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
+
+            <label>
+              <select id="priority-filter" class="Toolbar-btn">
+                <option value="">All Priorities</option>
+                <option value="low">Low</option>
+                <option value="medium-low">Medium-Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="checkbox-container">
+            <input type="checkbox" id="assigned-to-me" />
+            <label for="assigned-to-me">Show only my tasks</label>
+          </div>
         </div>
+
+        <!-- Task Table -->
+        <table id="task-table">
+          <thead>
+            <tr>
+              <th>Task Name</th>
+              <th>Assigned To</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div id="task-popup" class="popup"></div>
       </div>
-
-      <!-- Task Table -->
-      <table id="task-table">
-        <thead>
-          <tr>
-            <th>Task Name</th>
-            <th>Assigned To</th>
-            <th>Priority</th>
-            <th>Due Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-
-      <div id="task-popup" class="popup"></div>
     </div>
-    </div>
+
+    <!-- Popup add task container -->
+    <div id="popup-container"></div> 
 
     <script>
       const statusFilter = document.getElementById("status-filter");

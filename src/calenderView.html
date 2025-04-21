@@ -10,125 +10,400 @@
   </head>
   <body>
     <style>
-      /* Calendar Grid */
-      .calendar {
+      /* Calendar Header */
+      .calendar-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+      }
+
+      /* Modern Calendar Grid */
+      .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 10px;
-        padding: 20px 0;
+        padding: 0 10px;
       }
 
-      .day {
+      .calendar-cell {
         background: #f9f9f9;
-        padding: 15px;
-        text-align: center;
-        font-size: 16px;
-        border-radius: 5px;
-        position: relative;
-        min-height: 60px;
         border: 1px solid #ddd;
+        padding: 10px;
+        min-height: 100px;
+        border-radius: 8px;
+        position: relative;
+        font-size: 14px;
+        transition: background 0.3s;
       }
 
-      .day:hover {
+      .calendar-cell:hover {
         background: #ececec;
       }
 
-      .task {
+      .calendar-task {
         display: block;
         font-size: 12px;
         padding: 4px;
-        border-radius: 5px;
-        margin-top: 5px;
+        border-radius: 4px;
+        margin-top: 4px;
         font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .calendar-more {
+        color: #007bff;
+        font-size: 13px;
+        margin-top: 4px;
+        text-align: left;
+      }
+      .calendar-more:hover {
+        color: #2c3e50;
+      }
+
+      .popup {
+        position: absolute;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 100;
+        width: 260px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        display: none;
+        font-size: 14px;
+        line-height: 1.5;
       }
 
       /* Responsive Design */
       @media (max-width: 768px) {
-        .nav-links {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .calendar {
+        .calendar-grid {
           grid-template-columns: repeat(3, 1fr);
         }
       }
+
+      .calendar-header button {
+        height: 35px;
+        font-size: 16px;
+        padding: 0 10px;
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .checkbox-container input[type="checkbox"] {
+        height: 35px;
+        width: 20px;
+      }
+      .checkbox-container label {
+        font-size: 16px;
+      }
+
+      .Toolbar-btn {
+        height: 35px;
+        font-size: 16px;
+      }
+
+      .calendar-header h2 {
+        font-size: 16px;
+      }
+
     </style>
 
     <!-- Navbar -->
     <div id="navbar-placeholder"></div>
 
     <!-- Main Content -->
-    <div class="viwes-container">
-      <div class="tabs">
-        <a href="ganttView.html" class="tab">Gantt</a>
-        <a href="test.html" class="tab">Gantt test</a>
-        <a href="tableView.html" class="tab">Table</a>
-        <a href="calenderView.html" class="tab active">Calendar</a>
-      </div>
-      <div class="viwes-header">
-        <h1>Project Name</h1>
-        <button class="add-task-btn" id="openPopupBtn" >+ Add Task</button>
-      </div>
+    <div class="main-content">
+      <div class="viwes-container">
+        <div class="tabs">
+          <a href="ganttView.html" class="tab">Gantt</a>
+          <a href="test.html" class="tab">Gantt test</a>
+          <a href="tableView.html" class="tab">Table</a>
+          <a href="calenderView.html" class="tab active">Calendar</a>
+        </div>
+        <div class="viwes-header">
+          <h1>Project Name</h1>
+          <button class="add-task-btn" id="openPopupBtn" >+ Add Task</button>
+        </div>
 
-      <div class="calendar">
-        <div class="day">1 <span class="task high">Submit Report</span></div>
-        <div class="day">2</div>
-        <div class="day">
-          3 <span class="task critical">Client Meeting</span>
-        </div>
-        <div class="day">4</div>
-        <div class="day">5 <span class="task low">Check Emails</span></div>
-        <div class="day">6</div>
-        <div class="day">7 <span class="task medium">Project Update</span></div>
-        <div class="day">8</div>
-        <div class="day">
-          9 <span class="task medium-low">Team Review</span>
-        </div>
-        <div class="day">10</div>
-        <div class="day">11</div>
-        <div class="day">
-          12 <span class="task critical">Launch Deadline</span>
-        </div>
-        <div class="day">13</div>
-        <div class="day">14</div>
-        <div class="day">
-          15 <span class="task high">Prepare Presentation</span>
-        </div>
-        <div class="day">16</div>
-        <div class="day">17</div>
-        <div class="day">18</div>
-        <div class="day">19 <span class="task medium">Bug Fixing</span></div>
-        <div class="day">20</div>
-        <div class="day">21 <span class="task low">Team Meeting</span></div>
-        <div class="day">22</div>
-        <div class="day">23</div>
-        <div class="day">
-          24 <span class="task medium-low">Code Review</span>
-        </div>
-        <div class="day">25</div>
-        <div class="day">26</div>
-        <div class="day">27 <span class="task high">Deadline</span></div>
-        <div class="day">28</div>
-        <div class="day">29</div>
-        <div class="day">
-          30 <span class="task critical">Final Submission</span>
-        </div>
-      </div>
-    </div>
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <label>
+              <select id="status-filter" class="Toolbar-btn">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
 
-    <!-- Popup container -->
-    <div id="popup-container"></div> <!-- Popup content will be dynamically inserted here -->
+            <label>
+              <select id="priority-filter" class="Toolbar-btn">
+                <option value="">All Priorities</option>
+                <option value="low">Low</option>
+                <option value="medium-low">Medium-Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </label>
+          </div>          
+          
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="checkbox-container">
+              <input type="checkbox" id="assigned-to-me" />
+              <label for="assigned-to-me">Show only my tasks</label>
+            </div>
+  
+            <div class="calendar-header">
+              <button onclick="prevMonth()">←</button>
+              <h2 id="month-name">April 2025</h2>
+              <button onclick="nextMonth()">→</button>
+            </div>
+          </div>
+        </div>
+          
+          <div id="calendar-grid" class="calendar-grid"></div>
+          
+          <div id="task-popup" class="popup"></div>
 
+          
+      <!-- Popup add task container -->
+      <div id="popup-container"></div> 
 
     <script>
       // Fetch and insert navbar
-      fetch('navbar.html')
+      fetch('navbar.php')
         .then((response) => response.text())
         .then((data) => {
           document.getElementById('navbar-placeholder').innerHTML = data;
         })
         .catch((error) => console.error('Error loading navbar:', error));
+
+      const monthName = document.getElementById("month-name");
+      const calendarGrid = document.getElementById("calendar-grid");
+      const popup = document.getElementById("task-popup");
+
+      let currentMonth;
+      let currentYear;
+      let projectStart;
+      let projectEnd;
+      let taskLimit = 2;
+
+      function loadCalendar(month, year) {
+        const projectID = sessionStorage.getItem("selectedProjectID");
+        if (!projectID) return alert("No project selected");
+
+        const firstDay = new Date(year, month, 1).getDay(); // Sunday = 0
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        calendarGrid.innerHTML = "";
+        monthName.textContent = `${new Date(year, month).toLocaleString("default", { month: "long" })} ${year}`;
+
+        // Fill days
+        for (let day = 1; day <= daysInMonth; day++) {
+          const cell = document.createElement("div");
+          cell.className = "calendar-cell";
+          cell.innerHTML = `<strong>${day}</strong>`;
+          calendarGrid.appendChild(cell);
+        }
+
+        // Fetch tasks
+        const status = document.getElementById("status-filter").value;
+        const priority = document.getElementById("priority-filter").value;
+        const onlyMine = document.getElementById("assigned-to-me").checked;
+
+        fetch("getProjectTask.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectID, status, priority, onlyMine })
+        })
+
+        .then(res => res.json())
+        .then(tasks => {
+
+        tasks.forEach(task => {
+          const taskDate = new Date(task.startDate);
+          if (taskDate.getMonth() !== month || taskDate.getFullYear() !== year) return;
+
+          const day = taskDate.getDate();
+          const index = new Date(year, month, 1).getDay() + day - 1;
+          const cell = calendarGrid.children[index];
+          if (!cell) return;
+
+          let taskElements = cell.querySelectorAll(".calendar-task");
+          if (taskElements.length >= taskLimit) {
+
+            if (!cell.querySelector(".calendar-more")) {
+              const moreDiv = document.createElement("div");
+              moreDiv.className = "calendar-more";
+              moreDiv.textContent = "View More";
+              moreDiv.style.cursor = "pointer";
+
+              moreDiv.addEventListener("click", () => {
+
+                taskLimit = 100;
+
+                loadCalendar(currentMonth, currentYear);
+              });
+
+              cell.appendChild(moreDiv);
+            }
+            return;
+          }
+
+          const taskDiv = document.createElement("div");
+          taskDiv.className = `calendar-task ${task.priority}`;
+          taskDiv.textContent = task.taskName;
+
+          taskDiv.addEventListener("mouseenter", (e) => {
+            popup.innerHTML = `
+              <strong>Task:</strong> ${task.taskName}<br>
+              <strong>Description:</strong> ${task.description}<br>
+              <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
+              <strong>Priority:</strong> ${task.priority}<br>
+              <strong>Status:</strong> ${task.status}<br>
+              <strong>Start Date:</strong> ${task.startDate}<br>
+              <strong>End Date:</strong> ${task.endDate}<br>
+            `;
+            const rect = e.target.getBoundingClientRect();
+            const popupWidth = 260;
+            let left = rect.left;
+            if (left + popupWidth > window.innerWidth) {
+              left = window.innerWidth - popupWidth - 80;
+            }
+            popup.style.top = `${rect.bottom + window.scrollY + -110}px`;
+            popup.style.left = `${left}px`;
+            popup.style.display = "block";
+          });
+
+          taskDiv.addEventListener("mouseleave", () => {
+            popup.style.display = "none";
+          });
+
+          cell.appendChild(taskDiv);
+        });
+          if (!tasks.some(t => {
+            const taskDate = new Date(t.startDate);
+            return taskDate.getMonth() === month && taskDate.getFullYear() === year;
+          })) {
+            const noTasks = document.createElement("p");
+            noTasks.textContent = "No tasks in this month.";
+            noTasks.style.textAlign = "center";
+            noTasks.style.color = "#888";
+            noTasks.style.gridColumn = "span 7";
+            noTasks.style.fontSize = "16px";
+            noTasks.style.padding = "10px 0 5px";
+            noTasks.style.margin = "0px";
+            
+            calendarGrid.prepend(noTasks);
+          }
+        });
+      }
+
+      function prevMonth() {
+        const newDate = new Date(currentYear, currentMonth - 1);
+        if (newDate >= projectStart) {
+          currentMonth--;
+          if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+          }
+          loadCalendar(currentMonth, currentYear);
+          updateNavButtons();
+        }
+      }
+
+      function nextMonth() {
+        const newDate = new Date(currentYear, currentMonth + 1);
+        if (newDate <= projectEnd) {
+          currentMonth++;
+          if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+          }
+          loadCalendar(currentMonth, currentYear);
+          updateNavButtons();
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        loadProjectDateAndCalendar();
+      });
+
+      function loadProjectDateAndCalendar() {
+        const projectID = sessionStorage.getItem("selectedProjectID");
+        if (!projectID) return alert("No project selected");
+
+        fetch("getProjectDate.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectID })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.startDate && data.endDate) {
+              const startDate = new Date(data.startDate);
+              projectStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+              const endDate = new Date(data.endDate);
+              projectEnd = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+
+              const projectName = sessionStorage.getItem("selectedProjectName");
+              const projectRole = sessionStorage.getItem("selectedProjectRole");
+
+              currentMonth = projectStart.getMonth();
+              currentYear = projectStart.getFullYear();
+
+              document.querySelector(".viwes-header h1").textContent = projectName || "Project";
+              
+              if (projectRole !== "Manager") {
+                document.getElementById("openPopupBtn").style.display = "none";
+              }
+
+              loadCalendar(currentMonth, currentYear);
+              updateNavButtons();
+            }
+          })
+          .catch(err => {
+            console.error("Error:", err);
+          });
+      }
+
+      function updateNavButtons() {
+        const prevBtn = document.querySelector(".calendar-header button:first-child");
+        const nextBtn = document.querySelector(".calendar-header button:last-child");
+
+        const prevDate = new Date(currentYear, currentMonth - 1);
+        const nextDate = new Date(currentYear, currentMonth + 1);
+
+        prevBtn.disabled = prevDate < projectStart;
+        nextBtn.disabled = nextDate > projectEnd;
+      }
+
+      document.addEventListener("click", (e) => {
+        if ( taskLimit === 100 && !popup.contains(e.target) && !e.target.classList.contains("calendar-more") ) {
+          taskLimit = 2;
+          loadCalendar(currentMonth, currentYear);
+        }
+      });
+
+      document.getElementById("status-filter").addEventListener("change", () => {
+        loadCalendar(currentMonth, currentYear);
+      });
+
+      document.getElementById("priority-filter").addEventListener("change", () => {
+        loadCalendar(currentMonth, currentYear);
+      });
+
+      document.getElementById("assigned-to-me").addEventListener("change", () => {
+        loadCalendar(currentMonth, currentYear);
+      });
+
+
     </script>
   </body>
 </html>
