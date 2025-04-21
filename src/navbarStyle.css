@@ -160,23 +160,31 @@ input:checked + .slider:before {
 .profile-btn {
   width: 50px;
   height: 50px;
+  padding: 0;
+  margin: 0;
   border: none;
-  cursor: pointer;
   border-radius: 50%;
   overflow: hidden;
+  background: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 10px;
+  margin-right: 10px;
 }
 
+/* Profile Image */
 .profile-btn img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  display: block;
 }
+
+.profile-btn:hover {
+filter: brightness(0.7);
+}
+
 
 .profile-list {
   position: absolute;

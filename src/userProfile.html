@@ -622,7 +622,7 @@
         // Preview image instantly
         const reader = new FileReader();
         reader.onload = function (e) {
-          document.getElementById('profile-image').src = e.target.result;
+          document.getElementById('profile-image').src = e.target.result + '?t=' + new Date().getTime();
         };
         reader.readAsDataURL(file);
 
