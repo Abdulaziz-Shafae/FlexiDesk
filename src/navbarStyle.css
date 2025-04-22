@@ -158,8 +158,8 @@ input:checked + .slider:before {
 
 /* Profile Button */
 .profile-btn {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   padding: 0;
   margin: 0;
   border: none;
@@ -169,7 +169,7 @@ input:checked + .slider:before {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 /* Profile Image */
