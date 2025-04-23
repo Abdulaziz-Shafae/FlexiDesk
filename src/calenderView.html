@@ -146,6 +146,10 @@
       <div id="popup-container"></div> 
 
     <script>
+      window.refreshTasks = () => {
+        getTasks();
+      };
+
       // Fetch and insert navbar
       fetch('navbar.php')
         .then((response) => response.text())
@@ -231,13 +235,16 @@
 
           taskDiv.addEventListener("mouseenter", (e) => {
             popup.innerHTML = `
+              <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
+              <strong>Task Type:</strong> ${task.taskType}<br>
               <strong>Task:</strong> ${task.taskName}<br>
               <strong>Description:</strong> ${task.description}<br>
               <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
               <strong>Priority:</strong> ${task.priority}<br>
               <strong>Status:</strong> ${task.status}<br>
               <strong>Start Date:</strong> ${task.startDate}<br>
-              <strong>End Date:</strong> ${task.endDate}<br>
+              <strong>End Date:</strong> ${task.endDate}
+            </div>
             `;
             const rect = e.target.getBoundingClientRect();
             const popupWidth = 260;
@@ -252,6 +259,10 @@
 
           taskDiv.addEventListener("mouseleave", () => {
             popup.style.display = "none";
+          });
+
+          taskDiv.addEventListener("click", () => {
+            openPopup(task); // show edit popup
           });
 
           cell.appendChild(taskDiv);
@@ -372,6 +383,10 @@
         loadCalendar(currentMonth, currentYear);
       });
 
+      document.getElementById("openPopupBtn")?.addEventListener("click", () => {
+        const projectID = sessionStorage.getItem("selectedProjectID");
+        openPopup(null, projectID); // null task = new task
+      });
 
     </script>
   </body>

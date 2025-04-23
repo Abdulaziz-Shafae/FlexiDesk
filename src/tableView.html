@@ -112,6 +112,11 @@
     <div id="popup-container"></div> 
 
     <script>
+      // Global refresh hook for popup
+      window.refreshTasks = () => {
+        loadCalendar(currentMonth, currentYear); 
+      };
+
       const statusFilter = document.getElementById("status-filter");
       const priorityFilter = document.getElementById("priority-filter");
       const assignedCheckbox = document.getElementById("assigned-to-me");
@@ -149,13 +154,16 @@
 
               tr.addEventListener("mouseenter", (e) => {
                 popup.innerHTML = `
-                  <strong>Task:</strong> ${task.taskName}<br>
-                  <strong>Description:</strong> ${task.description}<br>
-                  <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
-                  <strong>Priority:</strong> ${task.priority}<br>
-                  <strong>Status:</strong> ${task.status}<br>
-                   <strong>Start Date:</strong> ${task.startDate}<br>
-                  <strong>endDate:</strong> ${task.endDate}<br>
+                  <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
+                    <strong>Task Type:</strong> ${task.taskType}<br>
+                    <strong>Task:</strong> ${task.taskName}<br>
+                    <strong>Description:</strong> ${task.description}<br>
+                    <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
+                    <strong>Priority:</strong> ${task.priority}<br>
+                    <strong>Status:</strong> ${task.status}<br>
+                    <strong>Start Date:</strong> ${task.startDate}<br>
+                    <strong>End Date:</strong> ${task.endDate}
+                  </div>
                 `;
                 const rect = e.target.getBoundingClientRect();
                 popup.style.top = `${rect.bottom + window.scrollY + -110}px`;
@@ -165,6 +173,10 @@
 
               tr.addEventListener("mouseleave", () => {
                 popup.style.display = "none";
+              });
+
+              tr.addEventListener("click", () => {
+                openPopup(task); // task object already available
               });
 
               taskTableBody.appendChild(tr);
@@ -199,6 +211,12 @@
       fetch("navbar.php")
         .then((res) => res.text())
         .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
+    
+        document.getElementById("openPopupBtn")?.addEventListener("click", () => {
+          const projectID = sessionStorage.getItem("selectedProjectID");
+          openPopup(null, projectID); // null task = new task
+        });
+
     </script>
   </body>
 </html>
