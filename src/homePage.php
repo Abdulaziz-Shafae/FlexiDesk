@@ -9,8 +9,22 @@ if (!isset($_SESSION['userID'])) {
 
 $userID = $_SESSION['userID'];
 
-$sql = "SELECT p.projectID, p.title, p.description, p.endDate, up.role, 
-               COALESCE(ROUND(SUM(t.status = 'Completed') / COUNT(t.taskID) * 100), 0) as progress
+$sql = "SELECT 
+          p.projectID, 
+          p.title, 
+          p.description,
+          p.startDate, 
+          p.endDate, 
+          up.role, 
+          COALESCE(ROUND((
+            SUM(
+              CASE 
+                WHEN t.status = 'Completed' THEN 1 
+                WHEN t.status = 'In Progress' THEN 0.5 
+                ELSE 0 
+              END
+            ) / NULLIF(COUNT(t.taskID), 0)
+          ) * 100, 0), 0) AS progress
         FROM Projects p
         JOIN user_projects up ON p.projectID = up.projectID
         LEFT JOIN Tasks t ON t.projectID = p.projectID
@@ -24,8 +38,31 @@ $result = $stmt->get_result();
 
 $projects = [];
 while ($row = $result->fetch_assoc()) {
+  $startDate = new DateTime($row['startDate']);
+  $endDate = new DateTime($row['endDate']);
+  $today = new DateTime();
+
+  $totalDays = max($startDate->diff($endDate)->days, 1);  // Avoid division by zero
+  $elapsedDays = max($startDate->diff($today)->days, 0);
+  $progress = (int)$row['progress'];
+
+  $expectedProgress = round(($elapsedDays / $totalDays) * 100);
+
+  // Default color
+  $progressColor = '#28a745'; // green
+
+  if ($progress < $expectedProgress - 20) {
+    $progressColor = '#dc3545'; // red: way behind
+  } elseif ($progress < $expectedProgress - 5) {
+    $progressColor = '#ffc107'; // yellow: slightly behind
+  }
+
+  $row['progressColor'] = $progressColor;
+  $row['progress'] = $progress;
+  $row['expected'] = $expectedProgress;
   $projects[] = $row;
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -100,6 +137,10 @@ while ($row = $result->fetch_assoc()) {
     .progress-bar {
       height: 100%;
       background: #28a745;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      line-height: 20px;
     }
 
     .btn {
@@ -170,8 +211,11 @@ while ($row = $result->fetch_assoc()) {
     <div class="main-content">
         <div class="projects-container">
             <div class="top-bar">
-            <h1>Number of projects: <?php echo count($projects); ?></h1>
-            <a href="createProject.html" class="create-btn">+ Create Project</a>
+              <h1>Number of projects: <?php echo count($projects); ?></h1>
+              <div>
+                <a href="createTask.html" class="create-btn">+ Create Task</a>
+                <a href="createProject.html" class="create-btn">+ Create Project</a>
+              </div>
             </div>
 
             <div class="projects-grid">
@@ -179,9 +223,10 @@ while ($row = $result->fetch_assoc()) {
                 <div class="project-card">
                     <img src="https://www.itarian.com/assets-new/images/project-management.png" alt="Project Image" />
                     <p class="project-title"><?php echo htmlspecialchars($project['title']); ?></p>
-                    <p><strong>Progress</strong></p>
                     <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: <?php echo (int)$project['progress']; ?>%"></div>
+                    <div class="progress-bar" style="width: <?= (int)$project['progress']; ?>%; background: <?= $project['progressColor']; ?>">
+                      <?= (int)$project['progress']; ?>%
+                    </div>
                     </div>
                     <button onclick="" class="btn download-btn">Download Report</button>
 
