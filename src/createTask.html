@@ -28,6 +28,8 @@
       }
 
       .task-form input,
+      .task-form input[type="text"],
+      .task-form input[type="date"],
       .task-form select,
       .task-form textarea {
         width: 100%;
@@ -36,6 +38,12 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         font-size: 16px;
+      }
+      .task-form input,
+      .task-form input[type="text"],
+      .task-form input[type="date"],
+      .task-form textarea {
+        width: 97%;
       }
 
       .task-form textarea {
@@ -121,6 +129,7 @@
         <!-- Project Selection -->
         <label for="projectID">Project *</label>
         <select id="projectID" required>
+          <option value="" disabled selected hidden>Select a project</option>
         </select>
 
         <!-- Task Name -->
@@ -131,6 +140,31 @@
           placeholder="Enter task name"
           required
         />
+
+        <!-- Task Type -->
+        <label for="taskType">Task Type</label>
+        <select id="taskType" name="taskType" required>
+          <option value="" disabled selected hidden>Select The Type</option>
+          <option value="Task">Task</option>
+          <option value="Milestone">Milestone</option>
+        </select>
+
+        <!-- Priority -->
+        <label for="priority">Priority </label>
+        <select id="priority" required>
+          <option value="" disabled selected hidden>Select The Priority</option>
+          <option value="low">🟢 Low</option>
+          <option value="medium-low">🔵 Medium-Low</option>
+          <option value="medium">🟡 Medium</option>
+          <option value="high">🟠 High</option>
+          <option value="critical">🔴 Critical</option>
+        </select>
+
+        <!-- Assign to -->
+        <label for="assignTo">Assign to </label>
+        <select id="assignTo" required>
+          <option value="" disabled selected hidden>Select a project First</option>
+        </select>
 
         <!-- Task Description -->
         <label for="taskDescription">Task Description</label>
@@ -146,21 +180,6 @@
         <!-- Task end Date -->
         <label for="endDate">End Date</label>
         <input type="date" id="endDate" required />
-
-        <!-- Priority -->
-        <label for="priority">Priority </label>
-        <select id="priority" required>
-          <option value="low">🟢 Low</option>
-          <option value="medium-low">🔵 Medium-Low</option>
-          <option value="medium">🟡 Medium</option>
-          <option value="high">🟠 High</option>
-          <option value="critical">🔴 Critical</option>
-        </select>
-
-        <!-- Assign to -->
-        <label for="assignTo">Assign to </label>
-        <select id="assignTo" required>
-        </select>
 
         <!-- File Requirement -->
         <div class="checkbox-group">
@@ -203,48 +222,48 @@
         })
         .catch((error) => console.error('Error loading navbar:', error));
 
-// Run after DOM loads
-document.addEventListener("DOMContentLoaded", function () {
-  const projectSelect = document.getElementById("projectID");
-  const assignToSelect = document.getElementById("assignTo");
-  const startDateInput = document.getElementById("startDate");
-  const endDateInput = document.getElementById("endDate");
+      // Run after DOM loads
+      document.addEventListener("DOMContentLoaded", function () {
+        const projectSelect = document.getElementById("projectID");
+        const assignToSelect = document.getElementById("assignTo");
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
 
-  // Fetch projects where user is manager
-  fetch("loadDataTaskCreate.php?projects")
-    .then((res) => res.json())
-    .then((projects) => {
-      projects.forEach((project) => {
-        const option = document.createElement("option");
-        option.value = project.projectID;
-        option.textContent = project.title;
-        option.dataset.start = project.startDate;
-        option.dataset.end = project.endDate;
-        projectSelect.appendChild(option);
-      });
-    })
-    .catch((err) => console.error("Error loading projects:", err));
+        // Fetch projects where user is manager
+        fetch("loadDataTaskCreate.php?projects")
+          .then((res) => res.json())
+          .then((projects) => {
+            projects.forEach((project) => {
+              const option = document.createElement("option");
+              option.value = project.projectID;
+              option.textContent = project.title;
+              option.dataset.start = project.startDate;
+              option.dataset.end = project.endDate;
+              projectSelect.appendChild(option);
+            });
+          })
+        .catch((err) => console.error("Error loading projects:", err));
 
-    // When a project is selected, fetch its team members & update date limits
-      projectSelect.addEventListener("change", function () {
-        const selectedProjectID = this.value;
-        assignToSelect.innerHTML = "";
+      // When a project is selected, fetch its team members & update date limits
+        projectSelect.addEventListener("change", function () {
+          const selectedProjectID = this.value;
+          assignToSelect.innerHTML = "";
 
-        const selectedOption = this.options[this.selectedIndex];
-        const projStart = selectedOption.dataset.start;
-        const projEnd = selectedOption.dataset.end;
+          const selectedOption = this.options[this.selectedIndex];
+          const projStart = selectedOption.dataset.start;
+          const projEnd = selectedOption.dataset.end;
 
-        startDateInput.setAttribute("min", projStart);
-        startDateInput.setAttribute("max", projEnd);
-        endDateInput.setAttribute("min", projStart);
-        endDateInput.setAttribute("max", projEnd);
+          startDateInput.setAttribute("min", projStart);
+          startDateInput.setAttribute("max", projEnd);
+          endDateInput.setAttribute("min", projStart);
+          endDateInput.setAttribute("max", projEnd);
 
-        if (!selectedProjectID) {
-          const warning = document.createElement("option");
-          warning.textContent = "Please select a project first";
-          assignToSelect.appendChild(warning);
-          return;
-        }
+          if (!selectedProjectID) {
+            const warning = document.createElement("option");
+            warning.textContent = "Please select a project first";
+            assignToSelect.appendChild(warning);
+            return;
+          }
 
         fetch(`loadDataTaskCreate.php?members&projectID=${selectedProjectID}`)
           .then((res) => res.json())
@@ -258,7 +277,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const defaultOption = document.createElement("option");
             defaultOption.textContent = "Select a team member";
-            defaultOption.value = "";
+            defaultOption.value = "" ;
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.hidden = true;
             assignToSelect.appendChild(defaultOption);
 
             members.forEach((member) => {
@@ -274,6 +296,15 @@ document.addEventListener("DOMContentLoaded", function () {
             errorOption.textContent = "Failed to load members";
             assignToSelect.appendChild(errorOption);
           });
+      });
+      document.querySelector(".task-form").addEventListener("submit", function (e) {
+        const projectSelect = document.getElementById("projectID");
+        const assignToSelect = document.getElementById("assignTo");
+
+        if (!projectSelect.value || !assignToSelect.value) {
+          e.preventDefault();
+          alert("Please select a project and assign the task to a team member.");
+        }
       });
     });
     </script>

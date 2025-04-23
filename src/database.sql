@@ -31,6 +31,7 @@ CREATE TABLE Tasks (
     startDate DATE DEFAULT NULL,
     endDate DATE NOT NULL,
     priority ENUM('low', 'medium-low', 'medium', 'high', 'critical') DEFAULT 'medium',
+    taskType ENUM('Task', 'Milestone') NOT NULL DEFAULT 'Task',
     assignedTo INT,
     filePath VARCHAR(255),
     status ENUM('Pending', 'In Progress', 'Completed') NOT NULL DEFAULT 'Pending',

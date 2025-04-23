@@ -199,8 +199,8 @@
         <select id="task-type" class="addTask-select">
           <option value="task">Task</option>
           <option value="milestone">Milestone</option>
-        </select>
-
+        </select>        
+        
         <label for="task-priority" class="addTask-label">Task Priority</label>
         <select id="task-priority" class="addTask-select">
           <option value="1">Low</option>
@@ -208,6 +208,11 @@
           <option value="3">Medium</option>
           <option value="4">High</option>
           <option value="5">Critical</option>
+        </select>
+
+        <label for="assignTo" class="addTask-label">Assign to</label>
+        <select id="assignTo" class="addTask-select">
+          <option value="" disabled selected hidden>Select a project First</option>
         </select>
 
         <label for="task-desc" class="addTask-label">Task Description</label>
