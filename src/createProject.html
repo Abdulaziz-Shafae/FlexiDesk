@@ -105,6 +105,39 @@
         resize: none;
         overflow-y: hidden;
       }
+
+      .suggestions {
+        background: white;
+        border: none;
+        max-height: 150px;
+        overflow-y: auto;
+        position: absolute;
+        z-index: 1000;
+        width: 200px;
+      }
+
+      .suggestions div {
+        padding: 8px;
+        cursor: pointer;
+      }
+
+      .suggestions div:hover {
+        background: #f0f0f0;
+      }
+
+      #selected-members {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+
+      #selected-members span {
+        background: #d1e4e7;
+        padding: 5px 10px;
+        border-radius: 20px;
+      }
+
     </style>
   </head>
   <body>
@@ -123,6 +156,16 @@
             <textarea id="project-description" class="input" required></textarea>
             <label class="label">Project Description</label>
           </div>
+
+          <div class="wave-group">
+            <input type="text" id="team-member-input" class="input" autocomplete="off" />
+            <label class="label">Team Members</label>
+            </div>
+            
+            <div id="team-member-suggestions" class="suggestions"  style="margin-top: -20px; margin-bottom: 20px;"></div>
+            <div id="selected-members" style="margin-bottom: 25px;"></div>
+            <!-- Hidden input to hold selected user IDs -->
+            <input type="hidden" name="team-member-ids" id="team-member-ids" />
 
           <div class="wave-group">
             <input type="date" id="start-date" class="input" required />
@@ -168,7 +211,17 @@
         fetch('createProject.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, description, startDate, endDate })
+          body: JSON.stringify({
+            title,
+            description,
+            startDate,
+            endDate,
+            teamMembers: document
+              .getElementById('team-member-ids')
+              .value.split(',')
+              .filter(id => id.trim() !== '')
+              .map(id => parseInt(id))
+          })
         })
           .then(res => res.json())
           .then(data => {
@@ -181,6 +234,56 @@
             }
           });
       });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById("team-member-input");
+        const suggestionsBox = document.getElementById("team-member-suggestions");
+        const selectedBox = document.getElementById("selected-members");
+        const hiddenInput = document.getElementById("team-member-ids");
+
+        let selectedUsers = [];
+
+        input.addEventListener("input", async () => {
+          const query = input.value.trim();
+          if (query.length < 2) {
+            suggestionsBox.innerHTML = "";
+            return;
+          }
+
+          const res = await fetch("searchUsers.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+
+          const users = await res.json();
+          suggestionsBox.innerHTML = "";
+          users.forEach((user) => {
+            const div = document.createElement("div");
+            div.textContent = user.name;
+            div.addEventListener("click", () => {
+              if (!selectedUsers.find((u) => u.id === user.id)) {
+                selectedUsers.push(user);
+                updateSelected();
+              }
+              input.value = "";
+              suggestionsBox.innerHTML = "";
+            });
+            suggestionsBox.appendChild(div);
+          });
+        });
+
+        function updateSelected() {
+          selectedBox.innerHTML = "";
+          selectedUsers.forEach((user) => {
+            const span = document.createElement("span");
+            span.textContent = user.name;
+            selectedBox.appendChild(span);
+          });
+          hiddenInput.value = selectedUsers.map((u) => u.id).join(",");
+        }
+      });
+
     </script>
   </body>
 </html>

@@ -92,6 +92,7 @@
           <table id="task-table">
             <thead>
               <tr>
+                <th>Task Type</th>
                 <th>Task Name</th>
                 <th>Assigned To</th>
                 <th>Priority</th>
@@ -103,7 +104,6 @@
           </table>
         </div>
 
-
         <div id="task-popup" class="popup_tasks"></div>
       </div>
     </div>
@@ -112,17 +112,12 @@
     <div id="popup-container"></div> 
 
     <script>
-      // Global refresh hook for popup
-      window.refreshTasks = () => {
-        loadCalendar(currentMonth, currentYear); 
-      };
 
       const statusFilter = document.getElementById("status-filter");
       const priorityFilter = document.getElementById("priority-filter");
       const assignedCheckbox = document.getElementById("assigned-to-me");
       const taskTableBody = document.querySelector("#task-table tbody");
       const popup = document.getElementById("task-popup");
-
       const projectID = sessionStorage.getItem("selectedProjectID");
 
       function getTasks() {
@@ -145,8 +140,9 @@
               const tr = document.createElement("tr");
 
               tr.innerHTML = `
+                <td>${task.taskType}</td>
                 <td>${task.taskName}</td>
-                <td>${task.assignedToName || 'Unassigned'}</td>
+                <td>${task.assignedTo || 'Unassigned'}</td>
                 <td>${task.priority}</td>
                 <td>${new Date(task.endDate).toLocaleDateString()}</td>
                 <td>${task.status}</td>
@@ -158,7 +154,7 @@
                     <strong>Task Type:</strong> ${task.taskType}<br>
                     <strong>Task:</strong> ${task.taskName}<br>
                     <strong>Description:</strong> ${task.description}<br>
-                    <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
+                    <strong>Assigned To:</strong> ${task.assignedTo || 'Unassigned'}<br>
                     <strong>Priority:</strong> ${task.priority}<br>
                     <strong>Status:</strong> ${task.status}<br>
                     <strong>Start Date:</strong> ${task.startDate}<br>
@@ -176,7 +172,12 @@
               });
 
               tr.addEventListener("click", () => {
-                openPopup(task); // task object already available
+                const projectRole = sessionStorage.getItem("selectedProjectRole");
+
+                // Allow edit only if the user is a manager
+                if (projectRole === "Manager") {
+                  openEditTaskPopup(task, projectID); // task object already available
+                }
               });
 
               taskTableBody.appendChild(tr);
@@ -214,9 +215,8 @@
     
         document.getElementById("openPopupBtn")?.addEventListener("click", () => {
           const projectID = sessionStorage.getItem("selectedProjectID");
-          openPopup(null, projectID); // null task = new task
+          openAddTaskPopup(projectID); // null task = new task          
         });
-
     </script>
   </body>
 </html>

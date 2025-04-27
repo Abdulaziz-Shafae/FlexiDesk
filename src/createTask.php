@@ -18,6 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $endDate = $_POST['endDate'];
     $priority = $_POST['priority'];
     $assignedTo = $_POST['assignedTo'];
+
+    // Set default value for status if it's not provided in the form
+    $status = isset($_POST['status']) ? $_POST['status'] : 'Pending'; 
+
     $filePath = NULL;
 
     // Check if the user is a manager in this project
@@ -65,12 +69,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert task
-    $stmt = $conn->prepare("INSERT INTO Tasks (projectID, assignedTo, taskName, description, priority, startDate, endDate, filePath, taskType, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
-    $stmt->bind_param("iisssssss", $projectID, $assignedTo, $taskName, $taskDescription, $priority, $startDate, $endDate, $filePath, $taskType);    
+    $stmt = $conn->prepare("INSERT INTO Tasks (projectID, assignedTo, taskName, description, priority, startDate, endDate, filePath, taskType, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iissssssss", $projectID, $assignedTo, $taskName, $taskDescription, $priority, $startDate, $endDate, $filePath, $taskType, $status);    
     $stmt->execute();
-
-    echo "Task created successfully!";
+    
+    echo json_encode(["status" => "success", "message" => "Task added successfully."]);
+    exit;
+    
 } else {
     echo "Invalid request.";
 }
+
 ?>

@@ -167,7 +167,7 @@
       let projectStart;
       let projectEnd;
       let taskLimit = 2;
-
+      let view = 'calendarView';
       function loadCalendar(month, year) {
         const projectID = sessionStorage.getItem("selectedProjectID");
         if (!projectID) return alert("No project selected");
@@ -239,7 +239,7 @@
               <strong>Task Type:</strong> ${task.taskType}<br>
               <strong>Task:</strong> ${task.taskName}<br>
               <strong>Description:</strong> ${task.description}<br>
-              <strong>Assigned To:</strong> ${task.assignedToName || 'Unassigned'}<br>
+              <strong>Assigned To:</strong> ${task.assignedTo || 'Unassigned'}<br>
               <strong>Priority:</strong> ${task.priority}<br>
               <strong>Status:</strong> ${task.status}<br>
               <strong>Start Date:</strong> ${task.startDate}<br>
@@ -262,7 +262,12 @@
           });
 
           taskDiv.addEventListener("click", () => {
-            openPopup(task); // show edit popup
+            const projectRole = sessionStorage.getItem("selectedProjectRole");
+            
+            // Allow edit only if the user is a manager
+            if (projectRole === "Manager") {
+              openEditTaskPopup(task, projectID); // task object already available
+            }
           });
 
           cell.appendChild(taskDiv);
@@ -385,7 +390,7 @@
 
       document.getElementById("openPopupBtn")?.addEventListener("click", () => {
         const projectID = sessionStorage.getItem("selectedProjectID");
-        openPopup(null, projectID); // null task = new task
+        openAddTaskPopup(projectID); // null task = new task
       });
 
     </script>

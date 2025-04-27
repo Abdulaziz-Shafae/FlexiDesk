@@ -193,23 +193,25 @@
         <span class="addTask-close-btn">&times;</span>
 
         <!-- Project Selection -->
+        <input type="hidden" id="projectStartDate" />
+        <input type="hidden" id="projectEndDate" />
         <input type="hidden" id="projectID" name="projectID" />
 
         <!-- Task Name -->
-        <label for="task-name" class="addTask-label">Task Name</label>
-        <input type="text" id="task-name" class="addTask-input" placeholder="Enter task name" />
-
-        <!-- Task Type -->
-        <label for="task-type" class="addTask-label">Task Type</label>
-        <select id="task-type" class="addTask-select">
-          <option value="" disabled selected hidden>Select The Type</option>
-          <option value="task">Task</option>
-          <option value="milestone">Milestone</option>
-        </select>        
+        <label for="taskName" class="addTask-label">Task Name</label>
+        <input type="text" id="taskName" name="taskName" class="addTask-input" placeholder="Enter task name" required/>
         
+        <!-- Task Type -->
+        <label for="taskType" class="addTask-label">Task Type</label>
+        <select id="taskType" name="taskType" class="addTask-select" required>
+          <option value="" disabled selected hidden>Select The Type</option>
+          <option value="Task">Task</option>
+          <option value="Milestone">Milestone</option>
+        </select>
+
         <!-- Priority -->
         <label for="priority" class="addTask-label">Task Priority</label>
-        <select id="priority" class="addTask-select">
+        <select id="priority" name="priority" class="addTask-select" >
           <option value="" disabled selected hidden>Select The Priority</option>
           <option value="low">Low</option>
           <option value="medium-low">Medium-low</option>
@@ -220,88 +222,48 @@
 
         <!-- Assign to -->
         <label for="assignTo" class="addTask-label">Assign to</label>
-        <select id="assignTo" class="addTask-select">
-          <option value="" disabled selected hidden>Select a project First</option>
+        <select id="assignTo" name="assignTo" class="addTask-select" required>
         </select>
 
         <!-- Task Description -->
         <label for="taskDescription" class="addTask-label">Task Description</label>
-        <textarea id="taskDescription" class="addTask-textarea"></textarea>
+        <textarea id="taskDescription" name="taskDescription" class="addTask-textarea" ></textarea>     
+        
+        <!-- Task status -->
+        <label for="status" class="addTask-label">Task Status</label>
+        <select id="status" name="status" class="addTask-select" >
+          <option value="" disabled selected hidden>Select The Status</option>
+          <option value="Pending">Pending</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>     
+        </select>
 
+        <!-- Task Dates -->
         <label for="time-period" class="addTask-label">Time Period</label>
         <div class="time-period-container">
           <div class="addTask-time-period">
             <select id="day" class="addTask-date" style="margin-left: 5.2%; width: 50px;">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-              <option value="22">22</option>
-              <option value="23">23</option>
-              <option value="24">24</option>
-              <option value="25">25</option>
-              <option value="26">26</option>
-              <option value="27">27</option>
-              <option value="28">28</option>
-              <option value="29">29</option>
-              <option value="30">30</option>
-              <option value="31">31</option>
+              <option value="1" selected>1</option>
             </select>
-
+        
             <select id="month" class="addTask-date" style="width: 110px;">
-              <option>January</option>
-              <option>February</option>
-              <option>March</option>
-              <option>April</option>
-              <option>May</option>
-              <option>June</option>
-              <option>July</option>
-              <option>August</option>
-              <option>September</option>
-              <option>October</option>
-              <option>November</option>
-              <option>December</option>
+              <option value="January" selected>January</option>
             </select>
-
+        
             <select id="year" class="addTask-date" style="width: 70px;">
-              <option>2020</option>
-              <option>2021</option>
-              <option>2022</option>
-              <option>2023</option>
-              <option>2024</option>
-              <option>2025</option>
-              <option>2026</option>
-              <option>2027</option>
-              <option>2028</option>
-              <option>2029</option>
-              <option>2030</option>
+              <option value="2025" selected>2025</option>
             </select>
           </div>
-
+        
           <div class="day-control">
             <button id="decrease-day" class="day-button" style="border-radius: 3px 0 0 3px;">-</button>
             <span id="days-count">1</span>
             <button id="increase-day" class="day-button" style="border-radius: 0 3px 3px 0;">+</button>
           </div>
-          <div class="end-date" id="end-date">End Date 02 February 2025</div>
+          <div class="end-date" id="end-date"></div>
         </div>
+
+
 
         <!-- File Requirement -->
         <div class="checkbox-group" style="margin-left: 2%; margin-top: 8px;">
@@ -314,7 +276,7 @@
           <label for="taskFile">Upload File</label>
           <input type="file" id="taskFile" class="addTask-input" />
         </div>
-
+        
         <div class="button-container">
           <button id="delete-task" class="addTask-delete-btn">Delete</button>
           <button id="cancel-task" class="addTask-cancel-btn">Cancel</button>

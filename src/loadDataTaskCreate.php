@@ -37,7 +37,7 @@ if (isset($_GET['members']) && isset($_GET['projectID'])) {
         SELECT u.userID, u.name 
         FROM Users u 
         JOIN user_projects up ON u.userID = up.userID 
-        WHERE up.projectID = ? AND up.role = 'Member'
+        WHERE up.projectID = ?
     ");
     $stmt->bind_param("i", $projectID);
     $stmt->execute();
@@ -47,7 +47,10 @@ if (isset($_GET['members']) && isset($_GET['projectID'])) {
     while ($row = $result->fetch_assoc()) {
         $members[] = $row;
     }
-    echo json_encode($members);
+    echo json_encode([
+      'currentUserID' => $_SESSION['userID'],
+      'members' => $members
+    ]);
     exit;
 }
 

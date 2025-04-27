@@ -127,18 +127,14 @@
       <form class="task-form">
 
         <!-- Project Selection -->
-        <label for="projectID">Project *</label>
-        <select id="projectID" required>
+        <label for="projectID" >Project *</label>
+        <select id="projectID" name="projectID" required>
           <option value="" disabled selected hidden>Select a project</option>
         </select>
 
         <!-- Task Name -->
         <label for="taskName">Task Name</label>
-        <input
-          type="text"
-          id="taskName"
-          placeholder="Enter task name"
-          required
+        <input name="taskName" type="text" id="taskName" placeholder="Enter task name" required
         />
 
         <!-- Task Type -->
@@ -151,7 +147,7 @@
 
         <!-- Priority -->
         <label for="priority">Priority </label>
-        <select id="priority" required>
+        <select id="priority" name="priority"required>
           <option value="" disabled selected hidden>Select The Priority</option>
           <option value="low">🟢 Low</option>
           <option value="medium-low">🔵 Medium-Low</option>
@@ -161,25 +157,26 @@
         </select>
 
         <!-- Assign to -->
-        <label for="assignTo">Assign to </label>
-        <select id="assignTo" required>
+        <label for="assignTo" >Assign to </label>
+        <select id="assignTo" name="assignedTo" required>
           <option value="" disabled selected hidden>Select a project First</option>
         </select>
 
         <!-- Task Description -->
-        <label for="taskDescription">Task Description</label>
+        <label for="taskDescription" >Task Description</label>
         <textarea
+          name="taskDescription"
           id="taskDescription"
           placeholder="Describe the task..."
         ></textarea>
 
         <!-- Task start Date -->
-        <label for="startDate">Start Date</label>
-        <input type="date" id="startDate" required />
+        <label for="startDate" >Start Date</label>
+        <input type="date" id="startDate" name="startDate" required />
 
         <!-- Task end Date -->
         <label for="endDate">End Date</label>
-        <input type="date" id="endDate" required />
+        <input type="date" id="endDate" name="endDate"required />
 
         <!-- File Requirement -->
         <div class="checkbox-group">
@@ -193,8 +190,8 @@
 
         <!-- fileUpload -->
         <div class="file-upload" id="fileUpload">
-          <label for="taskFile">Upload File</label>
-          <input type="file" id="taskFile" />
+          <label for="taskFile" >Upload File</label>
+          <input type="file" id="taskFile" name="taskFile" />
         </div>
 
         <button type="submit" class="submit-btn">Create Task</button>
@@ -267,29 +264,35 @@
 
         fetch(`loadDataTaskCreate.php?members&projectID=${selectedProjectID}`)
           .then((res) => res.json())
-          .then((members) => {
-            if (members.length === 0) {
-              const noMembers = document.createElement("option");
-              noMembers.textContent = "No members found for this project";
-              assignToSelect.appendChild(noMembers);
-              return;
-            }
+            .then((data) => {
+              const members = data.members;
+              const currentUserID = data.currentUserID;
 
-            const defaultOption = document.createElement("option");
-            defaultOption.textContent = "Select a team member";
-            defaultOption.value = "" ;
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            defaultOption.hidden = true;
-            assignToSelect.appendChild(defaultOption);
+              if (members.length === 0) {
+                const noMembers = document.createElement("option");
+                noMembers.textContent = "No members found for this project";
+                assignToSelect.appendChild(noMembers);
+                return;
+              }
 
-            members.forEach((member) => {
-              const option = document.createElement("option");
-              option.value = member.userID;
-              option.textContent = member.name;
-              assignToSelect.appendChild(option);
-            });
-          })
+              const defaultOption = document.createElement("option");
+              defaultOption.textContent = "Select a team member";
+              defaultOption.value = "";
+              defaultOption.disabled = true;
+              defaultOption.selected = true;
+              defaultOption.hidden = true;
+              assignToSelect.appendChild(defaultOption);
+
+              members.forEach((member) => {
+                const option = document.createElement("option");
+                option.value = member.userID;
+                option.textContent = member.userID == currentUserID
+                  ? `Me (${member.name})`
+                  : member.name;
+                assignToSelect.appendChild(option);
+              });
+            })
+
           .catch((err) => {
             console.error("Error loading team members:", err);
             const errorOption = document.createElement("option");
@@ -298,13 +301,32 @@
           });
       });
       document.querySelector(".task-form").addEventListener("submit", function (e) {
-        const projectSelect = document.getElementById("projectID");
-        const assignToSelect = document.getElementById("assignTo");
+        e.preventDefault(); // prevent default form submission
 
-        if (!projectSelect.value || !assignToSelect.value) {
-          e.preventDefault();
-          alert("Please select a project and assign the task to a team member.");
+        const formData = new FormData(this);
+        const selectedProjectOption = document.getElementById("projectID").selectedOptions[0];
+        if (selectedProjectOption) {
+          const projectName = selectedProjectOption.textContent;
+          formData.append("projectName", projectName);
         }
+        
+        fetch("createTask.php", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert("Task created successfully!");
+            window.location.href = "homepage.php"; // Redirect if needed
+          } else {
+            alert("Failed to create task: " + data.message);
+          }
+        })
+        .catch(error => {
+          console.error("Error creating task:", error);
+          alert("Something went wrong. Please try again.");
+        });
       });
     });
     </script>

@@ -1,204 +1,210 @@
-// Function to toggle profile dropdown
+// Toggle dropdown (optional)
 function profiledropdown() {
-  var profileList = document.getElementById('profileList');
+  const profileList = document.getElementById('profileList');
   profileList.style.display = profileList.style.display === 'block' ? 'none' : 'block';
 }
 
-// Open the popup - for both Add and Edit modes
-function openPopup(task = null, projectID = null) {
+// Global dragging flag
+let isDragging = false;
+
+// Function to open the popup for adding a new task
+function openAddTaskPopup(projectID) {
   fetch("addTaskpop.html")
     .then(response => response.text())
     .then(data => {
-      const popupContainer = document.getElementById("popup-container");
-      popupContainer.innerHTML = data;
-
+      // Insert the popup HTML into the container
+      document.getElementById("popup-container").innerHTML = data;
       const popup = document.getElementById("taskPopup");
       popup.style.display = "block";
 
-      const closeButton = document.querySelector(".addTask-close-btn");
-      const cancelButton = document.getElementById("cancel-task");
+      // Set popup events
+      document.querySelector(".addTask-close-btn").onclick = () => {
+        popup.style.display = "none";
+      };
+      document.getElementById("cancel-task").onclick = () => {
+        popup.style.display = "none";
+      };
 
-      closeButton.addEventListener("click", () => popup.style.display = "none");
-      cancelButton.addEventListener("click", () => popup.style.display = "none");
+      // Set the popup header for adding a new task
+      document.querySelector(".popup-header").textContent = "Add New Task";
+      document.getElementById("projectID").value = projectID;
+      document.getElementById("delete-task").style.display = "none"; // Hide delete button for new tasks
+      document.getElementById("save-task").dataset.edit = "false"; // Mark as new task
 
-      // If editing, fill the fields with task data
-      if (task) {
-        document.querySelector(".popup-header").textContent = "Edit Task";
-        document.getElementById("projectID").value = task.projectID;
-        document.getElementById("task-name").value = task.taskName;
-        document.getElementById("task-type").value = task.taskType;
-        document.getElementById("priority").value = task.priority;
-        document.getElementById("assignTo").value = task.assignedTo;
-        document.getElementById("taskDescription").value = task.taskDescription;
-        // TODO: convert task.startDate and endDate to day/month/year/duration
-        document.getElementById("save-task").dataset.edit = "true";
-        document.getElementById("save-task").dataset.taskid = task.taskID;
-        document.getElementById("delete-task").style.display = "inline-block";
-        document.getElementById("delete-task").dataset.taskid = task.taskID;
-      } else {
-        // If adding new task
-        document.querySelector(".popup-header").textContent = "Add New Task";
-        document.getElementById("projectID").value = projectID;
-        document.getElementById("delete-task").style.display = "none";
-        document.getElementById("save-task").dataset.edit = "false";
-      }
+      // Load team members using loadDataTaskCreate.php
+      loadAssignToList(projectID); // Reset dropdown
 
+      // Add event listeners for saving and cancelling the task
       attachPopupEventListeners();
-      makePopupDraggable(popup);
-    })
-    .catch(error => {
-      console.error("Error loading popup:", error);
+      makePopupDraggable(popup); // Make popup draggable
     });
 }
 
-// Attach all events inside popup
-function attachPopupEventListeners() {
-  // Update end date based on start and duration
-  document.getElementById('day')?.addEventListener('change', updateEndDate);
-  document.getElementById('month')?.addEventListener('change', updateEndDate);
-  document.getElementById('year')?.addEventListener('change', updateEndDate);
 
-  document.getElementById('increase-day')?.addEventListener('click', function () {
-    let days = parseInt(document.getElementById('days-count').innerText);
-    document.getElementById('days-count').innerText = days + 1;
-    updateEndDate();
-  });
 
-  document.getElementById('decrease-day')?.addEventListener('click', function () {
-    let days = parseInt(document.getElementById('days-count').innerText);
-    if (days > 1) {
-      document.getElementById('days-count').innerText = days - 1;
-      updateEndDate();
-    }
-  });
+// Function to open the popup for editing an existing task
+function openEditTaskPopup(task, projectID) {
+  fetch("addTaskpop.html")
+    .then(response => response.text())
+    .then(data => {
+      // Insert the popup HTML into the container
+      document.getElementById("popup-container").innerHTML = data;
+      const popup = document.getElementById("taskPopup");
+      popup.style.display = "block";
 
-  updateEndDate();
+      // Set popup events
+      document.querySelector(".addTask-close-btn").onclick = () => {
+        popup.style.display = "none";
+      };
+      document.getElementById("cancel-task").onclick = () => {
+        popup.style.display = "none";
+      };
 
-  // Delete task if editing
-  document.getElementById('delete-task')?.addEventListener('click', function () {
-    const taskID = this.dataset.taskid;
-    if (!taskID) return;
+      // Set the popup header for editing a task
+      document.querySelector(".popup-header").textContent = "Edit Task";
+      document.getElementById("projectID").value = task.projectID;
+      document.getElementById("taskName").value = task.taskName; // Task Name
+      document.getElementById("taskType").value = task.taskType; // Task Type
+      document.getElementById("priority").value = task.priority; // Priority
+      document.getElementById("taskDescription").value = task.description; // Task Description
+      document.getElementById("status").value = task.status; // Task Status
 
-    if (confirm("Are you sure you want to delete this task?")) {
-      fetch(`deleteTask.php?id=${taskID}`, { method: 'GET' })
-        .then(res => res.text())
-        .then(response => {
-          alert(response);
-          document.getElementById('taskPopup').style.display = 'none';
-        
-          // 🔁 Refresh tasks in the view
-          if (typeof window.refreshTasks === 'function') {
-            window.refreshTasks();
-          }
-        })
-        .catch(err => console.error("Error deleting task:", err))
-      }
-  });
+      // Load Assign To List and preselect the current assignee
+      loadAssignToList(projectID, task.assignedTo); // Pass the current assignee to preselect
 
-  // Save task (create or update)
-  document.getElementById('save-task')?.addEventListener('click', function () {
-    const formData = new FormData();
-    formData.append('projectID', document.getElementById('projectID').value);
-    formData.append('taskName', document.getElementById('task-name').value);
-    formData.append('taskType', document.getElementById('task-type').value);
-    formData.append('priority', document.getElementById('priority').value);
-    formData.append('assignedTo', document.getElementById('assignTo').value);
-    formData.append('taskDescription', document.getElementById('taskDescription').value);
+      
+      document.getElementById("save-task").dataset.edit = "true"; // Mark as editing existing task
+      document.getElementById("delete-task").style.display = "inline-block"; // Show delete button
+      document.getElementById("delete-task").dataset.taskID = task.taskID; // Set taskID for deletion
 
-    const day = document.getElementById('day').value;
-    const month = document.getElementById('month').selectedIndex;
-    const year = document.getElementById('year').value;
-    const duration = parseInt(document.getElementById('days-count').innerText);
-    const startDate = new Date(year, month, day);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + duration);
-    formData.append('startDate', startDate.toISOString().split('T')[0]);
-    formData.append('endDate', endDate.toISOString().split('T')[0]);
+      // Add event listeners for saving, deleting, and cancelling the task
+      attachPopupEventListeners();
+      makePopupDraggable(popup); // Make popup draggable
+    });
+}
 
-    const fileInput = document.getElementById('taskFile');
-    if (fileInput?.files.length > 0) {
-      formData.append('taskFile', fileInput.files[0]);
-    }
 
-    const isEditMode = document.getElementById('save-task').dataset.edit === 'true';
-    const url = isEditMode ? 'updateTask.php' : 'createTask.php';
 
-    if (isEditMode) {
-      formData.append('taskID', document.getElementById('save-task').dataset.taskid);
-    }
+// Function to load the "Assign To" dropdown with team members
+function loadAssignToList(projectID, selectedUserName = null) {
+  const assignToSelect = document.getElementById("assignTo");
+  assignToSelect.innerHTML = ''; // Clear previous options
 
-    fetch(url, {
-      method: 'POST',
-      body: formData
-    }).then(res => res.text())
-    .then(response => {
-      alert(response);
-      document.getElementById('taskPopup').style.display = 'none';
-    
-      // 🔁 Refresh tasks in the view
-      if (typeof window.refreshTasks === 'function') {
-        window.refreshTasks();
-      }
+  // Fetch the team members
+  fetch(`loadDataTaskCreate.php?members&projectID=${projectID}`)
+    .then(response => response.json())
+    .then(data => {
+      data.members.forEach(member => {
+        const option = document.createElement("option");
+        option.value = member.userID;
+        option.textContent = member.name;
+
+        // Preselect the assignee if the task is being edited (match by name)
+        if (selectedUserName && member.name === selectedUserName) {
+          option.selected = true; // Preselect the assignee by name
+        }
+
+        assignToSelect.appendChild(option);
+      });
     })
-    .catch(err => console.error('Error saving task:', err));    
-  });
+    .catch(error => console.error("Error loading team members:", error));
 }
 
-// Calculate and update the end date
-function updateEndDate() {
-  const day = parseInt(document.getElementById('day')?.value);
-  const month = document.getElementById('month')?.selectedIndex + 1;
-  const year = parseInt(document.getElementById('year')?.value);
-  const duration = parseInt(document.getElementById('days-count')?.innerText) || 1;
 
-  if (isNaN(day) || isNaN(month) || isNaN(year)) return;
+// Add interactions to popup buttons (Save, Cancel, Delete)
+function attachPopupEventListeners() {
+  // Delete task
+  document.getElementById("delete-task").onclick = function () {
+    const id = this.dataset.taskID;
+    if (confirm("Are you sure you want to delete this task?")) {
+      fetch(`deleteTask.php?id=${id}`)
+        .then(res => res.text())
+        .then(data => {
+          alert('Task deleted successfully.');
+          document.getElementById("taskPopup").style.display = "none";
+          if (typeof window.refreshTasks === 'function') window.refreshTasks(); // Refresh task list
+        });
+    }
+  };
 
-  const startDate = new Date(year, month - 1, day);
-  startDate.setDate(startDate.getDate() + duration);
+  // Save task (either create or update)
+  document.getElementById("save-task").onclick = function () {
+    const formData = new FormData();
+    formData.append("projectID", document.getElementById("projectID").value);
+    formData.append("taskName", document.getElementById("taskName").value);
+    formData.append("taskType", document.getElementById("taskType").value);
+    formData.append("priority", document.getElementById("priority").value);
+    formData.append("assignedTo", document.getElementById("assignTo").value);
+    formData.append("status", document.getElementById("status").value);
+    formData.append("taskDescription", document.getElementById("taskDescription").value);
+    formData.append("startDate", "2025-04-18" ); // Add start date (you can change this dynamically if needed)
+    formData.append("endDate", "2025-04-20"); // Add end date (you can change this dynamically if needed)
 
-  const endDateStr = `${startDate.getDate()} ${startDate.toLocaleString('default', { month: 'long' })} ${startDate.getFullYear()}`;
-  document.getElementById('end-date').textContent = `End Date ${endDateStr}`;
+    // Check if a file is uploaded
+    const fileInput = document.getElementById("taskFile");
+    if (fileInput && fileInput.files.length > 0) {
+      formData.append("taskFile", fileInput.files[0]);
+    }
+
+    const isEdit = this.dataset.edit === "true";
+    const taskID = this.dataset.taskID; 
+    const url = isEdit ? "updateTask.php" : "createTask.php";
+    if (isEdit) formData.append("taskID", task.taskID);
+
+    // Submit the form data
+    fetch(url, { method: "POST", body: formData })
+      .then(res => res.text())
+      .then(data => {
+        alert(data.message);
+        document.getElementById("taskPopup").style.display = "none"; // Close popup
+        if (typeof window.refreshTasks === 'function') window.refreshTasks(); // Refresh task list
+      });
+  };
+
+  // Cancel task
+  document.getElementById("cancel-task").onclick = function () {
+    document.getElementById("taskPopup").style.display = "none"; // Close the popup
+  };
 }
 
-// Make popup draggable
-let isDragging = false;
+// Make the popup draggable
 function makePopupDraggable(popup) {
-  const popupContent = popup.querySelector(".popup-content");
-  const header = popupContent.querySelector("h2");
+  const header = popup.querySelector("h2");
+  const content = popup.querySelector(".popup-content");
   let offsetX, offsetY;
 
-  header.addEventListener('mousedown', function (e) {
-    isDragging = false;
-    const rect = popupContent.getBoundingClientRect();
-    popupContent.style.left = `${rect.left}px`;
-    popupContent.style.top = `${rect.top}px`;
-    popupContent.style.transform = 'none';
-    popupContent.style.position = 'fixed';
+  header.addEventListener("mousedown", function (e) {
+    const rect = content.getBoundingClientRect();
+    content.style.left = `${rect.left}px`;
+    content.style.top = `${rect.top}px`;
+    content.style.transform = "none";
+    content.style.position = "fixed";
+
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
 
     function onMouseMove(e) {
-      isDragging = true;
-      popupContent.style.left = `${e.clientX - offsetX}px`;
-      popupContent.style.top = `${e.clientY - offsetY}px`;
+      content.style.left = `${e.clientX - offsetX}px`;
+      content.style.top = `${e.clientY - offsetY}px`;
     }
 
     function onMouseUp() {
-      setTimeout(() => { isDragging = false }, 100);
-      window.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
     }
 
-    window.addEventListener('mousemove', onMouseMove);
-    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
   });
 }
 
-// Hide popup when clicking outside
+// Hide popup on outside click
 window.addEventListener("click", function (event) {
-  const popupContent = document.querySelector(".popup-content");
-  if (!popupContent?.contains(event.target) && !isDragging) {
+  const content = document.querySelector(".popup-content");
+  if (!content?.contains(event.target)) {
     const popup = document.getElementById("taskPopup");
     if (popup) popup.style.display = "none";
   }
 });
+
+

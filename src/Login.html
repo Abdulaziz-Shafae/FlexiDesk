@@ -301,6 +301,10 @@
           <div class="wave-group">
             <input type="password" id="password" name="password" class="input" required />
             <label class="label">Password</label>
+            <span
+              class="password-toggle"
+              onclick="togglePasswordVisibility('password', this)">👁️
+            </span>
           </div>
         
           <div id="login-error" class="login-error" style="display: none;">
@@ -314,6 +318,8 @@
           <button type="submit" class="btn login-btn">Login</button>
         </form>
         
+
+        <!-- Reset Password popup-->
 
         <div id="resetPopup" class="popup">
           <div class="popup-content" style="width: 400px; position: relative;">

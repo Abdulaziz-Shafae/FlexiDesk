@@ -7,26 +7,24 @@ if (!isset($_SESSION['userID'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    if (!isset($_POST['taskID'], $_POST['projectID'], $_POST['status '], $_POST['taskName'], $_POST['taskType'],$_POST['taskDescription'], $_POST['priority'], $_POST['assignedTo'], $_POST['startDate'], $_POST['endDate'])) {
+        die("Missing required fields.");
+    }
+
     $taskID = $_POST['taskID'];
     $projectID = $_POST['projectID'];
     $taskName = $_POST['taskName'];
     $taskType = $_POST['taskType'];
-    $taskDescription = $_POST['taskDescription'];
+    $taskDescription = trim($_POST['taskDescription']) ?: null;
     $startDate = $_POST['startDate'];
     $endDate = $_POST['endDate'];
     $priority = $_POST['priority'];
-    $assignedTo = $_POST['assignedTo'];
+    $assignedTo = $_POST['assignTo'];
+    $status = $_POST['status'];
     $filePath = NULL;
 
-    // Check if the user is a manager in this project
-    $checkManager = $conn->prepare("SELECT * FROM user_projects WHERE userID = ? AND projectID = ? AND role = 'Manager'");
-    $checkManager->bind_param("ii", $_SESSION['userID'], $projectID);
-    $checkManager->execute();
-    if ($checkManager->get_result()->num_rows === 0) {
-        die("You are not authorized to update this task.");
-    }
-
-    // Handle optional file upload
+    // Optional file upload
     if (isset($_FILES['taskFile']) && $_FILES['taskFile']['error'] == 0) {
         $uploadDir = 'uploads/';
         if (!is_dir($uploadDir)) {
@@ -41,21 +39,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("File upload failed.");
         }
     }
-
-    // Prepare update query
+    // Prepare the SQL query for updating the task
     if ($filePath !== NULL) {
-        $sql = "UPDATE Tasks SET taskName=?, taskType=?, description=?, priority=?, assignedTo=?, startDate=?, endDate=?, filePath=? WHERE taskID=?";
+        $sql = "UPDATE Tasks SET taskName=?, taskType=?, description=?, priority=?, assignedTo=?, startDate=?, endDate=?, status=?, filePath=? WHERE taskID=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssi", $taskName, $taskType, $taskDescription, $priority, $assignedTo, $startDate, $endDate, $filePath, $taskID);
+        if (!$stmt) {
+            die("SQL prepare failed: " . $conn->error);
+        }
+        $stmt->bind_param("sssssssssi", $taskName, $taskType, $taskDescription, $priority, $assignedTo, $startDate, $endDate, $status, $filePath, $taskID);
     } else {
-        $sql = "UPDATE Tasks SET taskName=?, taskType=?, description=?, priority=?, assignedTo=?, startDate=?, endDate=? WHERE taskID=?";
+        $sql = "UPDATE Tasks SET taskName=?, taskType=?, description=?, priority=?, assignedTo=?, startDate=?, endDate=?, status=? WHERE taskID=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssssi", $taskName, $taskType, $taskDescription, $priority, $assignedTo, $startDate, $endDate, $taskID);
+        if (!$stmt) {
+            die("SQL prepare failed: " . $conn->error);
+        }
+        $stmt->bind_param("ssssssssi", $taskName, $taskType, $taskDescription, $priority, $assignedTo, $startDate, $endDate, $status, $taskID);
     }
 
-    $stmt->execute();
-
-    echo "Task updated successfully!";
+    // Execute the query and check for success
+    if ($stmt->execute()) {
+        header('Content-Type: application/json');
+        echo json_encode(["status" => "success", "message" => "Task updated successfully!"]);
+    } else {
+        die("Error executing query: " . $stmt->error);
+    }
 } else {
     echo "Invalid request.";
 }

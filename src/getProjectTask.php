@@ -23,13 +23,17 @@ if (!$projectID) {
 
 // Base query
 $query = "
-    SELECT t.taskID, t.taskName, t.description, t.endDate, t.priority, t.status, t.startDate,
-           p.title AS projectTitle, u.name AS assignedToName
+    SELECT 
+        t.taskID, t.taskName, t.taskType, t.description, t.endDate, t.priority, 
+        t.status, t.startDate,
+        p.title AS projectTitle, 
+        u.name AS assignedTo
     FROM Tasks t
     JOIN Projects p ON t.projectID = p.projectID
     LEFT JOIN Users u ON t.assignedTo = u.userID
     WHERE t.projectID = ?
 ";
+
 
 $params = [$projectID];
 $types = "i";
