@@ -130,9 +130,9 @@
             </div>
   
             <div class="calendar-header">
-              <button onclick="prevMonth()">←</button>
+              <button aria-label="Previous Month" onclick="prevMonth()">←</button>
               <h2 id="month-name">April 2025</h2>
-              <button onclick="nextMonth()">→</button>
+              <button aria-label="Next Month" onclick="nextMonth()">→</button>
             </div>
           </div>
         </div>
@@ -204,7 +204,7 @@
           if (taskDate.getMonth() !== month || taskDate.getFullYear() !== year) return;
 
           const day = taskDate.getDate();
-          const index = new Date(year, month, 1).getDay() + day - 1;
+          const index = day - 1;
           const cell = calendarGrid.children[index];
           if (!cell) return;
 
@@ -235,10 +235,11 @@
 
           taskDiv.addEventListener("mouseenter", (e) => {
             popup.innerHTML = `
-              <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
+              <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px; word-break: break-word;">
               <strong>Task Type:</strong> ${task.taskType}<br>
               <strong>Task:</strong> ${task.taskName}<br>
               <strong>Description:</strong> ${task.description}<br>
+              <div style="display: -webkit-box; -webkit-line-clamp: 10; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; word-break: break-word;">
               <strong>Assigned To:</strong> ${task.assignedTo || 'Unassigned'}<br>
               <strong>Priority:</strong> ${task.priority}<br>
               <strong>Status:</strong> ${task.status}<br>
@@ -247,14 +248,27 @@
             </div>
             `;
             const rect = e.target.getBoundingClientRect();
-            const popupWidth = 260;
+            popup.style.visibility = 'hidden';
+            popup.style.display = 'block';
+            const popupWidth = 300;
+            const popupHeight = popup.offsetHeight + 100;
+
             let left = rect.left;
+            let top = rect.bottom + window.scrollY - 110;
+
+            // If the popup would go off the screen on the right, show it to the left
             if (left + popupWidth > window.innerWidth) {
-              left = window.innerWidth - popupWidth - 115;
+              left = window.innerWidth - popupWidth - 35;  // Adding padding to prevent it from sticking to the edge
             }
-            
-            popup.style.top = `${rect.bottom + window.scrollY - 110}px`;
+
+            // If the popup would go off the screen on the bottom, show it above
+            if (top + popupHeight > window.innerHeight) {
+              top = rect.top + window.scrollY - popupHeight - 10; // Position it above the target element
+            }
+
+            popup.style.top = `${top}px`;
             popup.style.left = `${left}px`;
+            popup.style.visibility = 'visible'; 
             popup.style.display = "block";
           });
 
@@ -377,17 +391,12 @@
         }
       });
 
-      document.getElementById("status-filter").addEventListener("change", () => {
-        loadCalendar(currentMonth, currentYear);
+      ["status-filter", "priority-filter", "assigned-to-me"].forEach(id => {
+        document.getElementById(id).addEventListener("change", () => {
+          loadCalendar(currentMonth, currentYear);
+        });
       });
 
-      document.getElementById("priority-filter").addEventListener("change", () => {
-        loadCalendar(currentMonth, currentYear);
-      });
-
-      document.getElementById("assigned-to-me").addEventListener("change", () => {
-        loadCalendar(currentMonth, currentYear);
-      });
 
       document.getElementById("openPopupBtn")?.addEventListener("click", () => {
         const projectID = sessionStorage.getItem("selectedProjectID");

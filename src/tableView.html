@@ -162,8 +162,19 @@
                   </div>
                 `;
                 const rect = e.target.getBoundingClientRect();
-                popup.style.top = `${rect.bottom + window.scrollY + -110}px`;
+                popup.style.visibility = 'hidden';
+                popup.style.display = 'block';
+                const popupHeight = popup.offsetHeight + 100;
+                let top = rect.bottom + window.scrollY - 110;
+
+                // If the popup would go off the screen on the bottom, show it above
+                if (top + popupHeight > window.innerHeight) {
+                  top = rect.top + window.scrollY - popupHeight - 10; // Position it above the target element
+                }
+
+                popup.style.top = `${top}px`;
                 popup.style.left = `${rect.left}px`;                 
+                popup.style.visibility = 'visible'; 
                 popup.style.display = "block";
               });
 
