@@ -8,7 +8,7 @@ if (!isset($_SESSION['userID'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    if (!isset($_POST['taskID'], $_POST['projectID'], $_POST['status '], $_POST['taskName'], $_POST['taskType'],$_POST['taskDescription'], $_POST['priority'], $_POST['assignedTo'], $_POST['startDate'], $_POST['endDate'])) {
+    if (!isset($_POST['taskID'], $_POST['projectID'], $_POST['status'], $_POST['taskName'], $_POST['taskType'],$_POST['taskDescription'], $_POST['priority'], $_POST['assignedTo'], $_POST['startDate'], $_POST['endDate'])) {
         die("Missing required fields.");
     }
 
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $startDate = $_POST['startDate'];
     $endDate = $_POST['endDate'];
     $priority = $_POST['priority'];
-    $assignedTo = $_POST['assignTo'];
+    $assignedTo = $_POST['assignedTo'];
     $status = $_POST['status'];
     $filePath = NULL;
 

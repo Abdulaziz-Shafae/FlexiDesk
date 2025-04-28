@@ -252,7 +252,8 @@
             if (left + popupWidth > window.innerWidth) {
               left = window.innerWidth - popupWidth - 115;
             }
-            popup.style.top = `${rect.bottom + window.scrollY + -110}px`;
+            
+            popup.style.top = `${rect.bottom + window.scrollY - 110}px`;
             popup.style.left = `${left}px`;
             popup.style.display = "block";
           });

@@ -34,6 +34,9 @@ function openAddTaskPopup(projectID) {
       // Load team members using loadDataTaskCreate.php
       loadAssignToList(projectID); // Reset dropdown
 
+      // Initialize date handling
+      initializeDateSelectors(projectID);
+
       // Add event listeners for saving and cancelling the task
       attachPopupEventListeners();
       makePopupDraggable(popup); // Make popup draggable
@@ -68,14 +71,22 @@ function openEditTaskPopup(task, projectID) {
       document.getElementById("priority").value = task.priority; // Priority
       document.getElementById("taskDescription").value = task.description; // Task Description
       document.getElementById("status").value = task.status; // Task Status
+      document.getElementById("taskStartDate").value = task.startDate; // Task start date
+      document.getElementById("taskEndDate").value = task.endDate; // Task ennd date
 
       // Load Assign To List and preselect the current assignee
       loadAssignToList(projectID, task.assignedTo); // Pass the current assignee to preselect
 
-      
+
+
+      // Initialize date handling
+      initializeDateSelectors(projectID, task.startDate, task.endDate);
+
       document.getElementById("save-task").dataset.edit = "true"; // Mark as editing existing task
       document.getElementById("delete-task").style.display = "inline-block"; // Show delete button
       document.getElementById("delete-task").dataset.taskID = task.taskID; // Set taskID for deletion
+      document.getElementById("save-task").dataset.taskID = task.taskID; // Set taskID for saving 
+
 
       // Add event listeners for saving, deleting, and cancelling the task
       attachPopupEventListeners();
@@ -122,7 +133,7 @@ function attachPopupEventListeners() {
         .then(data => {
           alert('Task deleted successfully.');
           document.getElementById("taskPopup").style.display = "none";
-          if (typeof window.refreshTasks === 'function') window.refreshTasks(); // Refresh task list
+          location.reload();          
         });
     }
   };
@@ -137,8 +148,8 @@ function attachPopupEventListeners() {
     formData.append("assignedTo", document.getElementById("assignTo").value);
     formData.append("status", document.getElementById("status").value);
     formData.append("taskDescription", document.getElementById("taskDescription").value);
-    formData.append("startDate", "2025-04-18" ); // Add start date (you can change this dynamically if needed)
-    formData.append("endDate", "2025-04-20"); // Add end date (you can change this dynamically if needed)
+    formData.append("startDate", document.getElementById('taskStartDate').value ); 
+    formData.append("endDate", document.getElementById('taskEndDate').value); 
 
     // Check if a file is uploaded
     const fileInput = document.getElementById("taskFile");
@@ -149,15 +160,21 @@ function attachPopupEventListeners() {
     const isEdit = this.dataset.edit === "true";
     const taskID = this.dataset.taskID; 
     const url = isEdit ? "updateTask.php" : "createTask.php";
-    if (isEdit) formData.append("taskID", task.taskID);
+
+    if (isEdit) formData.append("taskID", taskID);
 
     // Submit the form data
     fetch(url, { method: "POST", body: formData })
       .then(res => res.text())
       .then(data => {
-        alert(data.message);
+        if(isEdit){
+          alert("Task updated successfully!");
+        } else {
+          alert("Task added successfully!");
+        }
+        
         document.getElementById("taskPopup").style.display = "none"; // Close popup
-        if (typeof window.refreshTasks === 'function') window.refreshTasks(); // Refresh task list
+        location.reload();          
       });
   };
 
@@ -208,3 +225,262 @@ window.addEventListener("click", function (event) {
 });
 
 
+function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = null) {
+  // DOM elements
+  const daySelect = document.getElementById('day');
+  const monthSelect = document.getElementById('month');
+  const yearSelect = document.getElementById('year');
+  const increaseBtn = document.getElementById('increase-day');
+  const decreaseBtn = document.getElementById('decrease-day');
+  const daysCount = document.getElementById('days-count');
+  const endDateDiv = document.getElementById('end-date');
+
+
+  let selectedStartDate;
+  let selectedEndDate;
+  let projectStartDate;
+  let projectEndDate;
+
+  // Populate selects
+  function populateDateOptions() {
+    // Clear existing options
+    daySelect.innerHTML = '';
+    monthSelect.innerHTML = '';
+    yearSelect.innerHTML = '';
+  
+    const projectStartDay = projectStartDate.getDate();
+    const projectStartMonth = projectStartDate.getMonth(); // 0-based month
+    const projectStartYear = projectStartDate.getFullYear();
+  
+    const projectEndDay = projectEndDate.getDate();
+    const projectEndMonth = projectEndDate.getMonth(); // 0-based month
+    const projectEndYear = projectEndDate.getFullYear();
+  
+    // Populate Years
+    for (let i = projectStartYear; i <= projectEndYear; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+  
+      // Skip years outside project start/end range
+      if (i < projectStartYear || i > projectEndYear) {
+        continue;
+      }
+  
+      yearSelect.appendChild(option);
+    }
+  
+    // Populate Months
+    const selectedYear = parseInt(yearSelect.value);
+  
+    for (let i = 1; i <= 12; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+  
+      // Skip months outside the valid range for the selected year
+      if (
+        (selectedYear === projectStartYear && i < projectStartMonth + 1) || 
+        (selectedYear === projectEndYear && i > projectEndMonth + 1)
+      ) {
+        continue; // Skip adding this option
+      }
+  
+      monthSelect.appendChild(option);
+    }
+  
+    // Update days when month or year changes
+    updateDays();
+  }
+  
+  // Recalculate and populate days based on selected month and year
+  function updateDays() {
+    const selectedYear = parseInt(yearSelect.value);
+    const selectedMonth = parseInt(monthSelect.value);
+    
+    // Get the last day of the selected month
+    const lastDayOfMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+  
+    const projectStartDay = projectStartDate.getDate();
+    const projectStartMonth = projectStartDate.getMonth();
+    const projectEndDay = projectEndDate.getDate();
+    const projectEndMonth = projectEndDate.getMonth();
+  
+    // Populate Days based on selected year and month
+    daySelect.innerHTML = '';
+  
+    // For the first month, limit days starting from project start day
+    if (selectedMonth === projectStartMonth + 1) {
+      for (let i = projectStartDay; i <= lastDayOfMonth; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+  
+        daySelect.appendChild(option);
+      }
+    }
+    // For the last month, limit days up to project end day
+    else if (selectedMonth === projectEndMonth + 1) {
+      for (let i = 1; i <= projectEndDay; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+  
+        daySelect.appendChild(option);
+      }
+    }
+    // For all other months, show days from 1 to 31
+    else {
+      for (let i = 1; i <= lastDayOfMonth; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+  
+        daySelect.appendChild(option);
+      }
+    }
+  }
+  
+  // Initialize date options when page loads or after month/year change
+  monthSelect.addEventListener('change', function() {
+    updateDays(); // Recalculate and update the available days when month changes
+  });
+  
+  yearSelect.addEventListener('change', function() {
+    updateDays(); // Recalculate and update the available days when year changes
+  });
+  
+  // Initialize the date selectors when the page is loaded
+  window.addEventListener('DOMContentLoaded', function() {
+    populateDateOptions(); // Populate date options when the page is loaded
+  });
+  
+  
+  
+
+  // Update end date and hidden fields
+  function updateEndDate(resetDays = false) {
+    // Get current selected date
+    const day = parseInt(daySelect.value);
+    const month = parseInt(monthSelect.value) - 1; // Month is 0-based
+    const year = parseInt(yearSelect.value);
+
+    selectedStartDate = new Date(year, month, day);
+
+    if (resetDays) {
+      daysCount.textContent = 0;
+    }
+
+    selectedEndDate = new Date(selectedStartDate);
+    selectedEndDate.setDate(selectedStartDate.getDate() + parseInt(daysCount.textContent));
+
+    // Limit endDate to projectEndDate
+    if (selectedEndDate > projectEndDate) {
+      selectedEndDate = new Date(projectEndDate);
+      const diffTime = Math.abs(selectedEndDate - selectedStartDate);
+      const correctedDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      daysCount.textContent = correctedDays;
+    }
+
+    // Update DOM
+    endDateDiv.textContent = `${selectedEndDate.getDate()} / ${selectedEndDate.getMonth() + 1} / ${selectedEndDate.getFullYear()}`;
+
+    document.getElementById('taskStartDate').value = 
+    `${selectedStartDate.getFullYear()}-${String(selectedStartDate.getMonth() + 1).padStart(2, '0')}-${String(selectedStartDate.getDate()).padStart(2, '0')}`;
+  
+  document.getElementById('taskEndDate').value = 
+    `${selectedEndDate.getFullYear()}-${String(selectedEndDate.getMonth() + 1).padStart(2, '0')}-${String(selectedEndDate.getDate()).padStart(2, '0')}`;
+  }
+
+
+  function setupHoldButton(button, action) {
+    let intervalId;
+  
+    button.addEventListener('mousedown', () => {
+      action(); // Immediate action
+      intervalId = setInterval(action, 200); // Repeat every 150ms
+    });
+  
+    button.addEventListener('mouseup', () => {
+      clearInterval(intervalId);
+    });
+  
+    button.addEventListener('mouseleave', () => {
+      clearInterval(intervalId);
+    });
+  
+    button.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      action();
+      intervalId = setInterval(action, 200);
+    }, { passive: false });    
+  
+    button.addEventListener('touchend', () => {
+      clearInterval(intervalId);
+    });
+  }
+
+  
+  // Button actions
+  setupHoldButton(increaseBtn, () => {
+    const maxDays = Math.floor((projectEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
+    if (parseInt(daysCount.textContent) < maxDays) {
+      daysCount.textContent = parseInt(daysCount.textContent) + 1;
+      updateEndDate();
+    }
+  });
+  
+  setupHoldButton(decreaseBtn, () => {
+    if (parseInt(daysCount.textContent) > 0) {
+      daysCount.textContent = parseInt(daysCount.textContent) - 1;
+      updateEndDate();
+    }
+  });
+  
+  daySelect.addEventListener('change', () => updateEndDate(true));
+  monthSelect.addEventListener('change', () => updateEndDate(true));
+  yearSelect.addEventListener('change', () => updateEndDate(true));
+
+  // Fetch the project dates
+  fetch('getProjectDate.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ projectID: projectID })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      console.error('Error:', data.error);
+      return;
+    }
+
+    // Set project start and end dates
+    projectStartDate = new Date(data.startDate);
+    projectEndDate = new Date(data.endDate);
+
+    // Use task-specific dates if available, else default to project start date
+    selectedStartDate = taskStartDate ? new Date(taskStartDate) : new Date(projectStartDate);
+    selectedEndDate = taskEndDate ? new Date(taskEndDate) : new Date(projectStartDate);
+
+    // Populate dropdowns
+    populateDateOptions();
+
+    // Set default dropdown selections to selectedStartDate
+    daySelect.value = selectedStartDate.getDate();
+    monthSelect.value = selectedStartDate.getMonth() + 1; // Months are 0-11, so add 1
+    yearSelect.value = selectedStartDate.getFullYear();
+
+    // Calculate days difference between start and end date
+    const diffTime = selectedEndDate - selectedStartDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    daysCount.textContent = diffDays;
+
+    // Update the end date display
+    updateEndDate();
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
+}
