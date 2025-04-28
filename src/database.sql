@@ -1,6 +1,7 @@
 -- Deletes all tables (order matters due to foreign keys)
 DROP TABLE IF EXISTS Reports, Alerts, Notifications, user_projects, Tasks, Projects, Users, MetaValues;
 
+
 -- Users Table 
 CREATE TABLE Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
