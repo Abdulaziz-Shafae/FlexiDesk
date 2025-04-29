@@ -87,6 +87,15 @@ CREATE TABLE MetaValues (
   value VARCHAR(100) NOT NULL UNIQUE
 );
 
+-- Chat Table
+CREATE TABLE project_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    user_id INT NOT NULL,
+    message TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- Sample Users
 INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bio) VALUES
@@ -149,3 +158,14 @@ INSERT INTO Notifications (recipientID, type, message) VALUES
 -- Alerts
 INSERT INTO Alerts (recipientID, priority, details) VALUES
 (2, 'High', 'CRM Project has critical milestone in 5 days.');
+
+-- Sample Chat Messages for project_messages table
+INSERT INTO project_messages (project_id, user_id, message, timestamp) VALUES
+(1, 1, 'Hi team, I just uploaded the homepage mockup. Please review.', '2025-04-25 10:15:00'),
+(1, 2, 'Thanks Alice! I will review it this afternoon.', '2025-04-25 11:00:00'),
+(1, 3, 'Noted. I will check for any styling issues.', '2025-04-25 11:30:00'),
+(2, 1, 'Splash screen draft is ready for feedback.', '2025-05-06 09:20:00'),
+(2, 2, 'Good work. Let’s finalize backend auth setup first.', '2025-05-06 09:45:00'),
+(2, 3, 'Can someone assign me tasks for notification testing?', '2025-05-07 14:00:00'),
+(3, 4, 'User roles definition completed. Uploaded to drive.', '2025-05-15 16:10:00'),
+(3, 5, 'I have updated the dashboard wireframe. Please review.', '2025-05-25 10:00:00');

@@ -180,21 +180,7 @@
             Select Project
           </button>
           <div class="project-list" id="projectList">
-            <div class="project-item" onclick="switchProject('Project Alpha')">
-              Project Alpha
-            </div>
-            <div class="project-item" onclick="switchProject('Project Beta')">
-              Project Beta
-            </div>
-            <div class="project-item" onclick="switchProject('Marketing Plan')">
-              Marketing Plan
-            </div>
-            <div
-              class="project-item"
-              onclick="switchProject('Development Team')"
-            >
-              Development Team
-            </div>
+            <!-- Projects will be loaded dynamically here -->
           </div>
         </div>
 
@@ -224,54 +210,106 @@
       </div>
     </div>
 
-    <!-- JavaScript for Dropdown & Chat Switching -->
     <script>
+      let currentProjectId = null;
+      const userName = 'You'; // Later you can replace this with session user name
+    
       function toggleDropdown() {
-        let dropdown = document.getElementById('projectList');
-        dropdown.style.display =
-          dropdown.style.display === 'flex' ? 'none' : 'flex';
+        const dropdown = document.getElementById('projectList');
+        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
       }
-
-      function sendMessage() {
-        let input = document.getElementById('messageInput');
-        let messageText = input.value.trim();
-
-        if (messageText !== '') {
-          let chatBox = document.getElementById('chatBox');
-
-          let messageDiv = document.createElement('div');
-          messageDiv.classList.add('message', 'sent');
-
-          let senderSpan = document.createElement('span');
-          senderSpan.classList.add('sender');
-          senderSpan.textContent = 'You';
-
-          let messageContent = document.createElement('p');
-          messageContent.textContent = messageText;
-
-          messageDiv.appendChild(senderSpan);
-          messageDiv.appendChild(messageContent);
-          chatBox.appendChild(messageDiv);
-
-          chatBox.scrollTop = chatBox.scrollHeight;
-          input.value = '';
-        }
-      }
-
-      function switchProject(projectName) {
-        document.getElementById('chatHeader').textContent =
-          projectName + ' Chat';
-        document.getElementById('chatBox').innerHTML = ''; // Clear messages when switching
+    
+      function switchProject(projectName, projectId) {
+        document.getElementById('chatHeader').textContent = projectName + ' Chat';
+        currentProjectId = projectId;
+        document.getElementById('chatBox').innerHTML = ''; 
+        fetchMessages(); 
         toggleDropdown();
       }
-
-      // Fetch and insert navbar
-      fetch('navbar.html')
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById('navbar-placeholder').innerHTML = data;
-        })
-        .catch((error) => console.error('Error loading navbar:', error));
+    
+      function loadUserProjects() {
+        fetch('getMyProjects.php')
+          .then(response => response.json())
+          .then(projects => {
+            const projectList = document.getElementById('projectList');
+            projectList.innerHTML = '';
+    
+            projects.forEach(project => {
+              const div = document.createElement('div');
+              div.className = 'project-item';
+              div.textContent = project.title;
+              div.onclick = () => switchProject(project.title, project.id);
+              projectList.appendChild(div);
+            });
+    
+            if (projects.length > 0) {
+              switchProject(projects[0].title, projects[0].id);
+            }
+          })
+          .catch(error => console.error('Error loading projects:', error));
+      }
+    
+      function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const messageText = input.value.trim();
+    
+        if (!messageText || currentProjectId === null) return;
+    
+        fetch('sendMessage.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectId: currentProjectId,
+            userName: userName,
+            message: messageText
+          })
+        }).then(() => {
+          input.value = '';
+          fetchMessages();
+        });
+      }
+    
+      function fetchMessages() {
+        if (currentProjectId === null) return;
+    
+        fetch(`getMessages.php?projectId=${currentProjectId}`)
+          .then(res => res.json())
+          .then(data => {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = '';
+    
+            data.forEach(msg => {
+              const div = document.createElement('div');
+              div.classList.add('message');
+              div.classList.add(msg.user_name === userName ? 'sent' : 'received');
+    
+              const sender = document.createElement('span');
+              sender.classList.add('sender');
+              sender.textContent = msg.user_name;
+    
+              const content = document.createElement('p');
+              content.textContent = msg.message;
+    
+              div.appendChild(sender);
+              div.appendChild(content);
+              chatBox.appendChild(div);
+            });
+    
+            chatBox.scrollTop = chatBox.scrollHeight;
+          });
+      }
+    
+      window.onload = function () {
+        loadUserProjects();
+        fetch('navbar.php')
+          .then(response => response.text())
+          .then(data => {
+            document.getElementById('navbar-placeholder').innerHTML = data;
+          })
+          .catch(error => console.error('Error loading navbar:', error));
+      };
+    
+      setInterval(fetchMessages, 5000); // Auto-refresh chat every 5 sec
     </script>
   </body>
 </html>

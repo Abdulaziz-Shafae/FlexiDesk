@@ -33,7 +33,7 @@ if (isset($_SESSION['userID'])) {
     <?php if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true): ?>
       <!-- If the user is logged in -->
       <a href="homePage.php">Home</a>
-      <a href="groupChat.php">Chat</a>
+      <a href="groupChat.html">Chat</a>
     <?php endif; ?>
     
     <!-- Links accessible for all users -->
