@@ -1,21 +1,28 @@
 <?php
 include 'db.php';
 
-$projectId = $_GET['projectId'];
+if (!isset($_GET['projectId']) || !is_numeric($_GET['projectId'])) {
+    http_response_code(400);
+    echo json_encode(["error" => "Invalid project ID"]);
+    exit;
+}
 
-$stmt = $conn->prepare("SELECT * FROM project_messages WHERE project_id = ? ORDER BY timestamp ASC");
-$stmt->bind_param("i", $projectId);
-$stmt->execute();
+$projectId = intval($_GET['projectId']);
 
-$result = $stmt->get_result();
+$query = "SELECT * FROM messages WHERE project_id = $projectId ORDER BY created_at ASC";
+$result = mysqli_query($conn, $query);
+
+if (!$result) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database query failed"]);
+    exit;
+}
+
 $messages = [];
 
-while ($row = $result->fetch_assoc()) {
+while ($row = mysqli_fetch_assoc($result)) {
     $messages[] = $row;
 }
 
 echo json_encode($messages);
-
-$stmt->close();
-$conn->close();
 ?>

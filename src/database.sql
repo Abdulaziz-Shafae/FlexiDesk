@@ -94,6 +94,7 @@ CREATE TABLE project_messages (
     user_id INT NOT NULL,
     message TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+      PRIMARY KEY (id)
 );
 
 

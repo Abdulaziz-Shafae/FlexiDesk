@@ -212,7 +212,7 @@
 
     <script>
       let currentProjectId = null;
-      const userName = 'You'; // Later you can replace this with session user name
+      const userName = null;
     
       function toggleDropdown() {
         const dropdown = document.getElementById('projectList');
@@ -227,6 +227,20 @@
         toggleDropdown();
       }
     
+      function loadUserName() {
+        fetch('getUser.php')
+          .then(res => res.json())
+          .then(user => {
+            if (user.error) {
+              console.error(user.error);
+              return;
+            }
+            userName = user.name; // Only set the name
+          })
+          .catch(error => console.error('Failed to load user name:', error));
+      }
+
+
       function loadUserProjects() {
         fetch('getMyProjects.php')
           .then(response => response.json())
@@ -300,6 +314,7 @@
       }
     
       window.onload = function () {
+        loadUserName();
         loadUserProjects();
         fetch('navbar.php')
           .then(response => response.text())
