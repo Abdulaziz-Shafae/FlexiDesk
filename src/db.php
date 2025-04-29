@@ -12,9 +12,10 @@ $conn = new mysqli($servername, $username, $password, $dbname, $port);
 // Check connection
 if ($conn->connect_error) {
     header('Content-Type: application/json');
-    echo json_encode(['
-    status' => 'error',
-    'message' => 'DB connection failed internally.'
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'DB connection failed internally.'
     ]);
-    exit;}
+    exit;
+}
 ?>

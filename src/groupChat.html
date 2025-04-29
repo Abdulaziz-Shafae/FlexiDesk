@@ -1,299 +1,197 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Project Chat - FlexiDesk</title>
-    <link rel="stylesheet" href="navbarStyle.css" />
-    <script src="script.js" defer></script>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat View - FlexiDesk</title>
+  <link rel="stylesheet" href="navbarStyle.css" />
+  <link rel="stylesheet" href="viwesStyle.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
 
-  <body>
-    <style>
-      /* Dropdown Menu */
-      .project-btn {
-        background-color: white;
-        color: #3498db;
-        border: none;
-        padding: 10px 15px;
-        cursor: pointer;
-        font-size: 16px;
-        border-radius: 5px;
-        position: relative;
-      }
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="viwes-container">
+      <div class="tabs">
+        <a href="ganttView.html" class="tab">Gantt</a>
+        <a href="tableView.html" class="tab">Table</a>
+        <a href="calenderView.html" class="tab">Calendar</a>
+        <a href="groupChat.html" class="tab active">Chat</a>
+      </div>
 
-      .project-btn:hover {
-        background-color: #2980b9;
-        color: white;
-      }
+      <div class="viwes-header">
+        <h1 id="chatHeader">Chat</h1>
+      </div>
 
-      .project-list {
-        position: absolute;
-        right: 0; /* Aligns it to the right under the button */
-        top: 100%; /* Places it right below the button */
-        background: white;
-        width: 200px;
-        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-        border-radius: 5px;
-        display: none;
-        flex-direction: column;
-        padding: 10px 0;
-        z-index: 10;
-      }
-
-      .project-item {
-        padding: 10px;
-        cursor: pointer;
-        transition: background 0.3s;
-      }
-
-      .project-item:hover {
-        background: #3498db;
-        color: white;
-      }
-
-      /* Chat Container */
-      .chat-container {
-        width: 90%;
-        max-width: 800px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        height: 500px;
-        overflow: hidden;
-        margin: 80px auto;
-      }
-
-      /* Chat Header */
-      .chat-header {
-        background-color: #3498db;
-        padding: 15px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-      }
-      .chat-header a {
-        color: white;
-        font-size: 20px;
-        font-weight: bold;
-      }
-
-      /* Chat Messages */
-      .chat-box {
-        flex: 1;
-        padding: 15px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Chat Message */
-      .message {
-        max-width: 80%;
-        padding: 10px;
-        border-radius: 10px;
-        margin: 5px 0;
-        display: flex;
-        flex-direction: column;
-      }
-
-      /* Sender Name */
-      .sender {
-        font-size: 14px;
-        font-weight: bold;
-        margin-bottom: 3px;
-      }
-
-      /* Messages Alignment */
-      .message.sent {
-        align-self: flex-end;
-        background: #007bff;
-        color: white;
-      }
-
-      .message.received {
-        align-self: flex-start;
-        background: #f1f1f1;
-        color: black;
-      }
-
-      /* Chat Input */
-      .chat-input {
-        display: flex;
-        padding: 10px;
-        border-top: 1px solid #ddd;
-        background: #fff;
-      }
-
-      .chat-input input {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-      }
-
-      .chat-input button {
-        padding: 10px 15px;
-        background: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 16px;
-        margin-left: 10px;
-        border-radius: 5px;
-      }
-
-      .chat-input button:hover {
-        background: #0056b3;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .nav-links {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .project-btn {
-          width: 100%;
-        }
-
-        .project-list {
-          width: 100%;
-        }
-      }
-    </style>
-
-    <!-- Navbar -->
-    <div id="navbar-placeholder"></div>
-
-    <!-- Chat Container -->
-    <div class="main-content">
+      <!-- Chat Container -->
       <div class="chat-container">
-        <div class="chat-header">
-          <a id="chatHeader">Select A Project</a>
-          <button class="project-btn" onclick="toggleDropdown()">
-            Select Project
-          </button>
-          <div class="project-list" id="projectList">
-            <!-- Projects will be loaded dynamically here -->
-          </div>
-        </div>
+        <div class="chat-box" id="chatBox"></div>
 
-        <div class="chat-box" id="chatBox">
-          <!-- Messages -->
-        </div>
-
-        <!-- Chat Input -->
         <div class="chat-input">
-          <input
-            type="text"
-            id="messageInput"
-            placeholder="Type a message..."
-          />
-          <button >Send</button>
+          <input type="text" id="messageInput" placeholder="Type a message..." />
+          <button id="sendMessageBtn">Send</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-      // Define your current user ID here (example: from PHP session)
-      const YOUR_USER_ID = 123; // <-- Replace this with real user ID dynamically!
-      
-      let currentProjectId = null;
-      let currentProjectName = "";
-      
-      // Load Navbar
-      fetch('navbar.php')
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById('navbar-placeholder').innerHTML = data;
-        })
-        .catch(error => console.error('Error loading navbar:', error));
-      
-      // Fetch Projects List
-      fetch('getMyProjects.php')
-        .then(response => response.json())
-        .then(projects => {
-          const projectList = document.getElementById('projectList');
-          projects.forEach(project => {
-            const item = document.createElement('div');
-            item.className = 'project-item';
-            item.onclick = () => selectProject(project.id, project.title);
-            item.innerText = project.title;
-            projectList.appendChild(item);
+  <style>
+    .chat-container {
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+      background: #fff;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .chat-input button {
+      padding: 10px 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 10px;
+      border-radius: 5px;
+    }
+
+    .chat-input button:hover {
+      background: #0056b3;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px;
+      border-radius: 10px;
+      margin: 5px 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message.sent {
+      align-self: flex-end;
+      background: #007bff;
+      color: white;
+    }
+
+    .message.received {
+      align-self: flex-start;
+      background: #f1f1f1;
+      color: black;
+    }
+
+    .sender {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+  </style>
+
+  <script>
+    
+    let currentProjectId = null;
+    let currentProjectName = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      currentProjectId = sessionStorage.getItem("selectedProjectID");
+      currentProjectName = sessionStorage.getItem("selectedProjectName");
+
+      if (!currentProjectId) {
+        alert("No project selected. Redirecting...");
+        window.location.href = "dashboard.html"; // or your intended fallback
+        return;
+      }
+
+      document.getElementById("chatHeader").innerText = currentProjectName || "Chat";
+
+      // Start polling
+      setInterval(fetchMessages, 5000);
+      fetchMessages();
+
+      // Event listener
+      document.getElementById("sendMessageBtn").addEventListener("click", sendMessage);
+    });
+
+    function fetchMessages() {
+      if (!currentProjectId) return;
+
+      fetch(`getMessages.php?project_id=${currentProjectId}`)
+      .then(res => res.json())
+        .then(messages => {
+          const chatBox = document.getElementById("chatBox");
+          chatBox.innerHTML = "";
+          
+          if (messages.length === 0) {
+            chatBox.innerHTML = "<p style='color: #888; text-align: center;'>No messages yet.</p>";
+            return;
+          }
+
+          messages.forEach(msg => {
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "message " + (msg.is_self ? "sent" : "received");
+            msgDiv.innerHTML = `<div class="sender">${msg.username}</div><div>${msg.message}</div>`;
+            chatBox.appendChild(msgDiv);
           });
+
+          chatBox.scrollTop = chatBox.scrollHeight;
         })
-        .catch(error => console.error('Error loading projects:', error));
-      
-      // Select Project
-      function selectProject(projectId, projectName) {
-        currentProjectId = projectId;
-        currentProjectName = projectName;
-        document.getElementById('chatHeader').innerText = projectName;
+        .catch(err => console.error("Error loading messages:", err));
+    }
 
-        const chatBox = document.getElementById('chatBox');
-        chatBox.innerHTML = ""; // ⬅️ Clear old chat immediately!
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const message = input.value.trim();
+      if (!message || !currentProjectId) return;
 
-        fetchMessages(); // ⬅️ Fetch new messages for the selected project
-      }
-
-      
-      // Fetch Messages
-      function fetchMessages() {
-        if (!currentProjectId) return; // No project selected yet
-        fetch(`getMessages.php?project_id=${currentProjectId}&user_id=${YOUR_USER_ID}`)
-          .then(response => response.json())
-          .then(messages => {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML = ""; // Clear old messages
-            messages.forEach(msg => {
-              const messageDiv = document.createElement('div');
-              messageDiv.className = 'message ' + (msg.is_self ? 'sent' : 'received');
-              messageDiv.innerHTML = `
-                <div class="sender">${msg.username}</div>
-                <div>${msg.message}</div>
-              `;
-              chatBox.appendChild(messageDiv);
-            });
-            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom automatically
-          })
-          .catch(error => console.error('Error loading messages:', error));
-      }
-      
-      // Send Message
-      document.querySelector('.chat-input button').addEventListener('click', () => {
-        const input = document.getElementById('messageInput');
-        const message = input.value.trim();
-        if (!message || !currentProjectId) return;
-        
-        fetch('sendMessage.php', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          body: `project_id=${encodeURIComponent(currentProjectId)}&message=${encodeURIComponent(message)}`
-        })
-        .then(response => {
-          if (response.ok) {
-            input.value = '';
-            fetchMessages(); // Refresh messages immediately after sending
+      fetch("sendMessage.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `project_id=${encodeURIComponent(currentProjectId)}&message=${encodeURIComponent(message)}`
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            input.value = "";
+            fetchMessages();
           }
         })
-        .catch(error => console.error('Error sending message:', error));
-      });
-      
-      // Toggle Project Dropdown
-      function toggleDropdown() {
-        const list = document.getElementById('projectList');
-        list.style.display = list.style.display === 'flex' ? 'none' : 'flex';
-      }
-      
-      // Polling: Refresh messages every 5 seconds
-      setInterval(fetchMessages, 5000);
-      </script>
-      
-  </body>
+        .catch(err => console.error("Error sending message:", err));
+    }
+
+    fetch("navbar.php")
+      .then((res) => res.text())
+      .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
+  </script>
+</body>
 </html>
