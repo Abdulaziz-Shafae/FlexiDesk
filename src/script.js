@@ -77,8 +77,6 @@ function openEditTaskPopup(task, projectID) {
       // Load Assign To List and preselect the current assignee
       loadAssignToList(projectID, task.assignedTo); // Pass the current assignee to preselect
 
-
-
       // Initialize date handling
       initializeDateSelectors(projectID, task.startDate, task.endDate);
 
@@ -248,6 +246,7 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     monthSelect.innerHTML = '';
     yearSelect.innerHTML = '';
   
+  
     const projectStartDay = projectStartDate.getDate();
     const projectStartMonth = projectStartDate.getMonth(); // 0-based month
     const projectStartYear = projectStartDate.getFullYear();
@@ -296,21 +295,32 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
   // Recalculate and populate days based on selected month and year
   function updateDays() {
     const selectedYear = parseInt(yearSelect.value);
-    const selectedMonth = parseInt(monthSelect.value);
+    const selectedMonth = parseInt(monthSelect.value) ;
     
     // Get the last day of the selected month
     const lastDayOfMonth = new Date(selectedYear, selectedMonth, 0).getDate();
   
     const projectStartDay = projectStartDate.getDate();
-    const projectStartMonth = projectStartDate.getMonth();
+    const projectStartMonth = projectStartDate.getMonth() +1;
     const projectEndDay = projectEndDate.getDate();
-    const projectEndMonth = projectEndDate.getMonth();
-  
+    const projectEndMonth = projectEndDate.getMonth() +1;
+
+   
     // Populate Days based on selected year and month
     daySelect.innerHTML = '';
+
+    // For when the start and end are in the same month
+    if (projectStartMonth === projectEndMonth && selectedMonth === projectStartMonth){
+      for( let i = projectStartDay; i <= projectEndDay; i++ ){
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
   
+        daySelect.appendChild(option);
+      }
+    }
     // For the first month, limit days starting from project start day
-    if (selectedMonth === projectStartMonth + 1) {
+    else if (selectedMonth === projectStartMonth) {
       for (let i = projectStartDay; i <= lastDayOfMonth; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -320,7 +330,7 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
       }
     }
     // For the last month, limit days up to project end day
-    else if (selectedMonth === projectEndMonth + 1) {
+    else if (selectedMonth === projectEndMonth) {
       for (let i = 1; i <= projectEndDay; i++) {
         const option = document.createElement('option');
         option.value = i;
@@ -461,6 +471,7 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     projectEndDate = new Date(data.endDate);
 
     // Use task-specific dates if available, else default to project start date
+    
     selectedStartDate = taskStartDate ? new Date(taskStartDate) : new Date(projectStartDate);
     selectedEndDate = taskEndDate ? new Date(taskEndDate) : new Date(projectStartDate);
 

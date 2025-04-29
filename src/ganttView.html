@@ -12,20 +12,18 @@
     />
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
     <script src="script.js" defer></script>
-  </head>
-  <body>
-    <style>
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Space between elements */
-        padding: 5px;
-        background-color: #f8f9fa; /* Light gray background */
-        justify-content: space-between;
 
+    <style>
+      .gantt_grid_head_add,
+      .gantt_task_drag,
+      .gantt_task_progress_drag,
+      .gantt_add,
+      .gantt_task_progress_drag, 
+      .gantt_task_end_date, 
+      .gantt_task_start_date {
+        display: none !important;
       }
 
-      .Toolbar-btn,
       .zoom-btn {
         font-size: 16px;
         background: #2c3e50;
@@ -39,7 +37,6 @@
         margin-bottom: 3px;
         display: inline-block;
       }
-
       .zoom-btn {
         background: none;
         border: none;
@@ -50,9 +47,9 @@
         height: 30px;
         cursor: pointer;
       }
-      .zoom-btn:hover img,
+
       .Toolbar-btn:hover {
-        opacity: 0.7;
+        opacity: 0.8;
       }
 
       .gantt_task_line.gantt_milestone {
@@ -84,7 +81,10 @@
       .gantt_task_line.critical {
         background-color: #dc3545 !important;
       } /* Red */
+      
     </style>
+  </head>
+  <body>
 
     <!-- Navbar -->
     <div id="navbar-placeholder"></div>
@@ -94,18 +94,52 @@
       <div class="viwes-container">
         <div class="tabs">
           <a href="ganttView.html" class="tab active">Gantt</a>
-          <a href="test.html" class="tab">Gantt test</a>
           <a href="tableView.html" class="tab">Table</a>
           <a href="calenderView.html" class="tab">Calendar</a>
         </div>
         <div class="viwes-header">
           <h1>Project Name</h1>
-          <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
+
         </div>
 
-        <!-- Toolbar -->
         <div class="toolbar">
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <select id="view-mode" class="Toolbar-btn">
+                <option value="hour">Hour</option>
+                <option value="day" selected>Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+              </select>
+              <button onclick="goToToday()"style="width: 150px;" class="Toolbar-btn">Go to Today</button>
+            
+            <label>
+              <select id="status-filter" class="Toolbar-btn">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </label>
+          
+            <label>
+              <select id="priority-filter" class="Toolbar-btn">
+                <option value="">All Priorities</option>
+                <option value="low">Low</option>
+                <option value="medium-low">Medium-Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </label>
+          
+            <div class="checkbox-container">
+              <input type="checkbox" id="assigned-to-me" />
+              <label for="assigned-to-me">Show only my tasks</label>
+            </div>
+          </div>
           <div> 
+            
           <button onclick="zoomIn()" class="zoom-btn">
             <img src="photos/in light.png" alt="Zoom In" />
           </button>
@@ -114,128 +148,299 @@
           </button>
           </div>
 
-          <div>
-          <select id="view-mode" class="Toolbar-btn">
-            <option value="hour">Hour</option>
-            <option value="day" selected>Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-          </select>
-          <button onclick="goToToday()"style="width: 150px;" class="Toolbar-btn">Go to Today</button>
-          </div>
         </div>
 
-        <!-- Gantt chart -->
         <div id="gantt_here" style="width: 100%; height: 500px"></div>
-        
-        <!-- Popup container -->
-        <div id="popup-container"></div> <!-- Popup content will be dynamically inserted here -->
-
-        <script>
-          // Initialize Gantt
-          gantt.config.start_date = new Date(2025, 1, 1); // Feb 1, 2025
-          gantt.config.end_date = new Date(2025, 11, 31); // Dec 31, 2025
-          gantt.config.fit_tasks = true;
-          gantt.init('gantt_here');
-
-          // Sample Data
-          gantt.parse({
-            data: [
-              {
-                id: 1,
-                text: 'Task 1',
-                start_date: '01-02-2025',
-                duration: 5,
-                progress: 1,
-              },
-              {
-                id: 2,
-                text: 'Task 2',
-                start_date: '06-02-2025',
-                duration: 10,
-                progress: 0.5,
-                parent: 1,
-              },
-            ],
-          });
-
-          // Define zoom levels and their corresponding view modes
-          let zoomLevels = ['hour', 'day', 'week', 'month'];
-          let currentZoom = 1; // Default is "day"
-
-          function zoomIn() {
-            if (currentZoom > 0) {
-              currentZoom--;
-              applyZoom();
-            }
-          }
-
-          function zoomOut() {
-            if (currentZoom < zoomLevels.length - 1) {
-              currentZoom++;
-              applyZoom();
-            }
-          }
-
-          function applyZoom() {
-            let zoom = zoomLevels[currentZoom];
-
-            if (zoom === 'hour') {
-              gantt.config.scale_unit = 'day';
-              gantt.config.date_scale = '%d %M';
-              gantt.config.subscales = [
-                { unit: 'hour', step: 1, date: '%H:%i' },
-              ];
-              document.getElementById('view-mode').value = 'hour';
-            } else if (zoom === 'day') {
-              gantt.config.scale_unit = 'day';
-              gantt.config.date_scale = '%d %M';
-              gantt.config.subscales = [];
-              document.getElementById('view-mode').value = 'day';
-            } else if (zoom === 'week') {
-              gantt.config.scale_unit = 'week';
-              gantt.config.date_scale = 'Week %W';
-              gantt.config.subscales = [
-                { unit: 'day', step: 1, date: '%d %M' },
-              ];
-              document.getElementById('view-mode').value = 'week';
-            } else if (zoom === 'month') {
-              gantt.config.scale_unit = 'month';
-              gantt.config.date_scale = '%F %Y';
-              gantt.config.subscales = [
-                { unit: 'week', step: 1, date: 'Week %W' },
-              ];
-              document.getElementById('view-mode').value = 'month';
-            }
-
-            gantt.render();
-          }
-
-          // Sync dropdown selection with manual change
-          document
-            .getElementById('view-mode')
-            .addEventListener('change', function () {
-              let mode = this.value;
-              if (mode === 'day') currentZoom = 1;
-              else if (mode === 'week') currentZoom = 2;
-              else if (mode === 'month') currentZoom = 3;
-              applyZoom();
-            });
-
-          // Go to Today Function
-          function goToToday() {
-            gantt.showDate(new Date());
-          }
-
-          // Fetch and insert navbar
-          fetch('navbar.html')
-            .then((response) => response.text())
-            .then((data) => {
-              document.getElementById('navbar-placeholder').innerHTML = data;
-            })
-            .catch((error) => console.error('Error loading navbar:', error));
-        </script>
       </div>
     </div>
+
+
+    <div id="custom-tooltip" style="
+      position: absolute;
+      display: none;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      z-index: 1000;
+      line-height: 2;
+      text-align: center;
+      font-size: 14px;">
+    </div>
+
+    <script>
+
+    const projectID = sessionStorage.getItem("selectedProjectID");
+
+    //update the coloring need working
+    gantt.templates.task_class = function (start, end, task) {
+      let priorityClass = '';
+      switch (task.priority) {
+        case 1:
+          priorityClass = 'low';
+          break; // Green
+        case 2:
+          priorityClass = 'medium-low';
+          break; // Blue
+        case 3:
+          priorityClass = 'medium';
+          break; // Yellow
+        case 4:
+          priorityClass = 'high';
+          break; // Orange
+        case 5:
+          priorityClass = 'critical';
+          break; // Red
+        default:
+          priorityClass = ''; // No class if priority is not set
+      }
+
+      // Keep the milestone style but apply the same color as tasks
+      if (task.type === 'Milestone') {
+        return `gantt_milestone ${priorityClass}`;
+      }
+       return priorityClass;
+    };
+
+    // remove the text from the milestone
+    gantt.templates.task_text = function (start, end, task) {
+      if (task.type === 'Milestone') {
+        return ''; // Hide text for milestones
+      }
+      return task.text; // Show text for other tasks
+    };
+
+    if (projectID) {
+      fetch('getProjectDate.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ projectID })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            console.error('Error:', data.error);
+            return;
+          }
+
+          // Set Gantt chart start and end using project dates
+          gantt.config.start_date = new Date(data.startDate);
+          gantt.config.end_date = new Date(data.endDate);
+          gantt.config.fit_tasks = true;
+          gantt.config.drag_move = false;
+          gantt.config.drag_resize = false;
+          gantt.config.drag_progress = false;
+          gantt.config.drag_links = false;
+          gantt.config.show_progress = false;
+          gantt.config.show_links = false;
+
+          gantt.config.date_format = "%Y-%m-%d";
+          gantt.init("gantt_here"); // INIT GANTT AFTER SETTING DATES
+          loadGanttTasks();         // LOAD TASKS AFTER INIT
+
+        })
+        .catch(error => {
+          console.error('Fetch error:', error);
+        });
+    }
+
+      //zoom
+      let zoomLevels = ['hour', 'day', 'week', 'month'];
+      let currentZoom = 1;
+
+      function zoomIn() {
+        if (currentZoom > 0) {
+          currentZoom--;
+          applyZoom();
+        }
+      }
+
+      function zoomOut() {
+        if (currentZoom < zoomLevels.length - 1) {
+          currentZoom++;
+          applyZoom();
+        }
+      }
+
+      function applyZoom() {
+        let zoom = zoomLevels[currentZoom];
+        let viewMode = document.getElementById('view-mode');
+
+        if (zoom === 'hour') {
+          gantt.config.scale_unit = 'day';
+          gantt.config.date_scale = '%d %M';
+          gantt.config.subscales = [{ unit: 'hour', step: 1, date: '%H:%i' }];
+          viewMode.value = 'hour';
+        } else if (zoom === 'day') {
+          gantt.config.scale_unit = 'day';
+          gantt.config.date_scale = '%d %M';
+          gantt.config.subscales = [];
+          viewMode.value = 'day';
+        } else if (zoom === 'week') {
+          gantt.config.scale_unit = 'week';
+          gantt.config.date_scale = 'Week %W';
+          gantt.config.subscales = [{ unit: 'day', step: 1, date: '%d %M' }];
+          viewMode.value = 'week';
+        } else if (zoom === 'month') {
+          gantt.config.scale_unit = 'month';
+          gantt.config.date_scale = '%F %Y';
+          gantt.config.subscales = [{ unit: 'week', step: 1, date: 'Week %W' }];
+          viewMode.value = 'month';
+        }
+
+        gantt.render();
+      }
+      //view change
+      document
+        .getElementById('view-mode')
+        .addEventListener('change', function () {
+          let mode = this.value;
+          currentZoom = zoomLevels.indexOf(mode);
+          applyZoom();
+        });
+      //Today
+      function goToToday() {
+        gantt.showDate(new Date());
+      }
+
+      // Fetch and insert navbar
+      fetch("navbar.php")
+        .then((res) => res.text())
+        .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
+    
+      document.getElementById("openPopupBtn")?.addEventListener("click", () => {
+        const projectID = sessionStorage.getItem("selectedProjectID");
+        openAddTaskPopup(projectID); // null task = new task          
+      });
+
+
+      function loadGanttTasks() {
+        const projectID = sessionStorage.getItem("selectedProjectID");
+        const status = document.getElementById("status-filter").value;
+        const priority = document.getElementById("priority-filter").value;
+        const onlyMine = document.getElementById("assigned-to-me").checked;
+
+        fetch("getProjectTask.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectID, status, priority, onlyMine })
+        })
+          .then(res => res.json())
+          .then(tasks => {
+            const data = tasks.map((task) => ({
+              id: task.taskID,
+              text: task.taskName,
+              start_date: task.startDate,
+              end_date: task.endDate,
+              type: task.taskType === 'Milestone' ? 'Milestone' : 'task',
+              priority: convertPriority(task.priority),
+              description: task.description,
+              assignedTo: task.assignedTo,
+              status: task.status,
+              taskType: task.taskType
+            }));
+            
+            gantt.clearAll();
+            gantt.parse({ data });
+          })
+          .catch(err => console.error("Failed to load tasks:", err));
+      }
+
+      function convertPriority(p) {
+        switch (p.toLowerCase()) {
+          case "low": return 1;
+          case "medium-low": return 2;
+          case "medium": return 3;
+          case "high": return 4;
+          case "critical": return 5;
+          default: return 3;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const projectName = sessionStorage.getItem("selectedProjectName");
+        const projectRole = sessionStorage.getItem("selectedProjectRole");
+
+        document.querySelector(".viwes-header h1").textContent = projectName || "Project";
+
+      });
+
+      ["status-filter", "priority-filter", "assigned-to-me"].forEach(id => {
+        document.getElementById(id).addEventListener("change", loadGanttTasks);
+      });
+
+      gantt.attachEvent("onTaskDblClick", function(id, e) {
+        return false; // This disables the default lightbox
+      });
+
+      gantt.attachEvent("onMouseMove", function (id, e) {
+        if (!id) {
+          document.getElementById("custom-tooltip").style.display = "none";
+          return;
+        }
+
+        const task = gantt.getTask(id);
+        const popup = document.getElementById("custom-tooltip");
+
+        popup.innerHTML = `
+          <div style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 10px;">            
+            <div><strong>Task Type:</strong> ${capitalize(task.taskType)}</div>
+            <div><strong>Task:</strong> ${task.text}</div>
+            <div><strong>Description:</strong> ${task.description || "N/A"}</div>
+            <div><strong>Assigned To:</strong> ${task.assignedTo || "Unassigned"}</div>
+            <div><strong>Priority:</strong> ${priorityLabel(task.priority)}</div>
+            <div><strong>Status:</strong> ${task.status || "Unknown"}</div>
+            <div><strong>Start Date:</strong> ${formatDate(task.start_date)}</div>
+            <div><strong>End Date:</strong> ${formatDate(task.end_date)}</div>
+          </div>
+        `;
+
+        const rect = e.target.getBoundingClientRect();
+        popup.style.visibility = 'hidden';
+        popup.style.display = 'block';
+        const popupHeight = popup.offsetHeight;
+        let top = rect.bottom + window.scrollY - 0;
+
+        if (top + popupHeight > window.innerHeight) {
+          top = rect.top + window.scrollY - popupHeight - 10;
+        }
+
+        popup.style.top = `${top}px`;
+        popup.style.left = `${rect.left}px`;
+        popup.style.visibility = 'visible';
+      });
+
+      gantt.attachEvent("onMouseLeave", function () {
+        document.getElementById("custom-tooltip").style.display = "none";
+      });
+
+
+      function formatDate(dateString) {
+        const d = new Date(dateString);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`; // Local YYYY-MM-DD
+      }
+
+      function capitalize(word) {
+        return word ? word.charAt(0).toUpperCase() + word.slice(1) : "";
+      }
+
+      function priorityLabel(p) {
+        const labels = {
+          1: "low",
+          2: "medium-low",
+          3: "medium",
+          4: "high",
+          5: "critical"
+        };
+        return labels[p] || "medium";
+      }
+
+    </script>
   </body>
 </html>

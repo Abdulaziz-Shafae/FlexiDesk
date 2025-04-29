@@ -41,14 +41,15 @@
     </style>
   </head>
   <body>
+
+    <!-- Navbar -->
     <div id="navbar-placeholder"></div>
 
     <!-- Main Content -->
     <div class="main-content">
       <div class="viwes-container">      
         <div class="tabs">
-          <a href="ganttView.html" class="tab ">Gantt</a>
-          <a href="test.html" class="tab">Gantt test</a>
+          <a href="ganttView.html" class="tab">Gantt</a>
           <a href="tableView.html" class="tab active">Table</a>
           <a href="calenderView.html" class="tab">Calendar</a>
         </div>
@@ -150,7 +151,8 @@
 
               tr.addEventListener("mouseenter", (e) => {
                 popup.innerHTML = `
-                  <div style="padding: 10px; border-radius: 8px; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
+                  <div style="padding: 10px; border-radius: 8px; background: white; 
+                  box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
                     <strong>Task Type:</strong> ${task.taskType}<br>
                     <strong>Task:</strong> ${task.taskName}<br>
                     <strong>Description:</strong> ${task.description}<br>
@@ -220,6 +222,7 @@
         assignedCheckbox.addEventListener("change", getTasks);
       });
 
+      // Fetch and insert navbar
       fetch("navbar.php")
         .then((res) => res.text())
         .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
