@@ -1,32 +1,42 @@
 <?php
+session_start(); 
+
+// Connect to the database
 include 'db.php';
-header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents('php://input'), true);
-
-// Validate inputs
-if (!isset($data['projectId'], $data['userName'], $data['message'])) {
+// Check if required POST parameters exist
+if (!isset($_POST['project_id']) || !isset($_POST['message'])) {
     http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Missing fields']);
-    exit;
+    echo json_encode(["error" => "Missing parameters"]);
+    exit();
 }
 
-$projectId = intval($data['projectId']);
-$userName = trim($data['userName']);
-$message = trim($data['message']);
+// Securely get values
+if (!isset($_SESSION['userID'])) {
+    http_response_code(401);
+    echo json_encode(["error" => "User not logged in"]);
+    exit();
+}
 
-$stmt = $conn->prepare("INSERT INTO messages (project_id, user_name, message) VALUES (?, ?, ?)");
-$stmt->bind_param("iss", $projectId, $userName, $message);
+$user_id = intval($_SESSION['userID']);
+$project_id = intval($_POST['project_id']);
+$message = trim($_POST['message']);
+
+// Validate message
+if (empty($message)) {
+    http_response_code(400);
+    echo json_encode(["error" => "Message cannot be empty"]);
+    exit();
+}
+
+// Insert message into the database using prepared statement
+$stmt = $conn->prepare("INSERT INTO Messages (project_id, user_id, message) VALUES (?, ?, ?)");
+$stmt->bind_param("iis", $project_id, $user_id, $message);
 
 if ($stmt->execute()) {
-    echo json_encode(['status' => 'success']);
+    echo json_encode(["success" => true]);
 } else {
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => $stmt->error]);
+    echo json_encode(["error" => "Failed to send message"]);
 }
-
-$stmt->close();
-$conn->close();
-
-//sendMessage.php
 ?>

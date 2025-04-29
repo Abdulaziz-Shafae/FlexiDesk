@@ -1,5 +1,5 @@
 -- Deletes all tables (order matters due to foreign keys)
-DROP TABLE IF EXISTS Reports, Alerts, Notifications, user_projects, Tasks, Projects, Users, MetaValues;
+DROP TABLE IF EXISTS Reports, Alerts, Notifications, user_projects, Tasks, Projects, Users, MetaValues, Messages;
 
 -- Users Table 
 CREATE TABLE Users (
@@ -80,15 +80,15 @@ CREATE TABLE Reports (
     FOREIGN KEY (generatedBy) REFERENCES Users(userID)
 );
 
--- Departments , JobTitles Table
+-- MetaValues Table (Departments, Job Titles)
 CREATE TABLE MetaValues (
   id INT AUTO_INCREMENT PRIMARY KEY,
   type ENUM('Department', 'JobTitle') NOT NULL,
   value VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Chat Table
-CREATE TABLE messages (
+-- Messages Table
+CREATE TABLE Messages (
     messagesID INT AUTO_INCREMENT PRIMARY KEY,
     project_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -96,8 +96,9 @@ CREATE TABLE messages (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Sample Data --
 
--- Sample Users
+-- Users
 INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bio) VALUES
 ('Alice Johnson', 'alice@example.com', 'hashed_pw1', NULL, 'Software Engineer', 'Development', 'Frontend React specialist'),
 ('Bob Smith', 'bob@example.com', 'hashed_pw2', NULL, 'Project Manager', 'Management', 'Scrum expert & project lead'),
@@ -105,13 +106,13 @@ INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bi
 ('Dina Yusuf', 'dina@example.com', 'hashed_pw4', NULL, 'HR Specialist', 'Human Resources', 'Recruitment & employee relations'),
 ('Elias Roman', 'elias@example.com', 'hashed_pw5', NULL, 'IT Support', 'Information Technology', 'Hardware & networking');
 
--- Sample Projects
+-- Projects
 INSERT INTO Projects (title, description, startDate, endDate) VALUES
 ('Website Redesign', 'Modern UI overhaul of company site', '2025-04-23', '2025-07-22'),
 ('Mobile App Launch', 'Cross-platform mobile launch', '2025-05-03', '2025-08-01'),
 ('Internal CRM System', 'Rebuild CRM system for sales team', '2025-05-13', '2025-08-21');
 
--- Sample user_projects
+-- user_projects (Users assigned to projects)
 INSERT INTO user_projects (userID, projectID, role) VALUES
 (1, 1, 'Member'),
 (2, 1, 'Manager'),
@@ -121,7 +122,7 @@ INSERT INTO user_projects (userID, projectID, role) VALUES
 (4, 3, 'Manager'),
 (5, 3, 'Member');
 
--- Sample Tasks
+-- Tasks
 INSERT INTO Tasks (projectID, taskName, description, startDate, endDate, priority, taskType, assignedTo, filePath, status) VALUES
 (1, 'Design homepage mockup', 'Figma prototype', '2025-04-24', '2025-05-03', 'high', 'Milestone', 1, NULL, 'In Progress'),
 (1, 'SEO audit', 'Analyze SEO', '2025-05-04', '2025-05-13', 'medium-low', 'Task', 2, NULL, 'Pending'),
@@ -159,8 +160,11 @@ INSERT INTO Notifications (recipientID, type, message) VALUES
 INSERT INTO Alerts (recipientID, priority, details) VALUES
 (2, 'High', 'CRM Project has critical milestone in 5 days.');
 
--- Sample Chat Messages formessages table
-INSERT INTO messages (project_id, user_id, message, timestamp) VALUES
+-- Reports
+-- (You can add sample Reports if needed.)
+
+-- Messages (Chat sample data)
+INSERT INTO Messages (project_id, user_id, message, timestamp) VALUES
 (1, 1, 'Hi team, I just uploaded the homepage mockup. Please review.', '2025-04-25 10:15:00'),
 (1, 2, 'Thanks Alice! I will review it this afternoon.', '2025-04-25 11:00:00'),
 (1, 3, 'Noted. I will check for any styling issues.', '2025-04-25 11:30:00'),
