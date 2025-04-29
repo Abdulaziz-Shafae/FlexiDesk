@@ -1,4 +1,11 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// your function code below...
+
 function createWhiteboard() {
     $client_id = '92411c1d60ca1c0b68abbd94665f1323';
     $client_secret = '521d66095d27051f0cc5dc5b8c696c16';
