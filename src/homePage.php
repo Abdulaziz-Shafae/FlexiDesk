@@ -228,7 +228,7 @@ while ($row = $result->fetch_assoc()) {
                       <?= (int)$project['progress']; ?>%
                     </div>
                     </div>
-                    <button onclick="" class="btn download-btn">Download Report</button>
+                    <button onclick="generateReport(<?= $project['projectID'] ?>)" class="btn download-btn">Download Report</button>
 
                     <button onclick="enterProject(<?= $project['projectID'] ?>, '<?= addslashes($project['title']) ?>', '<?= $project['role'] ?>')" class="btn enter-btn">
                       Enter Project
@@ -241,7 +241,34 @@ while ($row = $result->fetch_assoc()) {
     </div>
 
   <script>
-
+    function generateReport(projectID) {
+  // Show loading indicator 
+  const buttons = document.querySelectorAll(`.project-card button.download-btn`);
+  let button = null;
+  
+  // Find the specific button that was clicked
+  for (let i = 0; i < buttons.length; i++) {
+    if (buttons[i].onclick.toString().includes(projectID)) {
+      button = buttons[i];
+      break;
+    }
+  }
+  
+  if (button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = "Generating...";
+    button.disabled = true;
+    
+    // Open the report generator in a new tab
+    window.open(`generate_report.php?project_id=${projectID}`, '_blank');
+    
+    // Reset the button after a short delay
+    setTimeout(() => {
+      button.innerHTML = originalText;
+      button.disabled = false;
+    }, 1500);
+  }
+}
     function enterProject(projectID, projectName, role) {
       sessionStorage.setItem('selectedProjectID', projectID);
       sessionStorage.setItem('selectedProjectName', projectName);
