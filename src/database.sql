@@ -88,13 +88,12 @@ CREATE TABLE MetaValues (
 );
 
 -- Chat Table
-CREATE TABLE project_messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE messages (
+    messagesID INT AUTO_INCREMENT PRIMARY KEY,
     project_id INT NOT NULL,
     user_id INT NOT NULL,
     message TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-      PRIMARY KEY (id)
 );
 
 
@@ -160,8 +159,8 @@ INSERT INTO Notifications (recipientID, type, message) VALUES
 INSERT INTO Alerts (recipientID, priority, details) VALUES
 (2, 'High', 'CRM Project has critical milestone in 5 days.');
 
--- Sample Chat Messages for project_messages table
-INSERT INTO project_messages (project_id, user_id, message, timestamp) VALUES
+-- Sample Chat Messages formessages table
+INSERT INTO messages (project_id, user_id, message, timestamp) VALUES
 (1, 1, 'Hi team, I just uploaded the homepage mockup. Please review.', '2025-04-25 10:15:00'),
 (1, 2, 'Thanks Alice! I will review it this afternoon.', '2025-04-25 11:00:00'),
 (1, 3, 'Noted. I will check for any styling issues.', '2025-04-25 11:30:00'),

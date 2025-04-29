@@ -175,7 +175,7 @@
     <div class="main-content">
       <div class="chat-container">
         <div class="chat-header">
-          <a id="chatHeader">Project Alpha Chat</a>
+          <a id="chatHeader">project name</a>
           <button class="project-btn" onclick="toggleDropdown()">
             Select Project
           </button>
@@ -185,145 +185,30 @@
         </div>
 
         <div class="chat-box" id="chatBox">
-          <!-- Example Messages -->
-          <div class="message received">
-            <span class="sender">John Doe</span>
-            <p>Hey team, let's finalize the project deadline.</p>
-          </div>
-
-          <div class="message sent">
-            <span class="sender">You</span>
-            <p>Sure! I think we should aim for next Monday.</p>
-          </div>
+          <!-- Messages -->
         </div>
 
         <!-- Chat Input -->
         <div class="chat-input">
-          <!-- Project Dropdown -->
           <input
             type="text"
             id="messageInput"
             placeholder="Type a message..."
           />
-          <button onclick="sendMessage()">Send</button>
+          <button >Send</button>
         </div>
       </div>
     </div>
 
     <script>
-      let currentProjectId = null;
-      const userName = null;
-    
-      function toggleDropdown() {
-        const dropdown = document.getElementById('projectList');
-        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
-      }
-    
-      function switchProject(projectName, projectId) {
-        document.getElementById('chatHeader').textContent = projectName + ' Chat';
-        currentProjectId = projectId;
-        document.getElementById('chatBox').innerHTML = ''; 
-        fetchMessages(); 
-        toggleDropdown();
-      }
-    
-      function loadUserName() {
-        fetch('getUser.php')
-          .then(res => res.json())
-          .then(user => {
-            if (user.error) {
-              console.error(user.error);
-              return;
-            }
-            userName = user.name; // Only set the name
-          })
-          .catch(error => console.error('Failed to load user name:', error));
-      }
-
-
-      function loadUserProjects() {
-        fetch('getMyProjects.php')
-          .then(response => response.json())
-          .then(projects => {
-            const projectList = document.getElementById('projectList');
-            projectList.innerHTML = '';
-    
-            projects.forEach(project => {
-              const div = document.createElement('div');
-              div.className = 'project-item';
-              div.textContent = project.title;
-              div.onclick = () => switchProject(project.title, project.id);
-              projectList.appendChild(div);
-            });
-    
-            if (projects.length > 0) {
-              switchProject(projects[0].title, projects[0].id);
-            }
-          })
-          .catch(error => console.error('Error loading projects:', error));
-      }
-    
-      function sendMessage() {
-        const input = document.getElementById('messageInput');
-        const messageText = input.value.trim();
-    
-        if (!messageText || currentProjectId === null) return;
-    
-        fetch('sendMessage.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            projectId: currentProjectId,
-            userName: userName,
-            message: messageText
-          })
-        }).then(() => {
-          input.value = '';
-          fetchMessages();
-        });
-      }
-    
-      function fetchMessages() {
-        if (currentProjectId === null) return;
-    
-        fetch(`getMessages.php?projectId=${currentProjectId}`)
-          .then(res => res.json())
-          .then(data => {
-            const chatBox = document.getElementById('chatBox');
-            chatBox.innerHTML = '';
-    
-            data.forEach(msg => {
-              const div = document.createElement('div');
-              div.classList.add('message');
-              div.classList.add(msg.user_name === userName ? 'sent' : 'received');
-    
-              const sender = document.createElement('span');
-              sender.classList.add('sender');
-              sender.textContent = msg.user_name;
-    
-              const content = document.createElement('p');
-              content.textContent = msg.message;
-    
-              div.appendChild(sender);
-              div.appendChild(content);
-              chatBox.appendChild(div);
-            });
-    
-            chatBox.scrollTop = chatBox.scrollHeight;
-          });
-      }
-    
-      window.onload = function () {
-        loadUserName();
-        loadUserProjects();
         fetch('navbar.php')
           .then(response => response.text())
           .then(data => {
             document.getElementById('navbar-placeholder').innerHTML = data;
           })
           .catch(error => console.error('Error loading navbar:', error));
-      };
-    
+
+
       setInterval(fetchMessages, 5000); // Auto-refresh chat every 5 sec
     </script>
   </body>

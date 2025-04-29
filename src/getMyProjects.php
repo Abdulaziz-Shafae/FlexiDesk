@@ -1,8 +1,9 @@
 <?php
 include 'db.php';
 session_start();
+header('Content-Type: application/json');
 
-$userId = $_SESSION['userID']; // Your database uses userID (not user_id)
+$userId = $_SESSION['userID']; 
 
 $stmt = $conn->prepare("
   SELECT p.projectID AS id, p.title
