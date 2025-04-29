@@ -19,7 +19,8 @@ CREATE TABLE Projects (
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     startDate DATE NOT NULL,
-    endDate DATE NOT NULL
+    endDate DATE NOT NULL,
+    boardCode VARCHAR(100)
 );
 
 -- Tasks Table
@@ -107,10 +108,10 @@ INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bi
 ('Elias Roman', 'elias@example.com', 'hashed_pw5', NULL, 'IT Support', 'Information Technology', 'Hardware & networking');
 
 -- Projects
-INSERT INTO Projects (title, description, startDate, endDate) VALUES
-('Website Redesign', 'Modern UI overhaul of company site', '2025-04-23', '2025-07-22'),
-('Mobile App Launch', 'Cross-platform mobile launch', '2025-05-03', '2025-08-01'),
-('Internal CRM System', 'Rebuild CRM system for sales team', '2025-05-13', '2025-08-21');
+INSERT INTO Projects (title, description, startDate, endDate, boardCode) VALUES
+('Website Redesign', 'Modern UI overhaul of company site', '2025-04-23', '2025-07-22', CONCAT('flexidesk-sample1-', UUID())),
+('Mobile App Launch', 'Cross-platform mobile launch', '2025-05-03', '2025-08-01', CONCAT('flexidesk-sample2-', UUID())),
+('Internal CRM System', 'Rebuild CRM system for sales team', '2025-05-13', '2025-08-21', CONCAT('flexidesk-sample3-', UUID()));
 
 -- user_projects (Users assigned to projects)
 INSERT INTO user_projects (userID, projectID, role) VALUES

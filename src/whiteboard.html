@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Whiteboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Whiteboard - FlexiDesk</title>
+  <link rel="stylesheet" href="navbarStyle.css" />
+  <link rel="stylesheet" href="viwesStyle.css" />
   <script src="https://www.whiteboard.team/dist/api.js"></script>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+    }
+    .whiteboard-wrapper {
+      height: 600px; /* Or use calc(100vh - header size) */
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
     }
     #wt-container {
       width: 100%;
@@ -18,35 +28,65 @@
 </head>
 <body>
 
-<!-- 🔲 This is where the whiteboard will show -->
-<div id="wt-container"></div>
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
 
-<script>
-  // Replace this with your actual clientId
-  const clientId = '92411c1d60ca1c0b68abbd94665f1323';
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="viwes-container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <a href="ganttView.html" class="tab">Gantt</a>
+        <a href="tableView.html" class="tab">Table</a>
+        <a href="calenderView.html" class="tab">Calendar</a>
+        <a href="groupChat.html" class="tab">Chat</a>
+        <a href="whiteboard.html" class="tab active">Whiteboard</a>
+      </div>
 
-  // You can either generate this dynamically or pass it from URL like ?board=abc123
-  const boardCode = 'flexidesk-' + crypto.randomUUID();
+      <div class="viwes-header">
+        <h1>Project Name</h1>
+      </div>
 
-  const wt = new api.WhiteboardTeam('#wt-container', {
-    clientId: clientId,
-    boardCode: boardCode,
-    participant: {
-      name: 'User',
-      role: 'editor',
-      permissions: ['view_templates', 'view_chat']
-    },
-    board: {
-      bg: 'Dot',
-      tool: 'pen',
-      color: '#000000'
-    }
-  });
+      <!-- Whiteboard -->
+      <div class="whiteboard-wrapper">
+        <div id="wt-container"></div>
+      </div>
+    </div>
+  </div>
 
-  wt.waitUntilReady()
-    .then(ctx => console.log('✅ Whiteboard Ready:', ctx.uid))
-    .catch(error => console.error('❌ Whiteboard Error:', error));
-</script>
-
+  <script>
+    fetch("navbar.php")
+      .then(res => res.text())
+      .then(data => document.getElementById("navbar-placeholder").innerHTML = data);
+  
+    // Set project name in header
+    document.addEventListener("DOMContentLoaded", () => {
+      const projectName = sessionStorage.getItem("selectedProjectName");
+      document.querySelector(".viwes-header h1").textContent = projectName || "Whiteboard";
+    });
+  
+    const clientId = '92411c1d60ca1c0b68abbd94665f1323';
+    const boardCode = 'flexidesk-' + crypto.randomUUID();
+  
+    const wt = new api.WhiteboardTeam('#wt-container', {
+      clientId: clientId,
+      boardCode: boardCode,
+      participant: {
+        name: 'User',
+        role: 'editor',
+        permissions: ['view_templates', 'view_chat']
+      },
+      board: {
+        bg: 'Dot',
+        tool: 'pen',
+        color: '#000000'
+      }
+    });
+  
+    wt.waitUntilReady()
+      .then(ctx => console.log('✅ Whiteboard Ready:', ctx.uid))
+      .catch(error => console.error('❌ Whiteboard Error:', error));
+  </script>
+  
 </body>
 </html>

@@ -12,7 +12,7 @@ $title = trim($data['title'] ?? '');
 $description = trim($data['description'] ?? '');
 $startDate = $data['startDate'] ?? '';
 $endDate = $data['endDate'] ?? '';
-$teamMembers = $data['teamMembers'] ?? []; // New line
+$teamMembers = $data['teamMembers'] ?? [];
 $userID = $_SESSION['userID'];
 
 if (!$title || !$description || !$startDate || !$endDate) {
@@ -20,9 +20,13 @@ if (!$title || !$description || !$startDate || !$endDate) {
     exit;
 }
 
-$sql = "INSERT INTO Projects (title, description, startDate, endDate) VALUES (?, ?, ?, ?)";
+// ✅ Generate unique boardCode
+$boardCode = 'flexidesk-' . uniqid();
+
+// ✅ Insert project with boardCode
+$sql = "INSERT INTO Projects (title, description, startDate, endDate, boardCode) VALUES (?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssss", $title, $description, $startDate, $endDate);
+$stmt->bind_param("sssss", $title, $description, $startDate, $endDate, $boardCode);
 
 if ($stmt->execute()) {
     $projectID = $stmt->insert_id;
@@ -43,7 +47,11 @@ if ($stmt->execute()) {
         }
     }
 
-    echo json_encode(['status' => 'success', 'projectID' => $projectID]);
+    echo json_encode([
+        'status' => 'success',
+        'projectID' => $projectID,
+        'boardCode' => $boardCode // 🔥 Return boardCode if you want
+    ]);
 } else {
     echo json_encode(['status' => 'error', 'message' => $stmt->error]);
 }
