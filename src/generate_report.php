@@ -412,7 +412,7 @@ $generatedTime = date('F j, Y, g:i a');
             <button class="btn" onclick="window.print();">Print Report</button>
             <button class="btn" onclick="showPdfInstructions();">Save as PDF</button>
             
-            <!-- PDF Instructions Panel - Hidden by default -->
+            <!-- PDF Instructions Panel -->
             <div id="pdf-instructions" style="display: none;">
                 <h3>To save as PDF:</h3>
                 <ol>

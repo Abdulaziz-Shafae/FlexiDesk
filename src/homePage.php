@@ -52,7 +52,7 @@ while ($row = $result->fetch_assoc()) {
   $progressColor = '#28a745'; // green
 
   if ($progress < $expectedProgress - 20) {
-    $progressColor = '#dc3545'; // red: way behind
+    $progressColor = '#dc3545'; // red: Way Behind
   } elseif ($progress < $expectedProgress - 5) {
     $progressColor = '#ffc107'; // yellow: slightly behind
   }
