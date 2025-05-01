@@ -610,6 +610,66 @@
             "install-path": "../ralouphie/getallheaders"
         },
         {
+            "name": "resend/resend-php",
+            "version": "v0.17.0",
+            "version_normalized": "0.17.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/resend/resend-php.git",
+                "reference": "e772153ac74b05ba72ce4d0f96d61418f48ebb3d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/e772153ac74b05ba72ce4d0f96d61418f48ebb3d",
+                "reference": "e772153ac74b05ba72ce4d0f96d61418f48ebb3d",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.5",
+                "php": "^8.1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.13",
+                "mockery/mockery": "^1.6",
+                "pestphp/pest": "^2.0"
+            },
+            "time": "2025-04-23T20:24:02+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/Resend.php"
+                ],
+                "psr-4": {
+                    "Resend\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Resend and contributors",
+                    "homepage": "https://github.com/resend/resend-php/contributors"
+                }
+            ],
+            "description": "Resend PHP library.",
+            "homepage": "https://resend.com/",
+            "keywords": [
+                "api",
+                "client",
+                "php",
+                "resend",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/resend/resend-php/issues",
+                "source": "https://github.com/resend/resend-php/tree/v0.17.0"
+            },
+            "install-path": "../resend/resend-php"
+        },
+        {
             "name": "setasign/fpdi",
             "version": "1.6.2",
             "version_normalized": "1.6.2.0",
