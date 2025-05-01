@@ -222,7 +222,6 @@ window.addEventListener("click", function (event) {
   }
 });
 
-
 function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = null) {
   // DOM elements
   const daySelect = document.getElementById('day');
@@ -233,11 +232,11 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
   const daysCount = document.getElementById('days-count');
   const endDateDiv = document.getElementById('end-date');
 
-
   let selectedStartDate;
   let selectedEndDate;
   let projectStartDate;
   let projectEndDate;
+  let isInitialLoad = true; // Flag to track initial load vs user changes
 
   // Populate selects
   function populateDateOptions() {
@@ -246,13 +245,7 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     monthSelect.innerHTML = '';
     yearSelect.innerHTML = '';
   
-  
-    const projectStartDay = projectStartDate.getDate();
-    const projectStartMonth = projectStartDate.getMonth(); // 0-based month
     const projectStartYear = projectStartDate.getFullYear();
-  
-    const projectEndDay = projectEndDate.getDate();
-    const projectEndMonth = projectEndDate.getMonth(); // 0-based month
     const projectEndYear = projectEndDate.getFullYear();
   
     // Populate Years
@@ -260,12 +253,6 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
       const option = document.createElement('option');
       option.value = i;
       option.textContent = i;
-  
-      // Skip years outside project start/end range
-      if (i < projectStartYear || i > projectEndYear) {
-        continue;
-      }
-  
       yearSelect.appendChild(option);
     }
   
@@ -273,106 +260,75 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     const selectedYear = parseInt(yearSelect.value);
   
     for (let i = 1; i <= 12; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = i;
-  
+      // Convert to 0-based for comparison with getMonth()
+      const monthIndex = i - 1;
+      
       // Skip months outside the valid range for the selected year
       if (
-        (selectedYear === projectStartYear && i < projectStartMonth + 1) || 
-        (selectedYear === projectEndYear && i > projectEndMonth + 1)
+        (selectedYear === projectStartYear && monthIndex < projectStartDate.getMonth()) || 
+        (selectedYear === projectEndYear && monthIndex > projectEndDate.getMonth())
       ) {
-        continue; // Skip adding this option
+        continue;
       }
   
+      const option = document.createElement('option');
+      option.value = i; // Keep as 1-indexed for display
+      option.textContent = i;
       monthSelect.appendChild(option);
     }
   
-    // Update days when month or year changes
+    // Update days based on selected month and year
     updateDays();
   }
   
   // Recalculate and populate days based on selected month and year
   function updateDays() {
     const selectedYear = parseInt(yearSelect.value);
-    const selectedMonth = parseInt(monthSelect.value) ;
-    
-    // Get the last day of the selected month
-    const lastDayOfMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-  
-    const projectStartDay = projectStartDate.getDate();
-    const projectStartMonth = projectStartDate.getMonth() +1;
-    const projectEndDay = projectEndDate.getDate();
-    const projectEndMonth = projectEndDate.getMonth() +1;
+    const selectedMonth = parseInt(monthSelect.value) - 1; // Convert to 0-indexed
+    const lastDayOfMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();  // Get last day of selected month
 
-   
-    // Populate Days based on selected year and month
+    // Clear previous days
     daySelect.innerHTML = '';
 
-    // For when the start and end are in the same month
-    if (projectStartMonth === projectEndMonth && selectedMonth === projectStartMonth){
-      for( let i = projectStartDay; i <= projectEndDay; i++ ){
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-  
-        daySelect.appendChild(option);
-      }
+    // Define start and end days for the month
+    let startDay = 1;
+    let endDay = lastDayOfMonth;
+
+    // If the selected year and month match the project's start month
+    if (selectedYear === projectStartDate.getFullYear() && selectedMonth === projectStartDate.getMonth()) {
+        startDay = projectStartDate.getDate();  // Start from project start day
     }
-    // For the first month, limit days starting from project start day
-    else if (selectedMonth === projectStartMonth) {
-      for (let i = projectStartDay; i <= lastDayOfMonth; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-  
-        daySelect.appendChild(option);
-      }
+
+    // If the selected year and month match the project's end month
+    if (selectedYear === projectEndDate.getFullYear() && selectedMonth === projectEndDate.getMonth()) {
+        endDay = projectEndDate.getDate();  // End at project end day
     }
-    // For the last month, limit days up to project end day
-    else if (selectedMonth === projectEndMonth) {
-      for (let i = 1; i <= projectEndDay; i++) {
+
+    // Populate the days dropdown
+    for (let i = startDay; i <= endDay; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
-  
         daySelect.appendChild(option);
-      }
     }
-    // For all other months, show days from 1 to 31
-    else {
-      for (let i = 1; i <= lastDayOfMonth; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-  
-        daySelect.appendChild(option);
-      }
+
+    // Automatically select the first day if it's available
+    if (isInitialLoad) {
+        daySelect.value = projectStartDate.getDate();
+        isInitialLoad = false;
     }
   }
+
   
   // Initialize date options when page loads or after month/year change
-  monthSelect.addEventListener('change', function() {
-    updateDays(); // Recalculate and update the available days when month changes
-  });
+  monthSelect.addEventListener('change', updateDays);
+  yearSelect.addEventListener('change', updateDays);
   
-  yearSelect.addEventListener('change', function() {
-    updateDays(); // Recalculate and update the available days when year changes
-  });
-  
-  // Initialize the date selectors when the page is loaded
-  window.addEventListener('DOMContentLoaded', function() {
-    populateDateOptions(); // Populate date options when the page is loaded
-  });
-  
-  
-  
-
   // Update end date and hidden fields
   function updateEndDate(resetDays = false) {
-    // Get current selected date
+    // Get current selected date (month is 1-indexed in dropdown, convert to 0-indexed)
     const day = parseInt(daySelect.value);
-    const month = parseInt(monthSelect.value) - 1; // Month is 0-based
+    const month = parseInt(monthSelect.value) - 1; // Convert to 0-based
     const year = parseInt(yearSelect.value);
 
     selectedStartDate = new Date(year, month, day);
@@ -392,23 +348,25 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
       daysCount.textContent = correctedDays;
     }
 
-    // Update DOM
+    // Update DOM with 1-indexed month for display
     endDateDiv.textContent = `${selectedEndDate.getDate()} / ${selectedEndDate.getMonth() + 1} / ${selectedEndDate.getFullYear()}`;
 
-    document.getElementById('taskStartDate').value = 
-    `${selectedStartDate.getFullYear()}-${String(selectedStartDate.getMonth() + 1).padStart(2, '0')}-${String(selectedStartDate.getDate()).padStart(2, '0')}`;
-  
-  document.getElementById('taskEndDate').value = 
-    `${selectedEndDate.getFullYear()}-${String(selectedEndDate.getMonth() + 1).padStart(2, '0')}-${String(selectedEndDate.getDate()).padStart(2, '0')}`;
+    // Format dates for form submission (YYYY-MM-DD)
+    document.getElementById('taskStartDate').value = formatDateForInput(selectedStartDate);
+    document.getElementById('taskEndDate').value = formatDateForInput(selectedEndDate);
   }
-
+  
+  // Helper function to format dates as YYYY-MM-DD
+  function formatDateForInput(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
 
   function setupHoldButton(button, action) {
     let intervalId;
   
     button.addEventListener('mousedown', () => {
       action(); // Immediate action
-      intervalId = setInterval(action, 200); // Repeat every 150ms
+      intervalId = setInterval(action, 200); // Repeat every 200ms
     });
   
     button.addEventListener('mouseup', () => {
@@ -430,7 +388,6 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     });
   }
 
-  
   // Button actions
   setupHoldButton(increaseBtn, () => {
     const maxDays = Math.floor((projectEndDate - selectedStartDate) / (1000 * 60 * 60 * 24));
@@ -471,7 +428,6 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     projectEndDate = new Date(data.endDate);
 
     // Use task-specific dates if available, else default to project start date
-    
     selectedStartDate = taskStartDate ? new Date(taskStartDate) : new Date(projectStartDate);
     selectedEndDate = taskEndDate ? new Date(taskEndDate) : new Date(projectStartDate);
 
@@ -480,7 +436,7 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
 
     // Set default dropdown selections to selectedStartDate
     daySelect.value = selectedStartDate.getDate();
-    monthSelect.value = selectedStartDate.getMonth() + 1; // Months are 0-11, so add 1
+    monthSelect.value = selectedStartDate.getMonth() + 1; // Months are 0-11, add 1 for display
     yearSelect.value = selectedStartDate.getFullYear();
 
     // Calculate days difference between start and end date

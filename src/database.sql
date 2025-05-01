@@ -1,7 +1,7 @@
 -- Deletes all tables (order matters due to foreign keys)
 DROP TABLE IF EXISTS Reports, Alerts, Notifications, user_projects, Tasks, Projects, Users, MetaValues, Messages;
 
--- Users Table 
+-- Users Table
 CREATE TABLE Users (
     userID INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -10,7 +10,8 @@ CREATE TABLE Users (
     profileImage VARCHAR(255),
     jobTitle VARCHAR(100),
     department VARCHAR(100),
-    bio TEXT
+    bio TEXT,
+    two_factor_enabled BOOLEAN DEFAULT FALSE
 );
 
 -- Projects Table
@@ -105,13 +106,18 @@ INSERT INTO Users (name, email, password, profileImage, jobTitle, department, bi
 ('Bob Smith', 'bob@example.com', 'hashed_pw2', NULL, 'Project Manager', 'Management', 'Scrum expert & project lead'),
 ('Charlie Lee', 'charlie@example.com', 'hashed_pw3', NULL, 'QA Tester', 'QA', 'Manual and automated testing'),
 ('Dina Yusuf', 'dina@example.com', 'hashed_pw4', NULL, 'HR Specialist', 'Human Resources', 'Recruitment & employee relations'),
-('Elias Roman', 'elias@example.com', 'hashed_pw5', NULL, 'IT Support', 'Information Technology', 'Hardware & networking');
+('Elias Roman', 'elias@example.com', 'hashed_pw5', NULL, 'IT Support', 'Information Technology', 'Hardware & networking'),
+('Grace Lee', 'grace@example.com', 'hashed_pw6', NULL, 'UI/UX Designer', 'Design', 'Specialized in designing user-friendly interfaces'),
+('Michael Brown', 'michael@example.com', 'hashed_pw7', NULL, 'Financial Analyst', 'Finance', 'Financial planning and analysis'),
+('Sarah Williams', 'sarah@example.com', 'hashed_pw8', NULL, 'DevOps Engineer', 'IT', 'Focused on continuous integration and delivery');
 
 -- Projects
 INSERT INTO Projects (title, description, startDate, endDate, boardCode) VALUES
 ('Website Redesign', 'Modern UI overhaul of company site', '2025-04-23', '2025-07-22', CONCAT('flexidesk-sample1-', UUID())),
 ('Mobile App Launch', 'Cross-platform mobile launch', '2025-05-03', '2025-08-01', CONCAT('flexidesk-sample2-', UUID())),
-('Internal CRM System', 'Rebuild CRM system for sales team', '2025-05-13', '2025-08-21', CONCAT('flexidesk-sample3-', UUID()));
+('Internal CRM System', 'Rebuild CRM system for sales team', '2025-05-13', '2025-08-21', CONCAT('flexidesk-sample3-', UUID())),
+('Cloud Storage Platform', 'Develop a secure and scalable cloud storage platform', '2025-06-01', '2025-11-30', CONCAT('flexidesk-sample4-', UUID())),
+('E-Commerce Website', 'Build a scalable e-commerce website', '2025-07-01', '2025-10-15', CONCAT('flexidesk-sample5-', UUID()));
 
 -- user_projects (Users assigned to projects)
 INSERT INTO user_projects (userID, projectID, role) VALUES
@@ -121,7 +127,10 @@ INSERT INTO user_projects (userID, projectID, role) VALUES
 (2, 2, 'Manager'),
 (1, 2, 'Member'),
 (4, 3, 'Manager'),
-(5, 3, 'Member');
+(5, 3, 'Member'),
+(6, 4, 'Manager'),
+(7, 5, 'Manager'),
+(8, 2, 'Member');
 
 -- Tasks
 INSERT INTO Tasks (projectID, taskName, description, startDate, endDate, priority, taskType, assignedTo, filePath, status) VALUES
@@ -132,7 +141,10 @@ INSERT INTO Tasks (projectID, taskName, description, startDate, endDate, priorit
 (2, 'Set up backend auth', 'Firebase & Node setup', '2025-05-15', '2025-05-25', 'critical', 'Milestone', 2, NULL, 'In Progress'),
 (2, 'Push notification test', 'FCM integration', '2025-05-28', '2025-06-02', 'medium-low', 'Task', 3, NULL, 'Pending'),
 (3, 'Define user roles', 'Admin, Sales, Viewers', '2025-05-14', '2025-05-23', 'high', 'Task', 4, NULL, 'Completed'),
-(3, 'Dashboard wireframe', 'Initial wireframe UX', '2025-05-24', '2025-06-02', 'medium', 'Task', 5, NULL, 'In Progress');
+(3, 'Dashboard wireframe', 'Initial wireframe UX', '2025-05-24', '2025-06-02', 'medium', 'Task', 5, NULL, 'In Progress'),
+(4, 'Implement file upload system', 'Create file upload interface for users', '2025-06-15', '2025-07-05', 'high', 'Task', 6, NULL, 'Pending'),
+(5, 'Design e-commerce homepage', 'First draft of homepage layout', '2025-07-01', '2025-07-10', 'critical', 'Milestone', 7, NULL, 'Pending'),
+(5, 'Payment gateway setup', 'Integrate payment system for e-commerce', '2025-07-10', '2025-08-01', 'high', 'Task', 8, NULL, 'In Progress');
 
 -- MetaValues - Departments
 INSERT INTO MetaValues (type, value) VALUES
@@ -141,7 +153,8 @@ INSERT INTO MetaValues (type, value) VALUES
 ('Department', 'QA'),
 ('Department', 'Management'),
 ('Department', 'Finance'),
-('Department', 'Information Technology');
+('Department', 'Information Technology'),
+('Department', 'Human Resources');
 
 -- MetaValues - Job Titles
 INSERT INTO MetaValues (type, value) VALUES
@@ -150,16 +163,23 @@ INSERT INTO MetaValues (type, value) VALUES
 ('JobTitle', 'Project Manager'),
 ('JobTitle', 'HR Specialist'),
 ('JobTitle', 'Financial Analyst'),
-('JobTitle', 'IT Support');
+('JobTitle', 'IT Support'),
+('JobTitle', 'QA Tester'),
+('JobTitle', 'DevOps Engineer');
 
 -- Notifications
 INSERT INTO Notifications (recipientID, type, message) VALUES
 (1, 'Reminder', 'Don\'t forget to submit homepage mockup by Friday.'),
-(3, 'Update', 'Bug fix task marked as completed.');
+(3, 'Update', 'Bug fix task marked as completed.'),
+(4, 'Alert', 'Your task deadline is approaching.'),
+(7, 'Reminder', 'E-commerce homepage design is due soon.'),
+(8, 'Update', 'Payment gateway integration progress.');
 
 -- Alerts
 INSERT INTO Alerts (recipientID, priority, details) VALUES
-(2, 'High', 'CRM Project has critical milestone in 5 days.');
+(2, 'High', 'CRM Project has critical milestone in 5 days.'),
+(3, 'Medium', 'Bug fix task has been assigned to you.'),
+(7, 'High', 'E-commerce website needs urgent attention on payment gateway.');
 
 -- Reports
 -- (You can add sample Reports if needed.)
@@ -173,4 +193,7 @@ INSERT INTO Messages (project_id, user_id, message, timestamp) VALUES
 (2, 2, 'Good work. Let’s finalize backend auth setup first.', '2025-05-06 09:45:00'),
 (2, 3, 'Can someone assign me tasks for notification testing?', '2025-05-07 14:00:00'),
 (3, 4, 'User roles definition completed. Uploaded to drive.', '2025-05-15 16:10:00'),
-(3, 5, 'I have updated the dashboard wireframe. Please review.', '2025-05-25 10:00:00');
+(3, 5, 'I have updated the dashboard wireframe. Please review.', '2025-05-25 10:00:00'),
+(4, 6, 'File upload system design document is ready for review.', '2025-06-16 11:00:00'),
+(5, 7, 'Payment gateway integration has been successfully tested.', '2025-07-11 15:30:00'),
+(5, 8, 'E-commerce homepage final design uploaded to drive.', '2025-07-15 10:10:00');

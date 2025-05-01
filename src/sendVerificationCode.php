@@ -37,7 +37,18 @@ if ($purpose === 'reset') {
     echo json_encode(['status' => 'error', 'message' => 'Email already registered']);
     exit;
   }
+} elseif ($purpose === '2fa') {
+  // Only check if email exists (same as reset)
+  $stmt = $conn->prepare("SELECT userID FROM Users WHERE email = ?");
+  $stmt->bind_param("s", $email);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  if ($result->num_rows === 0) {
+    echo json_encode(['status' => 'error', 'message' => 'Email not found']);
+    exit;
+  }
 }
+
 
 $_SESSION['verification'] = [
   'email' => $email,

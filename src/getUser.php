@@ -9,7 +9,7 @@ if (!isset($_SESSION['userID'])) {
 
 $userID = $_SESSION['userID'];
 
-$sql = "SELECT name, email, jobTitle, department, bio, profileImage FROM users WHERE userID = ?";
+$sql = "SELECT name, email, jobTitle, department, bio, profileImage, two_factor_enabled FROM users WHERE userID = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $userID);
 $stmt->execute();
@@ -22,6 +22,9 @@ if ($result->num_rows === 1) {
         ? "uploads/" . $user['profileImage']
         : "photos/profile-default-photo.jpeg";
 
+    // Make sure this is boolean
+    $user['twoFactorEnabled'] = (bool) $user['two_factor_enabled'];
+    unset($user['two_factor_enabled']);
 
     echo json_encode($user);
 } else {

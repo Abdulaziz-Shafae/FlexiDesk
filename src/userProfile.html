@@ -312,6 +312,9 @@
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" disabled/>
+                <small id="no-edit-email" style="color: #e74c3c; display: none;">
+                  Email address cannot be changed.
+                </small>
             </div>
             <div class="form-group">
                 <label for="job-title">Job Title</label>
@@ -371,6 +374,10 @@
                 <span class="password-toggle" onclick="togglePasswordVisibility('current-password', this)">👁️</span>
             </div>
             </div>
+
+            <small id="Current-Password-required" style="color: red; display: none;">
+             Please enter the Current Password.
+            </small>
             
             <div class="form-group">
             <label for="new-password">New Password</label>
@@ -607,7 +614,6 @@
         });
       });
 
-
       // Preview + Upload Profile Picture
       document.getElementById('change-photo-btn').addEventListener('click', () => {
         document.getElementById('profile-pic-upload').click();
@@ -617,8 +623,8 @@
         const file = this.files[0];
         if (!file) {
           alert("No file selected");
-        return;
-}
+          return;
+        }
         // Preview image instantly
         const reader = new FileReader();
         reader.onload = function (e) {
@@ -650,15 +656,6 @@
           });
       });
 
-      fetch('getDepartments.php')
-        .then(res => res.json())
-        .then(data => {
-          const datalist = document.getElementById('department-list');
-          if (datalist) {
-            datalist.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
-          }
-      });
-
       const form = document.getElementById('personal-info-form');
       const editBtn = document.getElementById('edit-save-btn');
       let isEditing = false;
@@ -667,16 +664,41 @@
         if (!isEditing) {
           // 🔓 Enable fields
           form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
+            document.getElementById('email').disabled = true;
+            document.getElementById('no-edit-email').style.display = 'block';
+
           editBtn.textContent = 'Save Changes';
           isEditing = true;
         } else {
           // ✅ Save changes
+
           const payload = {
-            name: document.getElementById('full-name').value,
-            email: document.getElementById('email').value,
-            jobTitle: document.getElementById('job-title').value,
-            department: document.getElementById('department').value,
-            bio: document.getElementById('bio').value
+            name: document.getElementById('full-name').value.trim(),
+            jobTitle: document.getElementById('job-title').value.trim(),
+            department: document.getElementById('department').value.trim(),
+            bio: document.getElementById('bio').value.trim()
+          };
+
+          fetch('updateUser.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          .then(res => res.json())
+          .then(data => {
+
+            if (data.status === 'success') {
+              alert('Profile updated successfully!');
+              loadUserProfile();
+              form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
+              document.getElementById('no-edit-email').style.display = 'none';
+              editBtn.textContent = 'Edit';
+              isEditing = false;
+            } else {
+              alert('Error: ' + data.message);
+            }
+          });
+
           };
           // Add department if new
           fetch('addMetaValueIfNew.php', {
@@ -690,26 +712,6 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'JobTitle', value: payload.jobTitle })
           });
-
-          fetch('updateUser.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-            .then(res => res.json())
-            .then(data => {
-              if (data.status === 'success') {
-                alert('Profile updated successfully!');
-                loadUserProfile();
-                // 🔒 Disable fields again
-                form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
-                editBtn.textContent = 'Edit';
-                isEditing = false;
-              } else {
-                alert('Error: ' + data.message);
-              }
-            });
-        }
       });
 
       function getQueryParam(name) {
@@ -786,48 +788,55 @@
         secRequirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
       });
 
-
       function handlePasswordUpdate() {
-        const currentPassword = document.getElementById('current-password').value;
-        const newPassword = document.getElementById('new-password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        const email = document.getElementById('email').value;
-        
-        if (!email || !currentPassword || !newPassword || !confirmPassword) {
-          return alert("Please fill in all fields.");
-        }
-        if (newPassword !== confirmPassword) {
-          document.getElementById('security-password-match-error').style.display = 'block';
+        const currentPassword = document.getElementById('current-password').value.trim();
+        const newPassword = document.getElementById('new-password').value.trim();
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const twoFactorEnabled = document.getElementById('two-factor').checked;
+
+        if (!email || !currentPassword) {
+          document.getElementById('Current-Password-required').style.display = 'block';
           return;
         }
-        if (newPassword !== confirmPassword) {
-          document.getElementById('security-password-match-error').style.display = 'block';
-          return;
-        } else {
-          document.getElementById('security-password-match-error').style.display = 'none';
+        document.getElementById('Current-Password-required').style.display = 'none';
+
+        // If new password is provided, confirm match
+        if (newPassword || confirmPassword) {
+          if (newPassword !== confirmPassword) {
+            document.getElementById('security-password-match-error').style.display = 'block';
+            return;
+          }
         }
 
-        // Send request to update the password
+        document.getElementById('security-password-match-error').style.display = 'none';
+
         fetch('updatePassword.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, currentPassword, newPassword, mode: 'profile' })
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.status === 'success') {
-              alert("Password updated successfully.");
-              document.getElementById('current-password').value = '';
-              document.getElementById('new-password').value = '';
-              document.getElementById('confirm-password').value = '';
-            } else {
-              alert(data.message || "Failed to update password.");
-            }
+          body: JSON.stringify({
+            email,
+            currentPassword,
+            newPassword, // may be empty
+            mode: 'profile',
+            twoFactorEnabled
           })
-          .catch(err => {
-            console.error("Request error:", err);
-            alert("An error occurred.");
-          });
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert("Security settings updated.");
+            ['current-password', 'new-password', 'confirm-password'].forEach(id => {
+              document.getElementById(id).value = '';
+            });
+          } else {
+            alert(data.message || "Failed to update settings.");
+          }
+        })
+        .catch(err => {
+          console.error("Request error:", err);
+          alert("An error occurred.");
+        });
       }
 
       document.getElementById('filter-priority').addEventListener('change', loadMyTasks);

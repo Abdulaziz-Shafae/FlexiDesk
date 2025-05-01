@@ -292,7 +292,7 @@
       <div class="form-container">
         <h2 class="form-title">Login to Your Account</h2>
         <!-- The form now sends data to login.php -->
-        <form method="POST" action="login.php">
+        <form method="POST" >
           <div class="wave-group">
             <input type="email" id="email" name="email" class="input" required />
             <label class="label">Email</label>
@@ -380,6 +380,25 @@
           <p class="signup-text">Don't have an account?</p>
           <a href="createAccount.html" class="btn signup-btn">Create Account</a>
         </div>
+
+        <!-- 2FA Verification Popup -->
+        <div id="twofaPopup" class="popup">
+          <div class="popup-content" style="width: 400px; position: relative;">
+            <h2 class="popup-header">Two-Factor Verification</h2>
+            <span class="addTask-close-btn" onclick="closeTwofaPopup()">&times;</span>
+            <div style="padding: 20px;">
+              <div class="wave-group">
+                <input type="text" id="twofa-code" class="input" maxlength="6" required />
+                <label class="label">Enter 6-digit Code</label>
+              </div>
+              <div class="button-container" style="margin-top: 20px; display: flex; gap: 10px;">
+                <button onclick="closeTwofaPopup()" class="popup-btn cancel">Cancel</button>
+                <button onclick="verifyTwofaCode()" class="popup-btn">Verify</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -523,6 +542,65 @@
         resetRequirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
       });
 
+      if (params.get('require2fa') === '1') {
+        showTwofaPopup(); // You already defined this function
+      }
+
+      function verifyTwofaCode() {
+        const code = document.getElementById('twofa-code').value;
+        if (!code) return alert("Enter the verification code.");
+
+        fetch('complete2fa.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            window.location.href = 'homePage.php'; // Redirect after success
+          } else {
+            alert(data.message || 'Invalid code.');
+          }
+        });
+      }
+
+      function showTwofaPopup() {
+        document.getElementById('twofaPopup').style.display = 'block';
+      }
+
+      function closeTwofaPopup() {
+        document.getElementById('twofaPopup').style.display = 'none';
+      }
+
+      document.querySelector('form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      fetch('login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            window.location.href = 'homePage.php';
+          } else if (data.status === '2fa_required') {
+            // ✅ Send 2FA code like forgot password logic
+            fetch('sendVerificationCode.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, purpose: '2fa' })
+            })
+            .then(() => showTwofaPopup());  // Show popup after sending
+          } else {
+            document.getElementById('login-error').style.display = 'block';
+          }
+        });
+    });
 
     </script>
   </body>

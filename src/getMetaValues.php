@@ -13,6 +13,8 @@ if (in_array($type, ['Department', 'JobTitle'])) {
     while ($row = $result->fetch_assoc()) {
         $values[] = $row['value'];
     }
+} else {
+    $values = ['error' => 'Invalid type specified'];
 }
 
 echo json_encode($values);
