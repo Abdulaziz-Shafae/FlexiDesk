@@ -1,0 +1,50 @@
+<!-- Universal Navbar -->
+<style>
+  /* Override the logo text color */
+  .logo .logo-text {
+    color: #22d1ee !important; /*!important to override any existing styles */
+  }
+  
+
+  .dark-mode .logo .logo-text {
+    color: #3d5af1 !important; /* Different color for dark mode */
+  }
+</style>
+<nav class="navbar">
+  <!-- Logo -->
+  <a href="homePage.php" class="logo">
+    <div class="logo-icon">
+      <i class="fas fa-tasks"></i>
+    </div>
+    <h2 class="logo-text">FlexiDesk</h2>
+  </a>
+  
+  <!-- Mobile Menu Toggle Button -->
+  <button class="menu-toggle" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  
+  <div class="nav-links" id="navLinks">
+    <!-- Navigation Links -->
+    <a href="homePage.php" id="home-link">Home</a>
+    <a href="about.html" id="about-link">About</a>
+    <a href="contact.html" id="contact-link">Contact</a>
+    
+    <!-- Auth Buttons -->
+    <div class="auth-buttons">
+      <button class="auth-button login-btn" onclick="window.location.href='Login.html'">Log in</button>
+      <button class="auth-button signup-btn" onclick="window.location.href='createAccount.html'">Sign up</button>
+    </div>
+  </div>
+  
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-container">
+    <div class="dark-mode-toggle" id="dark-mode-switch" onclick="toggleDarkMode()">
+      <div class="toggle-thumb">
+        <i class="fas fa-sun toggle-icon" id="theme-icon"></i>
+      </div>
+    </div>
+  </div>
+</nav>

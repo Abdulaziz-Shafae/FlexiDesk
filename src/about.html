@@ -1,176 +1,908 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>About FlexiDesk</title>
-    <link rel="stylesheet" href="navbarStyle.css" />
-    <script src="script.js" defer></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About FlexiDesk | Project Management Simplified</title>
+  <link rel="stylesheet" href="navbarStyle.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* ===== VARIABLES ===== */
+    :root {
+      /* Light mode colors */
+      --primary-color: #0d2240;
+      --secondary-color: #3d5af1;
+      --accent-color: #22d1ee;
+      --text-color: #1a1a1a;
+      --background-color: #ffffff;
+      --card-bg-light: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.04);
+      --gradient-start: #3d5af1;
+      --gradient-end: #22d1ee;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --subtle-bg: #f8f9fa;
+      --navbar-bg: rgba(255, 255, 255, 0.9);
+      --navbar-text: #0d2240;
+      --navbar-shadow: rgba(0, 0, 0, 0.05);
+      --navbar-hover: #3d5af1;
+      --navbar-active: #22d1ee;
+      --button-bg: #3d5af1;
+      --button-text: #ffffff;
+      --button-hover: #0d2240;
+    }
 
-    <style>
-      /* General Styles */
-      body {
-        font-family: 'Arial', sans-serif;
-        background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-        color: #333;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
+    /* Dark mode variables */
+    .dark-mode {
+      --primary-color: #22d1ee;
+      --secondary-color: #3d5af1;
+      --accent-color: #f5f5f5;
+      --text-color: #f1f1f1;
+      --background-color: #111111;
+      --card-bg-light: #1a1a1a;
+      --card-shadow: rgba(0, 0, 0, 0.25);
+      --gradient-start: #3d5af1;
+      --gradient-end: #22d1ee;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --subtle-bg: #1e1e1e;
+      --navbar-bg: rgba(17, 17, 17, 0.95);
+      --navbar-text: #f1f1f1;
+      --navbar-shadow: rgba(0, 0, 0, 0.3);
+      --navbar-hover: #22d1ee;
+      --navbar-active: #3d5af1;
+      --button-bg: #22d1ee;
+      --button-text: #111111;
+      --button-hover: #3d5af1;
+    }
+
+    /* ===== RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Inter', 'Arial', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      transition: all 0.3s ease;
+      line-height: 1.6;
+    }
+
+    /* ===== NAVBAR STYLES ===== */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 80px;
+      padding: 0 40px;
+      background-color: var(--navbar-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 30px var(--navbar-shadow);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    .navbar.scrolled {
+      height: 70px;
+      padding: 0 30px;
+    }
+
+    /* Logo Styles */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--navbar-text);
+      letter-spacing: -0.03em;
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover .logo-text {
+      color: var(--navbar-hover);
+    }
+
+    .logo:hover .logo-icon {
+      transform: rotate(-5deg) scale(1.1);
+    }
+
+    /* Navigation Links */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding: 8px 16px;
+      color: var(--navbar-text);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      border-radius: 6px;
+    }
+
+    .nav-links a:hover {
+      color: var(--navbar-hover);
+      background-color: rgba(61, 90, 241, 0.05);
+    }
+
+    .nav-links a.active {
+      color: var(--navbar-active);
+      font-weight: 600;
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+      border-radius: 3px;
+    }
+
+    /* Auth Buttons */
+    .auth-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .auth-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn {
+      background-color: transparent;
+      color: var(--navbar-text);
+      border: 1px solid var(--navbar-text);
+    }
+
+    .login-btn:hover {
+      background-color: rgba(61, 90, 241, 0.05);
+      border-color: var(--navbar-hover);
+      color: var(--navbar-hover);
+    }
+
+    .signup-btn {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      box-shadow: 0 4px 15px rgba(61, 90, 241, 0.25);
+    }
+
+    .signup-btn:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(61, 90, 241, 0.3);
+    }
+
+    /* Dark Mode Toggle */
+    .dark-mode-container {
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+    }
+
+    .dark-mode-toggle {
+      position: relative;
+      width: 48px;
+      height: 24px;
+      border-radius: 12px;
+      background-color: rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dark-mode .dark-mode-toggle {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .toggle-thumb {
+      position: absolute;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dark-mode .toggle-thumb {
+      left: 26px;
+      background-color: var(--accent-color);
+    }
+
+    .toggle-icon {
+      font-size: 12px;
+      color: #ffc107;
+    }
+
+    .dark-mode .toggle-icon {
+      color: #2c3e50;
+    }
+
+    /* Mobile Menu Button (visible on small screens) */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 21px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      z-index: 1001;
+    }
+
+    .menu-toggle span {
+      width: 100%;
+      height: 3px;
+      background-color: var(--navbar-text);
+      border-radius: 3px;
+      transition: all 0.3s ease;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+
+    h1 {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+      width: 100%;
+      letter-spacing: -0.03em;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    main {
+      padding: 150px 0 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 70px;
+      max-width: 800px;
+    }
+
+    .section-title p {
+      font-size: 1.3rem;
+      opacity: 0.8;
+      margin-top: 1rem;
+    }
+
+    /* ===== INTRO ===== */
+    .intro {
+      margin-bottom: 80px;
+      text-align: center;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .intro-text {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 40px;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    /* ===== CARDS SECTION ===== */
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 80px;
+    }
+
+    .card {
+      position: relative;
+      min-height: 350px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px var(--card-shadow);
+      transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+    }
+
+    .card__image {
+      position: relative;
+      height: 140px;
+      overflow: hidden;
+    }
+
+    .card__image-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      transition: transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    .card:hover .card__image-inner {
+      transform: scale(1.05);
+    }
+
+    .card__content {
+      position: relative;
+      padding: 25px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      background-color: var(--card-bg-light);
+      z-index: 1;
+    }
+
+    .card__icon {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: var(--secondary-color);
+      transition: all 0.4s ease;
+    }
+
+    .card:hover .card__icon {
+      transform: translateY(-5px) scale(1.1);
+      color: var(--accent-color);
+    }
+
+    .card__title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      transition: all 0.3s ease;
+      letter-spacing: -0.03em;
+    }
+
+    .card__description {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-color);
+      opacity: 0.9;
+    }
+
+    /* ===== TEAM SECTION ===== */
+    .team-section {
+      width: 100%;
+      padding: 80px 0;
+      background-color: var(--subtle-bg);
+      border-radius: 30px;
+      margin-bottom: 120px;
+    }
+
+    .team-section-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    .team-title {
+      text-align: center;
+      margin-bottom: 70px;
+    }
+
+    .team-members {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 40px;
+    }
+
+    .team-member {
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .team-member:hover {
+      transform: translateY(-10px);
+    }
+
+    .member-avatar {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      margin: 0 auto 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .member-name {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+    }
+
+    .member-role {
+      font-size: 1rem;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+    }
+
+    .member-info {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* ===== MISSION SECTION ===== */
+    .mission-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 40px;
+      margin-bottom: 120px;
+    }
+
+    .mission-content {
+      max-width: 1000px;
+      position: relative;
+      padding: 70px;
+      border-radius: 30px;
+      background-color: var(--subtle-bg);
+      overflow: hidden;
+    }
+
+    .mission-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      opacity: 0.03;
+      z-index: 0;
+    }
+
+    .mission-title {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 35px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mission-title i {
+      color: var(--secondary-color);
+      font-size: 2.5rem;
+    }
+
+    .mission-text {
+      position: relative;
+      z-index: 1;
+      font-size: 1.3rem;
+      line-height: 1.8;
+    }
+
+    .highlight {
+      color: var(--secondary-color);
+      font-weight: 600;
+    }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .reveal {
+      position: relative;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+
+    /* ===== HOVER EFFECTS ===== */
+    .hover-lift {
+      transition: transform 0.3s ease;
+    }
+
+    .hover-lift:hover {
+      transform: translateY(-5px);
+    }
+
+    /* ===== MEDIA QUERIES ===== */
+    @media (max-width: 1200px) {
+      .cards-container {
+        grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
       }
-
-      body.dark-mode {
-        background: linear-gradient(135deg, #121212, #1a1a1a);
-        color: #f1f1f1;
+      
+      .mission-content {
+        padding: 50px;
       }
+    }
 
+    @media (max-width: 992px) {
+      .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
       h1 {
         font-size: 2.5rem;
-        margin-bottom: 2rem;
-        color: #2c3e50;
       }
-
+      
+      .intro-text {
+        font-size: 1.2rem;
+      }
+      
+      .mission-text {
+        font-size: 1.2rem;
+      }
+      
+      .navbar {
+        padding: 0 20px;
+      }
+      
+      .dark-mode-container {
+        margin-right: 10px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      main {
+        padding: 100px 0 70px;
+      }
+      
       .cards-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      
+      .mission-content {
+        padding: 40px 30px;
+      }
+
+      .team-members {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+      
+      .menu-toggle {
         display: flex;
-        gap: 2rem;
-        flex-wrap: wrap;
-        justify-content: center;
       }
-
-      /* Card Styles */
-      .card {
-        position: relative;
-        width: 300px;
-        height: 200px;
-        background: linear-gradient(-45deg, #f89b29 0%, #ff0f7b 100%);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      
+      .menu-open .menu-toggle span:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
       }
-
-      .card:hover {
-        transform: rotate(-5deg) scale(1.1);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      
+      .menu-open .menu-toggle span:nth-child(2) {
+        opacity: 0;
       }
-
-      .card__content {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(-45deg);
-        width: 100%;
-        height: 100%;
+      
+      .menu-open .menu-toggle span:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+      }
+      
+      .nav-links {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        right: 0;
+        background-color: var(--navbar-bg);
+        flex-direction: column;
         padding: 20px;
-        box-sizing: border-box;
-        background-color: #fff;
-        opacity: 0;
-        transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        box-shadow: 0 10px 30px var(--navbar-shadow);
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+        transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+        pointer-events: none;
       }
-
-      .card:hover .card__content {
-        transform: translate(-50%, -50%) rotate(0deg);
-        opacity: 1;
+      
+      .menu-open .nav-links {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        pointer-events: all;
       }
-
-      .card__title {
-        margin: 0;
-        font-size: 24px;
-        color: #333;
-        font-weight: 700;
+      
+      .nav-links a {
+        width: 100%;
+        text-align: center;
+        padding: 15px;
       }
-
-      .card__description {
-        margin: 10px 0 0;
-        font-size: 14px;
-        color: #777;
-        line-height: 1.4;
+      
+      .auth-buttons {
+        margin-top: 15px;
+        width: 100%;
       }
-
-      /* Main Word on Card */
-      .card h2 {
-        position: absolute;
-        color: white;
-        font-size: 1.8rem;
-        font-weight: bold;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        transition: opacity 0.3s ease;
+      
+      .auth-button {
+        flex: 1;
       }
+    }
 
-      .card:hover h2 {
-        opacity: 0;
+    @media (max-width: 576px) {
+      .container {
+        padding: 0 20px;
       }
-    </style>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <div id="navbar-placeholder"></div>
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .intro-text {
+        font-size: 1.1rem;
+      }
+      
+      .mission-title {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+      
+      .mission-text {
+        font-size: 1.1rem;
+      }
+      
+      .member-avatar {
+        width: 120px;
+        height: 120px;
+      }
+      
+      .logo-text {
+        font-size: 1.5rem;
+      }
+      
+      .navbar {
+        height: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Include the navbar -->
+  <div id="navbar-container"></div>
 
-    <!-- Main Content -->
-    <main style="margin-top: 100px">
-      <h1>About Us</h1>
-      <div class="cards-container">
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <!-- Intro Section -->
+      <section class="intro reveal">
+        <h1>About FlexiDesk</h1>
+        <p class="intro-text">
+          FlexiDesk is a comprehensive project management solution designed to simplify collaboration and boost productivity. We bring teams together through intuitive, powerful tools that adapt to your workflow.
+        </p>
+      </section>
+      
+      <!-- Cards Section -->
+      <section class="cards-container">
         <!-- Card 1: About FlexiDesk -->
-        <div class="card">
-          <h2>FlexiDesk</h2>
+        <div class="card reveal delay-1">
+          <div class="card__image">
+            <div class="card__image-inner"></div>
+          </div>
           <div class="card__content">
-            <p class="card__title">About FlexiDesk</p>
+            <i class="fas fa-tasks card__icon"></i>
+            <h3 class="card__title">Our Platform</h3>
             <p class="card__description">
-              FlexiDesk is a project management platform designed to simplify
-              teamwork. It combines all the tools you need to oversee projects,
-              track progress, and collaborate effectively. Our goal is to make
-              project management easier and more efficient for everyone on the
-              team.
+              FlexiDesk is a project management platform designed to simplify teamwork. It combines all the tools you need to oversee projects, track progress, and collaborate effectively. Our goal is to make project management easier and more efficient for everyone on the team.
             </p>
           </div>
         </div>
 
         <!-- Card 2: About the Group -->
-        <div class="card">
-          <h2>Our Team</h2>
+        <div class="card reveal delay-2">
+          <div class="card__image">
+            <div class="card__image-inner"></div>
+          </div>
           <div class="card__content">
-            <p class="card__title">Our Team</p>
+            <i class="fas fa-users card__icon"></i>
+            <h3 class="card__title">Our Team</h3>
             <p class="card__description">
-              We are a group of 5 passionate Computer Information Systems (CIS)
-              students at IAU. Our love for technology and problem-solving
-              drives us to create innovative solutions like FlexiDesk. Together,
-              we aim to make project management seamless and enjoyable for
-              everyone.
+              We are a group of 5 passionate Computer Information Systems (CIS) students at IAU. Our love for technology and problem-solving drives us to create innovative solutions like FlexiDesk. Together, we aim to make project management seamless and enjoyable for everyone.
             </p>
           </div>
         </div>
-      </div>
-    </main>
+        
+        <!-- Card 3: Our Vision -->
+        <div class="card reveal delay-3">
+          <div class="card__image">
+            <div class="card__image-inner"></div>
+          </div>
+          <div class="card__content">
+            <i class="fas fa-lightbulb card__icon"></i>
+            <h3 class="card__title">Our Vision</h3>
+            <p class="card__description">
+              We envision a world where teams can collaborate seamlessly regardless of location or time zone. FlexiDesk aims to break down communication barriers and create a workspace where productivity and creativity flourish together.
+            </p>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Team Section -->
+      <section class="team-section reveal delay-2">
+        <div class="team-section-inner">
+          <div class="team-title">
+            <h2>Meet Our Team</h2>
+            <p>The innovative minds behind FlexiDesk</p>
+          </div>
+          <div class="team-members">
+            <!-- Team member placeholders - replace with actual team info -->
+            <div class="team-member reveal delay-1">
+              <div class="member-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <h4 class="member-name">Team Member 1</h4>
+              <p class="member-role">Lead Developer</p>
+              <p class="member-info">CIS Student at IAU</p>
+            </div>
+            
+            <div class="team-member reveal delay-2">
+              <div class="member-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <h4 class="member-name">Team Member 2</h4>
+              <p class="member-role">UI/UX Designer</p>
+              <p class="member-info">CIS Student at IAU</p>
+            </div>
+            
+            <div class="team-member reveal delay-3">
+              <div class="member-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <h4 class="member-name">Team Member 3</h4>
+              <p class="member-role">Back-End Developer</p>
+              <p class="member-info">CIS Student at IAU</p>
+            </div>
+            
+            <div class="team-member reveal delay-4">
+              <div class="member-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <h4 class="member-name">Team Member 4</h4>
+              <p class="member-role">Database Specialist</p>
+              <p class="member-info">CIS Student at IAU</p>
+            </div>
+            
+            <div class="team-member reveal delay-5">
+              <div class="member-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <h4 class="member-name">Team Member 5</h4>
+              <p class="member-role">Project Manager</p>
+              <p class="member-info">CIS Student at IAU</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Mission Section -->
+      <section class="mission-section reveal delay-3">
+        <div class="mission-content">
+          <div class="mission-title">
+            <i class="fas fa-bullseye"></i>
+            <h2>Our Mission</h2>
+          </div>
+          <div class="mission-text">
+            <p>At <span class="highlight">FlexiDesk</span>, our mission is to transform the way teams collaborate on projects. We believe that effective project management shouldn't be complicated or frustrating. By creating an intuitive, flexible platform, we're empowering teams to focus on what truly matters: <span class="highlight">bringing great ideas to life</span>.</p>
+            <p>Whether you're a small startup or a large enterprise, FlexiDesk adapts to your unique workflow and helps you achieve your goals with greater efficiency and less stress.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
 
-    <script>
-      // Fetch and insert navbar
-      fetch('navbar.php')
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById('navbar-placeholder').innerHTML = data;
-        })
-        .catch((error) => console.error('Error loading navbar:', error));
-
-      const toggleSwitch = document.getElementById('dark-mode-switch');
-      const body = document.body;
-
-      toggleSwitch.addEventListener('change', () => {
-        body.classList.toggle('dark-mode');
-        localStorage.setItem(
-          'darkMode',
-          body.classList.contains('dark-mode') ? 'enabled' : 'disabled',
-        );
-      });
-
-      if (localStorage.getItem('darkMode') === 'enabled') {
-        body.classList.add('dark-mode');
-        toggleSwitch.checked = true;
+  <script>
+    // Reveal animations on scroll
+    const revealElements = document.querySelectorAll('.reveal');
+    
+    function reveal() {
+      for (let i = 0; i < revealElements.length; i++) {
+        const windowHeight = window.innerHeight;
+        const elementTop = revealElements[i].getBoundingClientRect().top;
+        const elementVisible = 150;
+        
+        if (elementTop < windowHeight - elementVisible) {
+          revealElements[i].classList.add('active');
+        }
       }
-    </script>
-  </body>
+    }
+    
+    window.addEventListener('scroll', reveal);
+    window.addEventListener('load', reveal);
+  </script>
+  <script src="navbar-loader.js"></script>
+</body>
 </html>
