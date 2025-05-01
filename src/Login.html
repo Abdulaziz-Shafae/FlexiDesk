@@ -291,8 +291,14 @@
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Login to Your Account</h2>
-        <!-- The form now sends data to login.php -->
-        <form method="POST" >
+        
+        <!-- Error message placed BEFORE the form for better visibility -->
+        <div id="login-error" class="login-error" style="display: none;">
+          Invalid Email or Password.
+        </div>
+        
+        <!-- The form with proper submission handling -->
+        <form id="login-form" onsubmit="return false;">
           <div class="wave-group">
             <input type="email" id="email" name="email" class="input" required />
             <label class="label">Email</label>
@@ -307,15 +313,11 @@
             </span>
           </div>
         
-          <div id="login-error" class="login-error" style="display: none;">
-            Invalid Email or Password.
-          </div>
-        
           <p style="text-align: right; margin-bottom: 1rem;">
             <a href="#" onclick="showResetPopup()" style="color: #3498db; text-decoration: underline; font-size: 0.9rem;">Forgot Password?</a>
           </p>
         
-          <button type="submit" class="btn login-btn">Login</button>
+          <button type="button" class="btn login-btn" onclick="submitLoginForm()">Login</button>
         </form>
         
 
@@ -573,19 +575,33 @@
         document.getElementById('twofaPopup').style.display = 'none';
       }
 
-      document.querySelector('form').addEventListener('submit', function (e) {
-      e.preventDefault();
+      // Main login submission function
+      function submitLoginForm() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        if (!email || !password) {
+          document.getElementById('login-error').style.display = 'block';
+          return;
+        }
+        
+        // Show loading state on button
+        const loginButton = document.querySelector('.login-btn');
+        const originalButtonText = loginButton.innerHTML;
+        loginButton.innerHTML = 'Logging in...';
+        loginButton.disabled = true;
 
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      fetch('login.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
+        fetch('login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        })
         .then(res => res.json())
         .then(data => {
+          // Reset button
+          loginButton.innerHTML = originalButtonText;
+          loginButton.disabled = false;
+          
           if (data.status === 'success') {
             window.location.href = 'homePage.php';
           } else if (data.status === '2fa_required') {
@@ -597,11 +613,31 @@
             })
             .then(() => showTwofaPopup());  // Show popup after sending
           } else {
-            document.getElementById('login-error').style.display = 'block';
+            // Show error message
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = data.message || 'Invalid Email or Password.';
           }
+        })
+        .catch(error => {
+          // Handle fetch errors
+          loginButton.innerHTML = originalButtonText;
+          loginButton.disabled = false;
+          
+          document.getElementById('login-error').style.display = 'block';
+          document.getElementById('login-error').textContent = 'Your email or password is incorrect. Please try again.';
         });
-    });
+      }
 
+      // Add event listener for pressing Enter key in password field
+      document.getElementById('password').addEventListener('keyup', function(event) {
+        if (event.key === "Enter") {
+          submitLoginForm();
+        }
+      });
+
+      // Remove the previous form submit listener and use the submitLoginForm function instead
+      document.querySelector('.login-btn').addEventListener('click', submitLoginForm);
     </script>
   </body>
 </html>
