@@ -5,8 +5,7 @@ session_start();
 require __DIR__ . '/vendor/autoload.php';
 include('db.php');
 
-use GuzzleHttp\Client;
-
+use Resend\Resend;
 
 $data = json_decode(file_get_contents("php://input"), true);
 $email = $data['email'] ?? '';
@@ -18,7 +17,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
   exit;
 }
 
-
+// Check email based on purpose
 if ($purpose === 'reset') {
   $stmt = $conn->prepare("SELECT userID FROM Users WHERE email = ?");
   $stmt->bind_param("s", $email);
@@ -49,27 +48,24 @@ if ($purpose === 'reset') {
   }
 }
 
-
+// Store verification data in session
 $_SESSION['verification'] = [
   'email' => $email,
   'code' => $code,
   'timestamp' => time()
 ];
 
-$client = new Client();
+// Initialize Resend client with your API key
+$resend = Resend::client('re_CLMUqmKb_KLFyyPNgGpxhXs62nuJiaWSQ');
 
 try {
-  $client->post('https://api.resend.com/emails', [
-    'headers' => [
-      'Authorization' => 'Bearer re_CLMUqmKb_KLFyyPNgGpxhXs62nuJiaWSQ',
-      'Content-Type' => 'application/json'
-    ],
-    'json' => [s
-      'from' => 'FlexiDesk <onboarding@resend.dev>',
-      'to' => 'amm1r.abdu@gmail.com',//  make it this after doing the domin [$email],
-      'subject' => 'Email Verification Code',
-      'html' => "<p>Your verification code is <strong>$code</strong></p>"
-    ]
+  // Send email using the new Resend API structure
+  $response = $resend->emails->send([
+    'from' => 'FlexiDesk <onboarding@resend.dev>',
+    'to' => $email, // Use the actual user email in production
+    // 'to' => 'amm1r.abdu@gmail.com', // For testing
+    'subject' => 'FlexiDesk Verification Code',
+    'html' => "<p>Your verification code is <strong>$code</strong></p>"
   ]);
 
   echo json_encode(['status' => 'success', 'message' => 'Verification code sent.']);
