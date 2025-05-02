@@ -65,8 +65,8 @@ try {
       'Content-Type' => 'application/json'
     ],
     'json' => [
-      'from' => 'FlexiDesk <onboarding@resend.dev>',
-      'to' => 'pompaprpo@gmail.com',//  make it this after doing the domin [$email],
+      'from' => 'FlexiDesk <noreply@flexidesk.site>', // Updated from your verified domain
+      'to' => $email, // Send to the user's email address
       'subject' => 'Email Verification Code',
       'html' => "<p>Your verification code is <strong>$code</strong></p>"
     ]
@@ -74,6 +74,9 @@ try {
 
   echo json_encode(['status' => 'success', 'message' => 'Verification code sent.']);
 } catch (Exception $e) {
+  // Add detailed error logging
+  file_put_contents('email_error.log', date('Y-m-d H:i:s') . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n\n", FILE_APPEND);
+  
   echo json_encode([
     'status' => 'error',
     'message' => 'Failed to send email.',
