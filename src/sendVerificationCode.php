@@ -56,6 +56,16 @@ $_SESSION['verification'] = [
   'timestamp' => time()
 ];
 
+// Development mode toggle - for local testing
+$isDevelopmentMode = true; // Set to false in production
+
+if ($isDevelopmentMode) {
+  // Log the code instead of sending email
+  file_put_contents('dev_verification_codes.log', date('Y-m-d H:i:s') . " - Email: $email, Code: $code\n", FILE_APPEND);
+  echo json_encode(['status' => 'success', 'message' => "Development mode: Code is $code"]);
+  exit;
+}
+
 $client = new Client();
 
 try {
@@ -65,7 +75,7 @@ try {
       'Content-Type' => 'application/json'
     ],
     'json' => [
-      'from' => 'FlexiDesk <noreply@flexidesk.site>', // Updated from your verified domain
+      'from' => 'FlexiDesk <onboarding@resend.dev>',
       'to' => $email, // Send to the user's email address
       'subject' => 'Email Verification Code',
       'html' => "<p>Your verification code is <strong>$code</strong></p>"
