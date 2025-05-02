@@ -66,7 +66,7 @@ try {
     ],
     'json' => [
       'from' => 'FlexiDesk <onboarding@resend.dev>',
-      'to' => 'iivxpz@gmail.com',//  make it this after doing the domin [$email],
+      'to' => 'pompaprpo@gmail.com',//  make it this after doing the domin [$email],
       'subject' => 'Email Verification Code',
       'html' => "<p>Your verification code is <strong>$code</strong></p>"
     ]
