@@ -1,21 +1,7 @@
-<!-- Universal Navbar -->
-<style>
-  /* Override the logo text color */
-  .logo .logo-text {
-    color: #22d1ee !important; /*!important to override any existing styles */
-  }
-  
-
-  .dark-mode .logo .logo-text {
-    color: #3d5af1 !important; /* Different color for dark mode */
-  }
-</style>
+<!-- Universal Navbar - Static HTML Version -->
 <nav class="navbar">
   <!-- Logo -->
   <a href="homePage.php" class="logo">
-    <div class="logo-icon">
-      <i class="fas fa-tasks"></i>
-    </div>
     <h2 class="logo-text">FlexiDesk</h2>
   </a>
   
@@ -26,8 +12,8 @@
     <span></span>
   </button>
   
-  <div class="nav-links" id="navLinks">
-    <!-- Navigation Links -->
+  <div class="nav-links">
+    <!-- Always include Home link -->
     <a href="homePage.php" id="home-link">Home</a>
     <a href="about.html" id="about-link">About</a>
     <a href="contact.html" id="contact-link">Contact</a>
@@ -43,8 +29,96 @@
   <div class="dark-mode-container">
     <div class="dark-mode-toggle" id="dark-mode-switch" onclick="toggleDarkMode()">
       <div class="toggle-thumb">
-        <i class="fas fa-sun toggle-icon" id="theme-icon"></i>
+        <i class="toggle-icon" id="theme-icon">☀️</i>
       </div>
     </div>
   </div>
 </nav>
+
+<script>
+  // Dark Mode Toggle Function
+  function toggleDarkMode() {
+    const body = document.body;
+    body.classList.toggle('dark-mode');
+    
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+    
+    // Update icon based on dark mode state
+    const toggleIcon = document.getElementById('theme-icon');
+    if (toggleIcon) {
+      toggleIcon.textContent = body.classList.contains('dark-mode') ? '🌙' : '☀️';
+    }
+    
+    // Update toggle thumb position
+    const toggleThumb = document.querySelector('.toggle-thumb');
+    if (toggleThumb) {
+      toggleThumb.style.left = body.classList.contains('dark-mode') ? '26px' : '2px';
+    }
+  }
+
+  // Mobile Menu Toggle Function
+  function toggleMenu() {
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+      navbar.classList.toggle('menu-open');
+    }
+  }
+  
+  // Set active page based on current URL
+  function setActivePage() {
+    const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+    
+    // Remove active class from all links
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.classList.remove('active');
+    });
+    
+    // Set active class based on current page
+    if (currentPage === 'homepage.php' || currentPage === '' || currentPage === 'index.html' || currentPage === 'index.php') {
+      document.getElementById('home-link').classList.add('active');
+    } 
+    else if (currentPage === 'about.html' || currentPage.includes('about')) {
+      document.getElementById('about-link').classList.add('active');
+    }
+    else if (currentPage === 'contact.html' || currentPage.includes('contact')) {
+      document.getElementById('contact-link').classList.add('active');
+    }
+  }
+  
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set active page
+    setActivePage();
+    
+    // Apply dark mode if enabled in localStorage
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+      const toggleIcon = document.getElementById('theme-icon');
+      if (toggleIcon) {
+        toggleIcon.textContent = '🌙';
+      }
+      
+      // Update toggle thumb position
+      const toggleThumb = document.querySelector('.toggle-thumb');
+      if (toggleThumb) {
+        toggleThumb.style.left = '26px';
+      }
+    }
+    
+    // Fix logo styling to match homepage
+    const logoText = document.querySelector('.logo-text');
+    if (logoText) {
+      logoText.style.fontSize = '2rem';
+      logoText.style.fontWeight = '700';
+      logoText.style.color = '#4169E1';
+      logoText.style.fontFamily = "'Inter', 'Arial', sans-serif";
+      logoText.style.letterSpacing = '-0.02em';
+    }
+  });
+  
+  // Make functions globally available
+  window.toggleDarkMode = toggleDarkMode;
+  window.toggleMenu = toggleMenu;
+  window.setActivePage = setActivePage;
+</script>
