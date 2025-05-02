@@ -43,8 +43,6 @@ function openAddTaskPopup(projectID) {
     });
 }
 
-
-
 // Function to open the popup for editing an existing task
 function openEditTaskPopup(task, projectID) {
   fetch("addTaskpop.html")
@@ -85,14 +83,11 @@ function openEditTaskPopup(task, projectID) {
       document.getElementById("delete-task").dataset.taskID = task.taskID; // Set taskID for deletion
       document.getElementById("save-task").dataset.taskID = task.taskID; // Set taskID for saving 
 
-
       // Add event listeners for saving, deleting, and cancelling the task
       attachPopupEventListeners();
       makePopupDraggable(popup); // Make popup draggable
     });
 }
-
-
 
 // Function to load the "Assign To" dropdown with team members
 function loadAssignToList(projectID, selectedUserName = null) {
@@ -119,7 +114,6 @@ function loadAssignToList(projectID, selectedUserName = null) {
     .catch(error => console.error("Error loading team members:", error));
 }
 
-
 // Add interactions to popup buttons (Save, Cancel, Delete)
 function attachPopupEventListeners() {
   // Delete task
@@ -129,9 +123,15 @@ function attachPopupEventListeners() {
       fetch(`deleteTask.php?id=${id}`)
         .then(res => res.text())
         .then(data => {
-          alert('Task deleted successfully.');
+          // Show success notification instead of alert
+          showNotification('success', 'Success', 'Task deleted successfully');
           document.getElementById("taskPopup").style.display = "none";
-          location.reload();          
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        })
+        .catch(error => {
+          showNotification('error', 'Error', 'Failed to delete task');
         });
     }
   };
@@ -165,14 +165,23 @@ function attachPopupEventListeners() {
     fetch(url, { method: "POST", body: formData })
       .then(res => res.text())
       .then(data => {
+        // Show success notification instead of alert
         if(isEdit){
-          alert("Task updated successfully!");
+          showNotification('success', 'Success', 'Task updated successfully');
         } else {
-          alert("Task added successfully!");
+          showNotification('success', 'Success', 'Task added successfully');
         }
         
         document.getElementById("taskPopup").style.display = "none"; // Close popup
-        location.reload();          
+        
+        // Delay reload slightly to allow notification to be seen
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
+      })
+      .catch(error => {
+        // Show error notification
+        showNotification('error', 'Error', 'Failed to save task');
       });
   };
 
@@ -451,3 +460,127 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
     console.error('Fetch error:', error);
   });
 }
+
+// Show notification function (global)
+function showNotification(type, title, message, duration = 3000) {
+  // Check if notification banner exists
+  let banner = document.getElementById('notification-banner');
+  
+  // If not, create one (for pages that don't include the notification HTML)
+  if (!banner) {
+    banner = document.createElement('div');
+    banner.id = 'notification-banner';
+    banner.className = 'notification-banner';
+    banner.innerHTML = `
+      <i id="notification-icon" class="fas fa-check-circle"></i>
+      <div class="notification-content">
+        <h4 id="notification-title">Success</h4>
+        <p id="notification-message">Action completed successfully.</p>
+      </div>
+      <button class="notification-close" onclick="hideNotification()">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+    document.body.appendChild(banner);
+    
+    // Add the style if not already present
+    if (!document.getElementById('notification-style')) {
+      const style = document.createElement('style');
+      style.id = 'notification-style';
+      style.textContent = `
+        .notification-banner {
+          position: fixed;
+          top: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 12px 20px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+          z-index: 2000;
+          max-width: 400px;
+          width: calc(100% - 40px);
+          opacity: 0;
+          transition: opacity 0.3s ease, transform 0.3s ease;
+          pointer-events: none;
+        }
+        .notification-banner.visible {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .notification-banner.success {
+          background-color: #d4edda;
+          border-left: 4px solid #28a745;
+          color: #155724;
+        }
+        .notification-banner.error {
+          background-color: #f8d7da;
+          border-left: 4px solid #dc3545;
+          color: #721c24;
+        }
+        .notification-banner i {
+          font-size: 24px;
+        }
+        .notification-content {
+          flex: 1;
+        }
+        .notification-content h4 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+        }
+        .notification-content p {
+          margin: 0;
+          font-size: 14px;
+        }
+        .notification-close {
+          background: none;
+          border: none;
+          color: inherit;
+          cursor: pointer;
+          opacity: 0.7;
+          transition: opacity 0.2s;
+        }
+        .notification-close:hover {
+          opacity: 1;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  }
+
+  const icon = document.getElementById('notification-icon');
+  const titleEl = document.getElementById('notification-title');
+  const messageEl = document.getElementById('notification-message');
+  
+  // Set content
+  titleEl.textContent = title;
+  messageEl.textContent = message;
+  
+  // Set type-specific styles
+  banner.className = 'notification-banner visible ' + type;
+  
+  if (type === 'success') {
+    icon.className = 'fas fa-check-circle';
+  } else if (type === 'error') {
+    icon.className = 'fas fa-exclamation-circle';
+  }
+  
+  // Auto-hide after duration
+  if (duration > 0) {
+    setTimeout(hideNotification, duration);
+  }
+}
+
+// Function to hide notification
+function hideNotification() {
+  const banner = document.getElementById('notification-banner');
+  if (banner) {
+    banner.classList.remove('visible');
+  }
+}
+
+// Make functions globally available
+window.showNotification = showNotification;
+window.hideNotification = hideNotification;

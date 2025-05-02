@@ -347,6 +347,74 @@
         text-decoration: underline;
       }
 
+      /* Notification banner styling */
+      .notification-banner {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        z-index: 2000;
+        max-width: 400px;
+        width: calc(100% - 40px);
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+      }
+
+      .notification-banner.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .notification-banner.success {
+        background-color: #d4edda;
+        border-left: 4px solid #28a745;
+        color: #155724;
+      }
+
+      .notification-banner.error {
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+      }
+
+      .notification-banner i {
+        font-size: 24px;
+      }
+
+      .notification-content {
+        flex: 1;
+      }
+
+      .notification-content h4 {
+        margin: 0 0 4px 0;
+        font-size: 16px;
+      }
+
+      .notification-content p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .notification-close {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+
+      .notification-close:hover {
+        opacity: 1;
+      }
+
       /* Responsive adjustments */
       @media (max-width: 768px) {
         .popup-content {
@@ -383,6 +451,18 @@
     </style>
   </head>
   <body>
+    <!-- Notification Banner Template -->
+    <div id="notification-banner" class="notification-banner">
+      <i id="notification-icon" class="fas fa-check-circle"></i>
+      <div class="notification-content">
+        <h4 id="notification-title">Success</h4>
+        <p id="notification-message">Action completed successfully.</p>
+      </div>
+      <button class="notification-close" onclick="hideNotification()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
     <div id="taskPopup" class="popup">
       <div class="popup-content">
         <h2 class="popup-header">New Task</h2>
@@ -507,5 +587,39 @@
         </div>
       </div>
     </div>
+
+    <script>
+      // Function to show notification
+      function showNotification(type, title, message, duration = 3000) {
+        const banner = document.getElementById('notification-banner');
+        const icon = document.getElementById('notification-icon');
+        const titleEl = document.getElementById('notification-title');
+        const messageEl = document.getElementById('notification-message');
+        
+        // Set content
+        titleEl.textContent = title;
+        messageEl.textContent = message;
+        
+        // Set type-specific styles
+        banner.className = 'notification-banner visible ' + type;
+        
+        if (type === 'success') {
+          icon.className = 'fas fa-check-circle';
+        } else if (type === 'error') {
+          icon.className = 'fas fa-exclamation-circle';
+        }
+        
+        // Auto-hide after duration
+        if (duration > 0) {
+          setTimeout(hideNotification, duration);
+        }
+      }
+      
+      // Function to hide notification
+      function hideNotification() {
+        const banner = document.getElementById('notification-banner');
+        banner.classList.remove('visible');
+      }
+    </script>
   </body>
 </html>
