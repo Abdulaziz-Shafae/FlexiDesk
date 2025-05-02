@@ -142,64 +142,59 @@ if ($isLoggedIn) {
       line-height: 1.6;
     }
 
-    /* ===== NAVBAR STYLES ===== */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 80px;
-      padding: 0 40px;
-      background-color: var(--navbar-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 30px var(--navbar-shadow);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-    }
-
-    .navbar.scrolled {
-      height: 70px;
-      padding: 0 30px;
-    }
-
-    /* Logo Styles */
+    /* ===== UPDATED NAVBAR STYLES ===== */
+    /* Logo styling and hover effect */
     .logo {
       display: flex;
       align-items: center;
-      gap: 8px;
       text-decoration: none;
-    }
-
-    .logo-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
-      border-radius: 10px;
-      color: white;
-      font-size: 18px;
-    }
-
-    .logo-text {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--navbar-text);
-      letter-spacing: -0.03em;
       transition: all 0.3s ease;
+      position: relative;
+      padding: 8px 0;
+      margin-top: 12px;
+    }
+
+    .logo .logo-text {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #4169E1 !important; /* Royal blue color - FIXED to match other pages */
+      letter-spacing: -0.03em;
+      transition: color 0.3s ease, transform 0.3s ease;
     }
 
     .logo:hover .logo-text {
-      color: var(--navbar-hover);
+      color: #3d5af1 !important;
+      transform: translateY(-2px);
     }
 
-    .logo:hover .logo-icon {
-      transform: rotate(-5deg) scale(1.1);
+    /* Add underline effect to logo */
+    .logo::after {
+      content: '';
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #3d5af1, #22d1ee);
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .logo:hover::after {
+      width: 100%;
+    }
+
+    .dark-mode .logo .logo-text {
+      color: #3d5af1 !important;
+    }
+
+    .dark-mode .logo:hover .logo-text {
+      color: #22d1ee !important;
+    }
+
+    /* Hide the logo icon */
+    .logo-icon {
+      display: none;
     }
 
     /* Navigation Links */
@@ -218,11 +213,28 @@ if ($isLoggedIn) {
       font-size: 1rem;
       transition: all 0.3s ease;
       border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #3d5af1, #22d1ee);
+      transition: width 0.3s ease;
+      border-radius: 2px;
     }
 
     .nav-links a:hover {
       color: var(--navbar-hover);
-      background-color: rgba(61, 90, 241, 0.05);
+      background-color: transparent;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
     }
 
     .nav-links a.active {
@@ -231,191 +243,39 @@ if ($isLoggedIn) {
     }
 
     .nav-links a.active::after {
-      content: '';
-      position: absolute;
-      bottom: 2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
-      border-radius: 3px;
+      width: 100%;
     }
 
-    /* Auth Buttons */
-    .auth-buttons {
-      display: flex;
-      gap: 12px;
-    }
-
+    /* Auth Buttons enhanced hover effects */
     .auth-button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .login-btn {
-      background-color: transparent;
-      color: var(--navbar-text);
-      border: 1px solid var(--navbar-text);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .login-btn:hover {
-      background-color: rgba(61, 90, 241, 0.05);
+      background-color: rgba(61, 90, 241, 0.1);
       border-color: var(--navbar-hover);
       color: var(--navbar-hover);
-    }
-
-    .signup-btn {
-      background-color: var(--button-bg);
-      color: var(--button-text);
-      box-shadow: 0 4px 15px rgba(61, 90, 241, 0.25);
+      transform: translateY(-3px);
     }
 
     .signup-btn:hover {
       background-color: var(--button-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(61, 90, 241, 0.3);
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 25px rgba(61, 90, 241, 0.3);
     }
 
-    /* Dark Mode Toggle */
-    .dark-mode-container {
-      display: flex;
-      align-items: center;
-      margin-right: 15px;
-    }
-
-    .dark-mode .login-container {
-    align-items: center;
-    justify-content: center;
-    }
-
-    .dark-mode .login-card {
-    margin: 0 auto;
-    position: relative;
-    }
-
+    /* Dark mode toggle enhanced animation */
     .dark-mode-toggle {
-      position: relative;
-      width: 48px;
-      height: 24px;
-      border-radius: 12px;
-      background-color: rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
       cursor: pointer;
       transition: all 0.3s ease;
     }
 
-    .dark-mode .dark-mode-toggle {
-      background-color: rgba(255, 255, 255, 0.2);
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
     }
 
     .toggle-thumb {
-      position: absolute;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background-color: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .dark-mode .toggle-thumb {
-      left: 26px;
-      background-color: var(--accent-color);
-    }
-
-    .toggle-icon {
-      font-size: 12px;
-      color: #ffc107;
-    }
-
-    .dark-mode .toggle-icon {
-      color: #2c3e50;
-    }
-
-    /* Mobile Menu Button (visible on small screens) */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 30px;
-      height: 21px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      z-index: 1001;
-    }
-
-    .menu-toggle span {
-      width: 100%;
-      height: 3px;
-      background-color: var(--navbar-text);
-      border-radius: 3px;
-      transition: all 0.3s ease;
-    }
-
-    /* Mobile Menu styles */
-    @media (max-width: 768px) {
-      .menu-toggle {
-        display: flex;
-      }
-      
-      .menu-open .menu-toggle span:nth-child(1) {
-        transform: translateY(9px) rotate(45deg);
-      }
-      
-      .menu-open .menu-toggle span:nth-child(2) {
-        opacity: 0;
-      }
-      
-      .menu-open .menu-toggle span:nth-child(3) {
-        transform: translateY(-9px) rotate(-45deg);
-      }
-      
-      .nav-links {
-        position: fixed;
-        top: 80px;
-        left: 0;
-        right: 0;
-        background-color: var(--navbar-bg);
-        flex-direction: column;
-        padding: 20px;
-        box-shadow: 0 10px 30px var(--navbar-shadow);
-        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-        transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-        pointer-events: none;
-      }
-      
-      .menu-open .nav-links {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        pointer-events: all;
-      }
-      
-      .nav-links a {
-        width: 100%;
-        text-align: center;
-        padding: 15px;
-      }
-      
-      .auth-buttons {
-        margin-top: 15px;
-        width: 100%;
-      }
-      
-      .auth-button {
-        flex: 1;
-      }
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
     }
 
     /* ===== Login Message Styling ===== */
@@ -688,8 +548,8 @@ if ($isLoggedIn) {
   </style>
 </head>
 <body>
-  <!-- Navbar Container -->
-  <div id="navbar-container"></div>
+  <!-- DIRECTLY include navbar -->
+  <?php include 'navbar.php'; ?>
 
   <?php if (!$isLoggedIn): ?>
   <!-- Login Message -->
@@ -795,9 +655,13 @@ if ($isLoggedIn) {
       sessionStorage.setItem('selectedProjectRole', role);
       window.location.href = 'tableView.html';
     }
+    
+    // Apply dark mode if set in localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+      }
+    });
   </script>
-
-  <!-- Load Navbar -->
-  <script src="navbar-loader.js"></script>
 </body>
 </html>

@@ -38,11 +38,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
     $fullName = $firstName . ' ' . $lastName;
 
-    $insertQuery = "INSERT INTO Users (name, email, password, jobTitle, department, bio, two_factor_enabled)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+    // Removed 'two_factor_enabled' from the query
+    $insertQuery = "INSERT INTO Users (name, email, password, jobTitle, department, bio) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insertQuery);
-    $twoFactorEnabled = false; // Default value is false
-    $stmt->bind_param("ssssssi", $fullName, $email, $hashedPassword, $jobTitle, $department, $bio, $twoFactorEnabled);
+    // Removed $twoFactorEnabled parameter
+    $stmt->bind_param("ssssss", $fullName, $email, $hashedPassword, $jobTitle, $department, $bio);
 
     if ($stmt->execute()) {
         $_SESSION['loggedin'] = true;

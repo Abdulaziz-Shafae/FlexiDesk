@@ -30,7 +30,7 @@
       --button-text: #ffffff;
       --button-hover: #0d2240;
     }
-
+  
     /* Dark mode variables */
     .dark-mode {
       --primary-color: #22d1ee;
@@ -53,240 +53,7 @@
       --button-text: #111111;
       --button-hover: #3d5af1;
     }
-
-    /* ===== RESET & BASE ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    body {
-      font-family: 'Inter', 'Arial', sans-serif;
-      background-color: var(--background-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      transition: all 0.3s ease;
-      line-height: 1.6;
-    }
-
-    /* ===== NAVBAR STYLES ===== */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 80px;
-      padding: 0 40px;
-      background-color: var(--navbar-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 30px var(--navbar-shadow);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-    }
-
-    .navbar.scrolled {
-      height: 70px;
-      padding: 0 30px;
-    }
-
-    /* Logo Styles */
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-
-    .logo-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 38px;
-      height: 38px;
-      background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
-      border-radius: 10px;
-      color: white;
-      font-size: 18px;
-    }
-
-    .logo-text {
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--navbar-text);
-      letter-spacing: -0.03em;
-      transition: all 0.3s ease;
-    }
-
-    .logo:hover .logo-text {
-      color: var(--navbar-hover);
-    }
-
-    .logo:hover .logo-icon {
-      transform: rotate(-5deg) scale(1.1);
-    }
-
-    /* Navigation Links */
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-links a {
-      position: relative;
-      padding: 8px 16px;
-      color: var(--navbar-text);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      border-radius: 6px;
-    }
-
-    .nav-links a:hover {
-      color: var(--navbar-hover);
-      background-color: rgba(61, 90, 241, 0.05);
-    }
-
-    .nav-links a.active {
-      color: var(--navbar-active);
-      font-weight: 600;
-    }
-
-    .nav-links a.active::after {
-      content: '';
-      position: absolute;
-      bottom: 2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 3px;
-      background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
-      border-radius: 3px;
-    }
-
-    /* Auth Buttons */
-    .auth-buttons {
-      display: flex;
-      gap: 12px;
-    }
-
-    .auth-button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .login-btn {
-      background-color: transparent;
-      color: var(--navbar-text);
-      border: 1px solid var(--navbar-text);
-    }
-
-    .login-btn:hover {
-      background-color: rgba(61, 90, 241, 0.05);
-      border-color: var(--navbar-hover);
-      color: var(--navbar-hover);
-    }
-
-    .signup-btn {
-      background-color: var(--button-bg);
-      color: var(--button-text);
-      box-shadow: 0 4px 15px rgba(61, 90, 241, 0.25);
-    }
-
-    .signup-btn:hover {
-      background-color: var(--button-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(61, 90, 241, 0.3);
-    }
-
-    /* Dark Mode Toggle */
-    .dark-mode-container {
-      display: flex;
-      align-items: center;
-      margin-right: 15px;
-    }
-
-    .dark-mode-toggle {
-      position: relative;
-      width: 48px;
-      height: 24px;
-      border-radius: 12px;
-      background-color: rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .dark-mode .dark-mode-toggle {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .toggle-thumb {
-      position: absolute;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background-color: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .dark-mode .toggle-thumb {
-      left: 26px;
-      background-color: var(--accent-color);
-    }
-
-    .toggle-icon {
-      font-size: 12px;
-      color: #ffc107;
-    }
-
-    .dark-mode .toggle-icon {
-      color: #2c3e50;
-    }
-
-    /* Mobile Menu Button (visible on small screens) */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 30px;
-      height: 21px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      z-index: 1001;
-    }
-
-    .menu-toggle span {
-      width: 100%;
-      height: 3px;
-      background-color: var(--navbar-text);
-      border-radius: 3px;
-      transition: all 0.3s ease;
-    }
-
+  
     /* ===== TYPOGRAPHY ===== */
     h1, h2, h3, h4, h5, h6 {
       font-weight: 700;
@@ -294,7 +61,7 @@
       margin-bottom: 1rem;
       color: var(--primary-color);
     }
-
+  
     h1 {
       font-size: 3rem;
       text-align: center;
@@ -303,18 +70,18 @@
       width: 100%;
       letter-spacing: -0.03em;
     }
-
+  
     h2 {
       font-size: 2.5rem;
       letter-spacing: -0.02em;
     }
-
+  
     p {
       line-height: 1.8;
       margin-bottom: 1.5rem;
       font-size: 1.1rem;
     }
-
+  
     /* ===== LAYOUT ===== */
     .container {
       max-width: 1400px;
@@ -325,7 +92,7 @@
       align-items: center;
       width: 100%;
     }
-
+  
     main {
       padding: 150px 0 100px;
       display: flex;
@@ -333,19 +100,19 @@
       align-items: center;
       width: 100%;
     }
-
+  
     .section-title {
       text-align: center;
       margin-bottom: 70px;
       max-width: 800px;
     }
-
+  
     .section-title p {
       font-size: 1.3rem;
       opacity: 0.8;
       margin-top: 1rem;
     }
-
+  
     /* ===== INTRO ===== */
     .intro {
       margin-bottom: 80px;
@@ -356,7 +123,7 @@
       align-items: center;
       width: 100%;
     }
-
+  
     .intro-text {
       font-size: 1.2rem;
       line-height: 1.6;
@@ -364,7 +131,7 @@
       max-width: 800px;
       text-align: center;
     }
-
+  
     /* ===== CARDS SECTION ===== */
     .cards-container {
       display: grid;
@@ -374,7 +141,7 @@
       max-width: 1200px;
       margin: 0 auto 80px;
     }
-
+  
     .card {
       position: relative;
       min-height: 350px;
@@ -386,18 +153,18 @@
       display: flex;
       flex-direction: column;
     }
-
+  
     .card:hover {
       transform: translateY(-15px);
       box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
     }
-
+  
     .card__image {
       position: relative;
       height: 140px;
       overflow: hidden;
     }
-
+  
     .card__image-inner {
       position: absolute;
       top: 0;
@@ -407,11 +174,11 @@
       background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
       transition: transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
     }
-
+  
     .card:hover .card__image-inner {
       transform: scale(1.05);
     }
-
+  
     .card__content {
       position: relative;
       padding: 25px;
@@ -422,19 +189,19 @@
       background-color: var(--card-bg-light);
       z-index: 1;
     }
-
+  
     .card__icon {
       font-size: 2rem;
       margin-bottom: 15px;
       color: var(--secondary-color);
       transition: all 0.4s ease;
     }
-
+  
     .card:hover .card__icon {
       transform: translateY(-5px) scale(1.1);
       color: var(--accent-color);
     }
-
+  
     .card__title {
       font-size: 1.5rem;
       font-weight: 700;
@@ -443,14 +210,14 @@
       transition: all 0.3s ease;
       letter-spacing: -0.03em;
     }
-
+  
     .card__description {
       font-size: 0.95rem;
       line-height: 1.6;
       color: var(--text-color);
       opacity: 0.9;
     }
-
+  
     /* ===== TEAM SECTION ===== */
     .team-section {
       width: 100%;
@@ -459,33 +226,33 @@
       border-radius: 30px;
       margin-bottom: 120px;
     }
-
+  
     .team-section-inner {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 40px;
     }
-
+  
     .team-title {
       text-align: center;
       margin-bottom: 70px;
     }
-
+  
     .team-members {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 40px;
     }
-
+  
     .team-member {
       text-align: center;
       transition: all 0.3s ease;
     }
-
+  
     .team-member:hover {
       transform: translateY(-10px);
     }
-
+  
     .member-avatar {
       width: 150px;
       height: 150px;
@@ -500,25 +267,25 @@
       position: relative;
       overflow: hidden;
     }
-
+  
     .member-name {
       font-weight: 700;
       font-size: 1.3rem;
       color: var(--primary-color);
       margin-bottom: 8px;
     }
-
+  
     .member-role {
       font-size: 1rem;
       color: var(--accent-color);
       margin-bottom: 15px;
     }
-
+  
     .member-info {
       font-size: 0.9rem;
       opacity: 0.8;
     }
-
+  
     /* ===== MISSION SECTION ===== */
     .mission-section {
       display: flex;
@@ -527,7 +294,7 @@
       padding: 0 40px;
       margin-bottom: 120px;
     }
-
+  
     .mission-content {
       max-width: 1000px;
       position: relative;
@@ -536,7 +303,7 @@
       background-color: var(--subtle-bg);
       overflow: hidden;
     }
-
+  
     .mission-content::before {
       content: '';
       position: absolute;
@@ -548,7 +315,7 @@
       opacity: 0.03;
       z-index: 0;
     }
-
+  
     .mission-title {
       position: relative;
       z-index: 1;
@@ -557,24 +324,24 @@
       align-items: center;
       gap: 20px;
     }
-
+  
     .mission-title i {
       color: var(--secondary-color);
       font-size: 2.5rem;
     }
-
+  
     .mission-text {
       position: relative;
       z-index: 1;
       font-size: 1.3rem;
       line-height: 1.8;
     }
-
+  
     .highlight {
       color: var(--secondary-color);
       font-weight: 600;
     }
-
+  
     /* ===== SCROLL ANIMATIONS ===== */
     .reveal {
       position: relative;
@@ -582,27 +349,27 @@
       transform: translateY(50px);
       transition: all 1s cubic-bezier(0.5, 0, 0, 1);
     }
-
+  
     .reveal.active {
       opacity: 1;
       transform: translateY(0);
     }
-
+  
     .delay-1 { transition-delay: 0.1s; }
     .delay-2 { transition-delay: 0.2s; }
     .delay-3 { transition-delay: 0.3s; }
     .delay-4 { transition-delay: 0.4s; }
     .delay-5 { transition-delay: 0.5s; }
-
+  
     /* ===== HOVER EFFECTS ===== */
     .hover-lift {
       transition: transform 0.3s ease;
     }
-
+  
     .hover-lift:hover {
       transform: translateY(-5px);
     }
-
+  
     /* ===== MEDIA QUERIES ===== */
     @media (max-width: 1200px) {
       .cards-container {
@@ -613,7 +380,7 @@
         padding: 50px;
       }
     }
-
+  
     @media (max-width: 992px) {
       .cards-container {
         grid-template-columns: repeat(2, 1fr);
@@ -629,14 +396,6 @@
       
       .mission-text {
         font-size: 1.2rem;
-      }
-      
-      .navbar {
-        padding: 0 20px;
-      }
-      
-      .dark-mode-container {
-        margin-right: 10px;
       }
     }
     
@@ -657,62 +416,12 @@
       .mission-content {
         padding: 40px 30px;
       }
-
+  
       .team-members {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       }
-      
-      .menu-toggle {
-        display: flex;
-      }
-      
-      .menu-open .menu-toggle span:nth-child(1) {
-        transform: translateY(9px) rotate(45deg);
-      }
-      
-      .menu-open .menu-toggle span:nth-child(2) {
-        opacity: 0;
-      }
-      
-      .menu-open .menu-toggle span:nth-child(3) {
-        transform: translateY(-9px) rotate(-45deg);
-      }
-      
-      .nav-links {
-        position: fixed;
-        top: 80px;
-        left: 0;
-        right: 0;
-        background-color: var(--navbar-bg);
-        flex-direction: column;
-        padding: 20px;
-        box-shadow: 0 10px 30px var(--navbar-shadow);
-        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-        transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-        pointer-events: none;
-      }
-      
-      .menu-open .nav-links {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-        pointer-events: all;
-      }
-      
-      .nav-links a {
-        width: 100%;
-        text-align: center;
-        padding: 15px;
-      }
-      
-      .auth-buttons {
-        margin-top: 15px;
-        width: 100%;
-      }
-      
-      .auth-button {
-        flex: 1;
-      }
     }
-
+  
     @media (max-width: 576px) {
       .container {
         padding: 0 20px;
@@ -740,20 +449,42 @@
         width: 120px;
         height: 120px;
       }
-      
-      .logo-text {
-        font-size: 1.5rem;
-      }
-      
-      .navbar {
-        height: 70px;
-      }
+    }
+
+    /* Loading indicator for navbar */
+    .navbar-loading {
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--navbar-bg);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 30px var(--navbar-shadow);
+    }
+
+    .loading-spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(61, 90, 241, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--secondary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <!-- Include the navbar -->
-  <div id="navbar-container"></div>
+  <!-- Placeholder with loading indicator -->
+  <div id="navbar-placeholder" class="navbar-loading">
+    <div class="loading-spinner"></div>
+  </div>
 
   <!-- Main Content -->
   <main>
@@ -885,24 +616,145 @@
   </main>
 
   <script>
-    // Reveal animations on scroll
-    const revealElements = document.querySelectorAll('.reveal');
+    // Dark Mode Toggle Function (must be defined globally)
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      
+      // Save preference to localStorage
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+      
+      // Update icon based on dark mode state
+      const toggleIcon = document.querySelector('.toggle-icon');
+      if (toggleIcon) {
+        toggleIcon.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+      }
+      
+      // Update toggle thumb position
+      const toggleThumb = document.querySelector('.toggle-thumb');
+      if (toggleThumb) {
+        toggleThumb.style.left = document.body.classList.contains('dark-mode') ? '26px' : '2px';
+      }
+    }
+
+    // Toggle mobile menu function
+    function toggleMenu() {
+      document.querySelector('.navbar').classList.toggle('menu-open');
+    }
     
+    // Profile dropdown function
+    function profiledropdown() {
+      const profileList = document.getElementById('profileList');
+      if (profileList) {
+        profileList.style.display = profileList.style.display === 'flex' ? 'none' : 'flex';
+      }
+    }
+
+    // Initialize dark mode when page loads
+    function initDarkMode() {
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+      }
+    }
+
+    // Fetch and insert navbar
+    fetch('navbar.php')
+      .then((response) => response.text())
+      .then((data) => {
+        document.getElementById('navbar-placeholder').innerHTML = data;
+        
+        // After navbar is loaded, init dark mode again to ensure toggle icon is updated
+        if (localStorage.getItem('darkMode') === 'enabled') {
+          const toggleIcon = document.querySelector('.toggle-icon');
+          if (toggleIcon) {
+            toggleIcon.textContent = '🌙';
+          }
+          
+          const toggleThumb = document.querySelector('.toggle-thumb');
+          if (toggleThumb) {
+            toggleThumb.style.left = '26px';
+          }
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading navbar:', error);
+        // Remove loading indicator if navbar fails to load
+        document.getElementById('navbar-placeholder').innerHTML = '';
+        
+        // Fallback static navbar
+        const staticNavbar = `
+        <nav class="navbar">
+          <a href="homePage.php" class="logo">
+            <h2 class="logo-text">FlexiDesk</h2>
+          </a>
+          
+          <button class="menu-toggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          
+          <div class="nav-links">
+            <a href="homePage.php">Home</a>
+            <a href="about.html" class="active">About</a>
+            <a href="contact.html">Contact</a>
+            
+            <div class="auth-buttons">
+              <button class="auth-button login-btn" onclick="window.location.href='Login.html'">Log in</button>
+              <button class="auth-button signup-btn" onclick="window.location.href='createAccount.html'">Sign up</button>
+            </div>
+          </div>
+          
+          <div class="dark-mode-container">
+            <div class="dark-mode-toggle" id="dark-mode-switch" onclick="toggleDarkMode()">
+              <div class="toggle-thumb">
+                <i class="toggle-icon" id="theme-icon">☀️</i>
+              </div>
+            </div>
+          </div>
+        </nav>`;
+        
+        document.getElementById('navbar-placeholder').innerHTML = staticNavbar;
+        
+        // Initialize dark mode for fallback navbar as well
+        if (localStorage.getItem('darkMode') === 'enabled') {
+          const toggleIcon = document.querySelector('.toggle-icon');
+          if (toggleIcon) {
+            toggleIcon.textContent = '🌙';
+          }
+          
+          const toggleThumb = document.querySelector('.toggle-thumb');
+          if (toggleThumb) {
+            toggleThumb.style.left = '26px';
+          }
+        }
+      });
+    
+    // Reveal animations on scroll
     function reveal() {
-      for (let i = 0; i < revealElements.length; i++) {
+      const reveals = document.querySelectorAll(".reveal");
+      for (let i = 0; i < reveals.length; i++) {
         const windowHeight = window.innerHeight;
-        const elementTop = revealElements[i].getBoundingClientRect().top;
+        const elementTop = reveals[i].getBoundingClientRect().top;
         const elementVisible = 150;
         
         if (elementTop < windowHeight - elementVisible) {
-          revealElements[i].classList.add('active');
+          reveals[i].classList.add("active");
         }
       }
     }
     
-    window.addEventListener('scroll', reveal);
-    window.addEventListener('load', reveal);
+    // Document ready function
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize dark mode immediately on page load
+      initDarkMode();
+      
+      // Initialize scroll animations
+      reveal();
+    });
+    
+    // Attach event listeners
+    window.addEventListener("scroll", reveal);
+    window.addEventListener("load", reveal);
   </script>
-  <script src="navbar-loader.js"></script>
 </body>
 </html>
