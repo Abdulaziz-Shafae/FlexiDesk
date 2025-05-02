@@ -61,10 +61,10 @@ $client = new Client();
 try {
   $client->post('https://api.resend.com/emails', [
     'headers' => [
-      'Authorization' => 'Bearer re_CLMUqmKb_KLFyyPNgGpxhXs62nuJiaWSQ',
+      'Authorization' => 'Bearer re_YfWDt5qe_PC7L5WLKgBn9TPKgupH1HzU9',
       'Content-Type' => 'application/json'
     ],
-    'json' => [s
+    'json' => [
       'from' => 'FlexiDesk <onboarding@resend.dev>',
       'to' => 'amm1r.abdu@gmail.com',//  make it this after doing the domin [$email],
       'subject' => 'Email Verification Code',
