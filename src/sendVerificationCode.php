@@ -84,7 +84,7 @@ try {
 
   echo json_encode(['status' => 'success', 'message' => 'Verification code sent.']);
 } catch (Exception $e) {
-  // Add detailed error logging
+  // Add detailed  error logging
   file_put_contents('email_error.log', date('Y-m-d H:i:s') . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n\n", FILE_APPEND);
   
   echo json_encode([
