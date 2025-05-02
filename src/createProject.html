@@ -5,139 +5,393 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FlexiDesk - Create Project</title>
     <link rel="stylesheet" href="navbarStyle.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="script.js" defer></script>
 
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Arial', sans-serif;
+      /* ===== VARIABLES ===== */
+      :root {
+        /* Light mode colors */
+        --primary-color: #0d2240;
+        --secondary-color: #3d5af1;
+        --accent-color: #22d1ee;
+        --text-color: #1a1a1a;
+        --background-color: #f4f4f4;
+        --card-bg-light: #ffffff;
+        --card-shadow: rgba(0, 0, 0, 0.08);
+        --gradient-start: #3d5af1;
+        --gradient-end: #22d1ee;
+        --border-color: rgba(0, 0, 0, 0.08);
+        --subtle-bg: #f8f9fa;
+        --navbar-bg: rgba(255, 255, 255, 0.9);
+        --navbar-text: #0d2240;
+        --navbar-shadow: rgba(0, 0, 0, 0.05);
+        --navbar-hover: #3d5af1;
+        --navbar-active: #22d1ee;
+        --button-bg: #3d5af1;
+        --button-text: #ffffff;
+        --button-hover: #0d2240;
+        --error-text: #e74c3c;
+      }
+
+      /* Dark mode variables */
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --accent-color: #f5f5f5;
+        --text-color: #f1f1f1;
+        --background-color: #111111;
+        --card-bg-light: #1a1a1a;
+        --card-shadow: rgba(0, 0, 0, 0.25);
+        --gradient-start: #3d5af1;
+        --gradient-end: #22d1ee;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --subtle-bg: #1e1e1e;
+        --navbar-bg: rgba(17, 17, 17, 0.95);
+        --navbar-text: #f1f1f1;
+        --navbar-shadow: rgba(0, 0, 0, 0.3);
+        --navbar-hover: #22d1ee;
+        --navbar-active: #3d5af1;
+        --button-bg: #22d1ee;
+        --button-text: #111111;
+        --button-hover: #3d5af1;
+        --error-text: #ff6b6b;
       }
 
       body {
-        background-color: #f5f5f5;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        font-family: 'Inter', 'Arial', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        transition: all 0.3s ease;
+        line-height: 1.6;
       }
 
       .container {
-        margin-top: 150px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-height: 100vh;
+        margin-top: 120px;
+        padding-bottom: 60px;
       }
 
       .form-container {
-        background: white;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 400px;
+        background-color: var(--card-bg-light);
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px var(--card-shadow);
+        width: 90%;
+        max-width: 600px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
       }
 
       .form-title {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 30px;
         text-align: center;
-        color: #2c3e50;
-        margin-bottom: 2rem;
-        font-size: 1.8rem;
+        font-weight: 700;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 15px;
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+      }
+
+      .form-section-title {
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        font-weight: 600;
       }
 
       .wave-group {
         position: relative;
-        margin-bottom: 1.5rem;
+        margin-bottom: 25px;
         width: 100%;
       }
 
       .wave-group .input {
         font-size: 16px;
-        padding: 10px 10px 10px 5px;
+        padding: 12px 10px 8px 5px;
         display: block;
         width: 100%;
         border: none;
-        border-bottom: 2px solid #515151;
-        background: transparent;
-        color: inherit;
+        border-bottom: 2px solid var(--border-color);
+        background-color: var(--card-bg-light);
+        color: var(--text-color);
+        transition: all 0.3s ease;
       }
 
       .wave-group .input:focus {
         outline: none;
+        border-bottom-color: var(--secondary-color);
       }
 
       .wave-group .label {
-        color: #999;
+        color: var(--text-color);
+        opacity: 0.7;
         font-size: 18px;
         position: absolute;
         pointer-events: none;
         left: 5px;
-        top: 10px;
-        transition: 0.2s ease all;
+        top: 12px;
+        transition: 0.3s ease all;
       }
 
       .wave-group input[type="date"] ~ .label,
       .wave-group .input:focus ~ .label,
       .wave-group .input:valid ~ .label {
-        transform: translateY(-28px);
+        transform: translateY(-22px);
         font-size: 14px;
-        color: #5264ae;
+        color: var(--accent-color);
+        opacity: 1;
       }
 
       .btn {
         width: 100%;
-        padding: 12px;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+        color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 8px;
         font-size: 1rem;
-        font-weight: bold;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
-        background-color: #3498db;
-        color: white;
+        box-shadow: 0 4px 15px rgba(61, 90, 241, 0.25);
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
       }
 
       .btn:hover {
-        opacity: 0.9;
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(61, 90, 241, 0.3);
+      }
+
+      .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
       textarea.input {
-        resize: none;
-        overflow-y: hidden;
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
+      }
+
+      .user-search-container {
+        position: relative;
+        margin-bottom: 30px;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-color);
+        opacity: 0.5;
+      }
+
+      .user-search-input {
+        width: 100%;
+        padding: 12px 12px 12px 35px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 16px;
+        background-color: var(--card-bg-light);
+        color: var(--text-color);
+        transition: all 0.3s ease;
+      }
+
+      .user-search-input:focus {
+        outline: none;
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.1);
       }
 
       .suggestions {
-        background: white;
-        border: none;
-        max-height: 150px;
+        background-color: var(--card-bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        max-height: 200px;
         overflow-y: auto;
         position: absolute;
         z-index: 1000;
-        width: 200px;
+        width: 100%;
+        box-shadow: 0 5px 15px var(--card-shadow);
+        margin-top: 5px;
+        display: none;
       }
 
-      .suggestions div {
-        padding: 8px;
+      .suggestions.active {
+        display: block;
+      }
+
+      .suggestion-item {
+        padding: 10px 15px;
         cursor: pointer;
+        color: var(--text-color);
+        transition: background-color 0.2s ease;
+        display: flex;
+        align-items: center;
       }
 
-      .suggestions div:hover {
-        background: #f0f0f0;
+      .suggestion-item:hover {
+        background-color: var(--subtle-bg);
+      }
+
+      .suggestion-item .user-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 10px;
+        font-weight: bold;
+      }
+
+      .no-results {
+        padding: 15px;
+        text-align: center;
+        color: var(--text-color);
+        opacity: 0.7;
       }
 
       #selected-members {
-        margin-top: 10px;
         display: flex;
         flex-wrap: wrap;
-        gap: 5px;
+        gap: 10px;
+        margin-top: 15px;
       }
 
-      #selected-members span {
-        background: #d1e4e7;
-        padding: 5px 10px;
+      .selected-member {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        color: white;
+        padding: 8px 12px;
         border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
       }
 
+      .selected-member:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(61, 90, 241, 0.2);
+      }
+
+      .member-remove {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.2s ease;
+      }
+
+      .member-remove:hover {
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(1.1);
+      }
+
+      .helper-text {
+        font-size: 0.9rem;
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-top: 5px;
+      }
+
+      .date-group {
+        display: flex;
+        gap: 20px;
+      }
+
+      .date-group .wave-group {
+        flex: 1;
+      }
+
+      .required-field::after {
+        content: " *";
+        color: var(--error-text);
+      }
+
+      .error-message {
+        color: var(--error-text);
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: none;
+      }
+
+      .error-message.visible {
+        display: block;
+      }
+
+      .input-error {
+        border-bottom-color: var(--error-text) !important;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .form-container {
+          width: 95%;
+          padding: 30px;
+        }
+        
+        .form-title {
+          font-size: 1.8rem;
+        }
+
+        .date-group {
+          flex-direction: column;
+          gap: 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .form-container {
+          padding: 25px;
+        }
+        
+        .wave-group .label {
+          font-size: 16px;
+        }
+      }
+
+      /* Loading animation for button */
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
     </style>
   </head>
   <body>
@@ -146,144 +400,401 @@
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Create Project</h2>
+        
         <form id="project-form">
-          <div class="wave-group">
-            <input type="text" id="project-title" class="input" required />
-            <label class="label">Project Title</label>
+          <!-- Project Details Section -->
+          <div class="form-section">
+            <div class="form-section-title">Project Details</div>
+            
+            <div class="wave-group">
+              <input type="text" id="project-title" class="input" required />
+              <label class="label required-field">Project Title</label>
+              <div id="title-error" class="error-message">Please enter a project title</div>
+            </div>
+
+            <div class="wave-group">
+              <textarea id="project-description" class="input" required></textarea>
+              <label class="label required-field">Project Description</label>
+              <div id="description-error" class="error-message">Please enter a project description</div>
+            </div>
           </div>
 
-          <div class="wave-group">
-            <textarea id="project-description" class="input" required></textarea>
-            <label class="label">Project Description</label>
-          </div>
-
-          <div class="wave-group">
-            <input type="text" id="team-member-input" class="input" autocomplete="off" />
-            <label class="label">Team Members</label>
+          <!-- Team Members Section -->
+          <div class="form-section">
+            <div class="form-section-title">Team Members</div>
+            <p class="helper-text">Add team members who will collaborate on this project</p>
+            
+            <div class="user-search-container">
+              <i class="fas fa-search search-icon"></i>
+              <input 
+                type="text" 
+                id="team-member-input" 
+                class="user-search-input" 
+                placeholder="Search by name or email" 
+                autocomplete="off" 
+              />
+              
+              <div id="team-member-suggestions" class="suggestions">
+                <!-- Suggestions will be populated here -->
+              </div>
             </div>
             
-            <div id="team-member-suggestions" class="suggestions"  style="margin-top: -20px; margin-bottom: 20px;"></div>
-            <div id="selected-members" style="margin-bottom: 25px;"></div>
-            <!-- Hidden input to hold selected user IDs -->
-            <input type="hidden" name="team-member-ids" id="team-member-ids" />
-
-          <div class="wave-group">
-            <input type="date" id="start-date" class="input" required />
-            <label class="label">Start Date</label>
+            <div id="selected-members">
+              <!-- Selected members will appear here -->
+            </div>
+            
+            <!-- Hidden input to store team member IDs -->
+            <input type="hidden" id="team-member-ids" name="team-member-ids" />
           </div>
 
-          <div class="wave-group">
-            <input type="date" id="end-date" class="input" required />
-            <label class="label">End Date</label>
+          <!-- Project Timeline Section -->
+          <div class="form-section">
+            <div class="form-section-title">Project Timeline</div>
+            
+            <div class="date-group">
+              <div class="wave-group">
+                <input type="date" id="start-date" class="input" required />
+                <label class="label required-field">Start Date</label>
+                <div id="start-date-error" class="error-message">Please select a start date</div>
+              </div>
+
+              <div class="wave-group">
+                <input type="date" id="end-date" class="input" required />
+                <label class="label required-field">End Date</label>
+                <div id="end-date-error" class="error-message">Please select an end date</div>
+              </div>
+            </div>
+            <div id="date-range-error" class="error-message">End date must be after start date</div>
           </div>
 
-          <button type="submit" class="btn">Create Project</button>
+          <button type="submit" id="submit-btn" class="btn">
+            <i class="fas fa-plus-circle"></i> Create Project
+          </button>
         </form>
       </div>
     </div>
 
     <script>
-      // Insert navbar
+      // Fetch and insert navbar
       fetch('navbar.php')
-        .then((response) => response.text())
-        .then((data) => {
+        .then(response => response.text())
+        .then(data => {
           document.getElementById('navbar-placeholder').innerHTML = data;
+          initDarkMode();
+        })
+        .catch(error => {
+          console.error('Error loading navbar:', error);
         });
 
-      // Expand textarea dynamically
-      document.addEventListener('DOMContentLoaded', function () {
-        const textarea = document.getElementById('project-description');
-        textarea.addEventListener('input', function () {
+      // Initialize dark mode
+      function initDarkMode() {
+        if (localStorage.getItem('darkMode') === 'enabled') {
+          document.body.classList.add('dark-mode');
+          
+          const toggleIcon = document.querySelector('.toggle-icon');
+          if (toggleIcon) toggleIcon.textContent = '🌙';
+          
+          const toggleThumb = document.querySelector('.toggle-thumb');
+          if (toggleThumb) toggleThumb.style.left = '26px';
+        }
+      }
+
+      // Make sure window.toggleDarkMode is available for navbar.php
+      window.toggleDarkMode = function() {
+        document.body.classList.toggle('dark-mode');
+        
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+        
+        const toggleIcon = document.querySelector('.toggle-icon');
+        if (toggleIcon) {
+          toggleIcon.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+        }
+        
+        const toggleThumb = document.querySelector('.toggle-thumb');
+        if (toggleThumb) {
+          toggleThumb.style.left = document.body.classList.contains('dark-mode') ? '26px' : '2px';
+        }
+      };
+      
+      // Also make these functions available globally for navbar
+      window.toggleMenu = function() {
+        document.querySelector('.navbar').classList.toggle('menu-open');
+      };
+      
+      window.profiledropdown = function() {
+        const profileList = document.getElementById('profileList');
+        if (profileList) {
+          profileList.style.display = profileList.style.display === 'flex' ? 'none' : 'flex';
+        }
+      };
+
+      // Run after DOM loads
+      document.addEventListener('DOMContentLoaded', function() {
+        // Initialize form validation
+        const form = document.getElementById('project-form');
+        const titleInput = document.getElementById('project-title');
+        const descriptionInput = document.getElementById('project-description');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        // Set today as minimum date for date inputs
+        const today = new Date().toISOString().split('T')[0];
+        startDateInput.setAttribute("min", today);
+        endDateInput.setAttribute("min", today);
+        
+        // Update end date min value when start date changes
+        startDateInput.addEventListener('change', function() {
+          endDateInput.setAttribute("min", this.value);
+          
+          // Auto-adjust end date if it's before start date
+          if (endDateInput.value && endDateInput.value < this.value) {
+            endDateInput.value = this.value;
+          }
+          
+          // Validate dates
+          validateDates();
+        });
+        
+        endDateInput.addEventListener('change', validateDates);
+        
+        function validateDates() {
+          const startDate = startDateInput.value;
+          const endDate = endDateInput.value;
+          const dateRangeError = document.getElementById('date-range-error');
+          
+          if (startDate && endDate && startDate > endDate) {
+            dateRangeError.classList.add('visible');
+            return false;
+          } else {
+            dateRangeError.classList.remove('visible');
+            return true;
+          }
+        }
+        
+        // Expand description textarea dynamically
+        descriptionInput.addEventListener('input', function() {
           this.style.height = 'auto';
           this.style.height = this.scrollHeight + 'px';
         });
-      });
-
-      // Handle form submission
-      document.getElementById('project-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const title = document.getElementById('project-title').value.trim();
-        const description = document.getElementById('project-description').value.trim();
-        const startDate = document.getElementById('start-date').value;
-        const endDate = document.getElementById('end-date').value;
-
-        fetch('createProject.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title,
-            description,
-            startDate,
-            endDate,
-            teamMembers: document
-              .getElementById('team-member-ids')
-              .value.split(',')
-              .filter(id => id.trim() !== '')
-              .map(id => parseInt(id))
+        
+        // Initialize team member search functionality
+        const searchInput = document.getElementById('team-member-input');
+        const suggestionsBox = document.getElementById('team-member-suggestions');
+        const selectedMembersBox = document.getElementById('selected-members');
+        const teamMemberIdsInput = document.getElementById('team-member-ids');
+        
+        let selectedUsers = [];
+        let debounceTimeout;
+        
+        searchInput.addEventListener('input', function() {
+          const query = this.value.trim();
+          
+          // Clear previous timeout
+          clearTimeout(debounceTimeout);
+          
+          // Hide suggestions if input is empty
+          if (query.length < 2) {
+            suggestionsBox.innerHTML = '';
+            suggestionsBox.classList.remove('active');
+            return;
+          }
+          
+          // Debounce the search to avoid too many requests
+          debounceTimeout = setTimeout(() => {
+            // Show loading indicator
+            suggestionsBox.innerHTML = '<div class="suggestion-item"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+            suggestionsBox.classList.add('active');
+            
+            fetch('searchUsers.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ query })
+            })
+            .then(res => res.json())
+            .then(users => {
+              suggestionsBox.innerHTML = '';
+              
+              if (users.length === 0) {
+                suggestionsBox.innerHTML = '<div class="no-results">No users found</div>';
+              } else {
+                users.forEach(user => {
+                  // Skip already selected users
+                  if (selectedUsers.some(u => u.id === user.id)) return;
+                  
+                  const initials = user.name.split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                  
+                  const userItem = document.createElement('div');
+                  userItem.className = 'suggestion-item';
+                  userItem.innerHTML = `
+                    <div class="user-avatar">${initials}</div>
+                    ${user.name}
+                  `;
+                  
+                  userItem.addEventListener('click', () => {
+                    addUserToSelection(user);
+                    searchInput.value = '';
+                    suggestionsBox.innerHTML = '';
+                    suggestionsBox.classList.remove('active');
+                  });
+                  
+                  suggestionsBox.appendChild(userItem);
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Error searching users:', error);
+              suggestionsBox.innerHTML = '<div class="no-results">Error searching users</div>';
+            });
+          }, 300);
+        });
+        
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+            suggestionsBox.classList.remove('active');
+          }
+        });
+        
+        // Focus input to show suggestions again
+        searchInput.addEventListener('focus', function() {
+          if (this.value.trim().length >= 2) {
+            suggestionsBox.classList.add('active');
+          }
+        });
+        
+        function addUserToSelection(user) {
+          // Don't add duplicates
+          if (selectedUsers.some(u => u.id === user.id)) return;
+          
+          selectedUsers.push(user);
+          updateSelectedMembers();
+        }
+        
+        function removeUserFromSelection(userId) {
+          selectedUsers = selectedUsers.filter(user => user.id !== userId);
+          updateSelectedMembers();
+        }
+        
+        function updateSelectedMembers() {
+          selectedMembersBox.innerHTML = '';
+          
+          selectedUsers.forEach(user => {
+            const memberElement = document.createElement('div');
+            memberElement.className = 'selected-member';
+            memberElement.innerHTML = `
+              <span>${user.name}</span>
+              <div class="member-remove" data-id="${user.id}">
+                <i class="fas fa-times"></i>
+              </div>
+            `;
+            
+            selectedMembersBox.appendChild(memberElement);
+          });
+          
+          // Update hidden input with comma-separated IDs
+          teamMemberIdsInput.value = selectedUsers.map(user => user.id).join(',');
+          
+          // Add event listeners to remove buttons
+          document.querySelectorAll('.member-remove').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const userId = parseInt(this.getAttribute('data-id'));
+              removeUserFromSelection(userId);
+            });
+          });
+        }
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Reset error states
+          document.querySelectorAll('.error-message').forEach(el => el.classList.remove('visible'));
+          document.querySelectorAll('.input').forEach(el => el.classList.remove('input-error'));
+          
+          // Validate fields
+          let isValid = true;
+          
+          if (!titleInput.value.trim()) {
+            document.getElementById('title-error').classList.add('visible');
+            titleInput.classList.add('input-error');
+            isValid = false;
+          }
+          
+          if (!descriptionInput.value.trim()) {
+            document.getElementById('description-error').classList.add('visible');
+            descriptionInput.classList.add('input-error');
+            isValid = false;
+          }
+          
+          if (!startDateInput.value) {
+            document.getElementById('start-date-error').classList.add('visible');
+            startDateInput.classList.add('input-error');
+            isValid = false;
+          }
+          
+          if (!endDateInput.value) {
+            document.getElementById('end-date-error').classList.add('visible');
+            endDateInput.classList.add('input-error');
+            isValid = false;
+          }
+          
+          // Validate date range
+          if (startDateInput.value && endDateInput.value) {
+            if (!validateDates()) {
+              isValid = false;
+            }
+          }
+          
+          if (!isValid) return;
+          
+          // Show loading state on button
+          const originalBtnContent = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
+          submitBtn.disabled = true;
+          
+          // Prepare data for submission
+          const projectData = {
+            title: titleInput.value.trim(),
+            description: descriptionInput.value.trim(),
+            startDate: startDateInput.value,
+            endDate: endDateInput.value,
+            teamMembers: selectedUsers.map(user => user.id)
+          };
+          
+          // Submit the form data
+          fetch('createProject.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(projectData)
           })
-        })
           .then(res => res.json())
           .then(data => {
             if (data.status === 'success') {
-              alert('✅ Project created successfully!');
-    //          window.location.href = 'projectDetails.html?projectID=' + data.projectID;
-                window.location.href = 'homePage.php';
+              alert('Project created successfully!');
+              window.location.href = 'homePage.php';
             } else {
-              alert('❌ Error: ' + data.message);
+              // Reset button and show error
+              submitBtn.innerHTML = originalBtnContent;
+              submitBtn.disabled = false;
+              alert('Error: ' + (data.message || 'Failed to create project'));
             }
-          });
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const input = document.getElementById("team-member-input");
-        const suggestionsBox = document.getElementById("team-member-suggestions");
-        const selectedBox = document.getElementById("selected-members");
-        const hiddenInput = document.getElementById("team-member-ids");
-
-        let selectedUsers = [];
-
-        input.addEventListener("input", async () => {
-          const query = input.value.trim();
-          if (query.length < 2) {
-            suggestionsBox.innerHTML = "";
-            return;
-          }
-
-          const res = await fetch("searchUsers.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query }),
-          });
-
-          const users = await res.json();
-          suggestionsBox.innerHTML = "";
-          users.forEach((user) => {
-            const div = document.createElement("div");
-            div.textContent = user.name;
-            div.addEventListener("click", () => {
-              if (!selectedUsers.find((u) => u.id === user.id)) {
-                selectedUsers.push(user);
-                updateSelected();
-              }
-              input.value = "";
-              suggestionsBox.innerHTML = "";
-            });
-            suggestionsBox.appendChild(div);
+          })
+          .catch(error => {
+            console.error('Error creating project:', error);
+            submitBtn.innerHTML = originalBtnContent;
+            submitBtn.disabled = false;
+            alert('Something went wrong. Please try again.');
           });
         });
 
-        function updateSelected() {
-          selectedBox.innerHTML = "";
-          selectedUsers.forEach((user) => {
-            const span = document.createElement("span");
-            span.textContent = user.name;
-            selectedBox.appendChild(span);
-          });
-          hiddenInput.value = selectedUsers.map((u) => u.id).join(",");
-        }
+        // Initialize dark mode
+        initDarkMode();
       });
-
     </script>
   </body>
 </html>

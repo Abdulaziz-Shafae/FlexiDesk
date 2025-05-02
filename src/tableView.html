@@ -5,15 +5,228 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Table View - FlexiDesk</title>
     <link rel="stylesheet" href="navbarStyle.css" />
-    <link rel="stylesheet" href="viwesStyle.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
     <style>
+      :root {
+        /* Color palette */
+        --primary-color: #0d2240;
+        --secondary-color: #3d5af1;
+        --accent-color: #22d1ee;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --white-color: #ffffff;
+        --black-color: #000000;
+        
+        /* UI Elements */
+        --body-bg: #f4f7fb;
+        --card-bg: #ffffff;
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-shadow: rgba(0, 0, 0, 0.08);
+        
+        /* Text colors */
+        --text-primary: #1a1a1a;
+        --text-secondary: #6c757d;
+        --text-muted: #8a94a6;
+        
+        /* Status colors */
+        --status-pending: #ffc107;
+        --status-in-progress: #3d5af1;
+        --status-completed: #28a745;
+      }
+
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --body-bg: #111927;
+        --card-bg: #1a2236;
+        --card-border: rgba(255, 255, 255, 0.1);
+        --card-shadow: rgba(0, 0, 0, 0.3);
+        --text-primary: #f1f1f1;
+        --text-secondary: #b0b7c3;
+        --text-muted: #8a94a6;
+      }
+
+      body {
+        font-family: 'Inter', 'Arial', sans-serif;
+        background-color: var(--body-bg);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .main-content {
+        padding-top: 100px;
+        padding-bottom: 40px;
+      }
+
+      .views-container {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px var(--card-shadow);
+        border: 1px solid var(--card-border);
+      }
+
+      /* Header */
+      .views-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .views-header h1 {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin: 0;
+        font-weight: 700;
+      }
+
+      /* Improved Tabs Navigation */
+      .tabs-navigation {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* For Firefox */
+      }
+
+      .tabs-navigation::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+      }
+
+      .tab {
+        text-decoration: none;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab:hover {
+        color: var(--secondary-color);
+        background-color: rgba(61, 90, 241, 0.05);
+      }
+
+      .tab.active {
+        color: var(--secondary-color);
+        border-bottom: 3px solid var(--secondary-color);
+      }
+
+      .tab i {
+        font-size: 1rem;
+      }
+
+      /* Add Task Button */
+      .add-task-btn {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 10px rgba(61, 90, 241, 0.2);
+      }
+
+      .add-task-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(61, 90, 241, 0.3);
+      }
+
+      /* Toolbar */
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(248, 249, 250, 0.5);
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--card-border);
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-select {
+        background-color: var(--white-color);
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-width: 140px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%236c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 30px;
+      }
+
+      .toolbar-select:hover, .toolbar-select:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.1);
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-container input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      .checkbox-container label {
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+      }
+
+      /* Table styling */
       .table-container {
         width: 100%;
-        background: white;
+        background: var(--card-bg);
         border-radius: 10px;
-        box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-        overflow-x: auto;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
       }
 
       table {
@@ -21,67 +234,266 @@
         border-collapse: collapse;
       }
 
-      th,
-      td {
-        padding: 10px;
+      th, td {
+        padding: 14px 16px;
         text-align: left;
-        border-bottom: 1px solid #ddd;
-        position: relative;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        font-size: 0.9rem;
       }
 
       th {
-        background: #2c3e50;
-        color: white;
+        background-color: rgba(0, 0, 0, 0.02);
+        font-weight: 600;
+        color: var(--text-secondary);
+        position: sticky;
+        top: 0;
       }
 
-      tr:hover {
-        background: #f1f1f1;
+      tbody tr {
+        transition: all 0.2s ease;
+        cursor: pointer;
       }
 
+      tbody tr:hover {
+        background-color: rgba(61, 90, 241, 0.05);
+      }
+
+      /* Status badges */
+      .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .status-pending {
+        background-color: rgba(255, 193, 7, 0.15);
+        color: #d6a206;
+      }
+
+      .status-in-progress {
+        background-color: rgba(61, 90, 241, 0.15);
+        color: #3d5af1;
+      }
+
+      .status-completed {
+        background-color: rgba(40, 167, 69, 0.15);
+        color: #28a745;
+      }
+
+      /* Priority indicators */
+      .priority-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .priority-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      .priority-low { background-color: var(--success-color); }
+      .priority-medium-low { background-color: var(--info-color); }
+      .priority-medium { background-color: var(--warning-color); }
+      .priority-high { background-color: var(--danger-color); }
+      .priority-critical { background-color: #e74c3c; }
+
+      /* Task popup styling */
+      .task-popup {
+        position: absolute;
+        z-index: 1000;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--card-border);
+        width: 320px;
+        display: none;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .task-popup-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--card-border);
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--primary-color);
+      }
+
+      .task-popup-content {
+        padding: 15px;
+      }
+
+      .task-popup-field {
+        margin-bottom: 12px;
+      }
+
+      .task-popup-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      .task-popup-value {
+        font-size: 0.9rem;
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        display: none;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .empty-state h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+      }
+
+      .empty-state p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      /* Loading animation */
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(61, 90, 241, 0.2);
+        border-radius: 50%;
+        border-top-color: var(--secondary-color);
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 992px) {
+        .views-container {
+          margin: 0 15px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .views-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+        
+        .add-task-btn {
+          align-self: flex-start;
+        }
+        
+        .toolbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .tabs-navigation {
+          margin-bottom: 20px;
+        }
+        
+        .tab {
+          padding: 10px 16px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .toolbar-select {
+          min-width: 120px;
+        }
+        
+        th, td {
+          padding: 10px;
+          font-size: 0.8rem;
+        }
+        
+        .table-container {
+          overflow-x: auto;
+        }
+      }
     </style>
   </head>
   <body>
-
-    <!-- Navbar -->
+    <!-- Navbar (will be loaded via JS) -->
     <div id="navbar-placeholder"></div>
 
     <!-- Main Content -->
     <div class="main-content">
-      <div class="viwes-container">      
-        <div class="tabs">
-          <a href="ganttView.html" class="tab">Gantt</a>
-          <a href="tableView.html" class="tab active">Table</a>
-          <a href="calenderView.html" class="tab">Calendar</a>
-          <a href="groupChat.html" class="tab">Chat</a>
-          <a href="whiteboard.html" class="tab">Whiteboard</a>
-        </div>
-        <div class="viwes-header">
-          <h1>Project Name</h1>
-          <button class="add-task-btn" id="openPopupBtn">+ Add Task</button>
+      <div class="views-container">      
+        <!-- Improved Tabs Navigation with Icons -->
+        <div class="tabs-navigation">
+          <a href="ganttView.html" class="tab">
+            <i class="fas fa-chart-bar"></i> Gantt
+          </a>
+          <a href="tableView.html" class="tab active">
+            <i class="fas fa-table"></i> Table
+          </a>
+          <a href="calenderView.html" class="tab">
+            <i class="fas fa-calendar"></i> Calendar
+          </a>
+          <a href="groupChat.html" class="tab">
+            <i class="fas fa-comments"></i> Chat
+          </a>
+          <a href="whiteboard.html" class="tab">
+            <i class="fas fa-chalkboard"></i> Whiteboard
+          </a>
         </div>
 
-        <!-- Toolbar -->
+        <div class="views-header">
+          <h1 id="project-title">Project Name</h1>
+          <button class="add-task-btn" id="openPopupBtn">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
+        </div>
+
+        <!-- Improved Toolbar -->
         <div class="toolbar">
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <label>
-              <select id="status-filter" class="Toolbar-btn">
-                <option value="">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </label>
+          <div class="filter-group">
+            <select id="status-filter" class="toolbar-select">
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
 
-            <label>
-              <select id="priority-filter" class="Toolbar-btn">
-                <option value="">All Priorities</option>
-                <option value="low">Low</option>
-                <option value="medium-low">Medium-Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
-            </label>
+            <select id="priority-filter" class="toolbar-select">
+              <option value="">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="medium-low">Medium-Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
           </div>
 
           <div class="checkbox-container">
@@ -92,7 +504,11 @@
 
         <!-- Task Table -->
         <div class="table-container">
-          <table id="task-table">
+          <div id="loading-indicator" class="loading-container">
+            <div class="loading-spinner"></div>
+          </div>
+          
+          <table id="task-table" style="display: none;">
             <thead>
               <tr>
                 <th>Task Type</th>
@@ -103,11 +519,25 @@
                 <th>Status</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              <!-- Tasks will be loaded dynamically -->
+            </tbody>
           </table>
+          
+          <div id="empty-state" class="empty-state">
+            <i class="fas fa-clipboard-list"></i>
+            <h3>No tasks found</h3>
+            <p>Try changing your filters or add a new task to get started.</p>
+          </div>
         </div>
 
-        <div id="task-popup" class="popup_tasks"></div>
+        <!-- Task Popup for details -->
+        <div id="task-popup" class="task-popup">
+          <div class="task-popup-header">Task Details</div>
+          <div class="task-popup-content">
+            <!-- Will be populated dynamically -->
+          </div>
+        </div>
       </div>
     </div>
 
@@ -115,15 +545,165 @@
     <div id="popup-container"></div> 
 
     <script>
+      // Fetch and insert navbar
+      fetch("navbar.php")
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById("navbar-placeholder").innerHTML = data;
+          initializeDarkMode();
+        })
+        .catch(error => console.error("Error loading navbar:", error));
 
+      // Initialize dark mode
+      function initializeDarkMode() {
+        if (localStorage.getItem("darkMode") === "enabled") {
+          document.body.classList.add("dark-mode");
+        }
+      }
+
+      // Global variables
       const statusFilter = document.getElementById("status-filter");
       const priorityFilter = document.getElementById("priority-filter");
       const assignedCheckbox = document.getElementById("assigned-to-me");
+      const taskTable = document.getElementById("task-table");
       const taskTableBody = document.querySelector("#task-table tbody");
+      const loadingIndicator = document.getElementById("loading-indicator");
+      const emptyState = document.getElementById("empty-state");
       const popup = document.getElementById("task-popup");
       const projectID = sessionStorage.getItem("selectedProjectID");
 
+      // Format status badge with appropriate styling
+      function getStatusBadge(status) {
+        let className = "";
+        
+        switch (status) {
+          case "Pending":
+            className = "status-pending";
+            break;
+          case "In Progress":
+            className = "status-in-progress";
+            break;
+          case "Completed":
+            className = "status-completed";
+            break;
+          default:
+            className = "status-pending";
+        }
+        
+        return `<span class="status-badge ${className}">${status}</span>`;
+      }
+
+      // Format priority with color indicator
+      function getPriorityIndicator(priority) {
+        let className = "";
+        
+        switch (priority) {
+          case "low":
+            className = "priority-low";
+            break;
+          case "medium-low":
+            className = "priority-medium-low";
+            break;
+          case "medium":
+            className = "priority-medium";
+            break;
+          case "high":
+            className = "priority-high";
+            break;
+          case "critical":
+            className = "priority-critical";
+            break;
+          default:
+            className = "priority-medium";
+        }
+        
+        const formattedPriority = priority.split("-").map(word => 
+          word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(" ");
+        
+        return `
+          <div class="priority-indicator">
+            <span class="priority-dot ${className}"></span>
+            <span>${formattedPriority}</span>
+          </div>
+        `;
+      }
+
+      // Format date in a more readable way
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
+      }
+
+      // Show task details in popup
+      function showTaskPopup(task, event) {
+        const popupContent = document.querySelector(".task-popup-content");
+        
+        popupContent.innerHTML = `
+          <div class="task-popup-field">
+            <span class="task-popup-label">Type</span>
+            <span class="task-popup-value">${task.taskType}</span>
+          </div>
+          
+          <div class="task-popup-field">
+            <span class="task-popup-label">Description</span>
+            <span class="task-popup-value">${task.description || "No description provided"}</span>
+          </div>
+          
+          <div class="task-popup-field">
+            <span class="task-popup-label">Assigned To</span>
+            <span class="task-popup-value">${task.assignedTo || "Unassigned"}</span>
+          </div>
+          
+          <div class="task-popup-field">
+            <span class="task-popup-label">Priority</span>
+            <span class="task-popup-value">${task.priority}</span>
+          </div>
+          
+          <div class="task-popup-field">
+            <span class="task-popup-label">Status</span>
+            <span class="task-popup-value">${task.status}</span>
+          </div>
+          
+          <div class="task-popup-field">
+            <span class="task-popup-label">Start Date</span>
+            <span class="task-popup-value">${formatDate(task.startDate)}</span>
+          </div>
+          
+          <div class="task-popup-field">
+            <span class="task-popup-label">End Date</span>
+            <span class="task-popup-value">${formatDate(task.endDate)}</span>
+          </div>
+        `;
+        
+        document.querySelector(".task-popup-header").textContent = task.taskName;
+        
+        // Position popup
+        const rect = event.target.getBoundingClientRect();
+        popup.style.display = "block";
+        
+        // Calculate position
+        const popupHeight = popup.offsetHeight;
+        const viewportHeight = window.innerHeight;
+        let top = rect.bottom + window.scrollY + 5;
+        
+        // Check if popup would go off screen
+        if (top + popupHeight > window.scrollY + viewportHeight) {
+          top = rect.top + window.scrollY - popupHeight - 5;
+        }
+        
+        popup.style.top = `${top}px`;
+        popup.style.left = `${rect.left}px`;
+      }
+
+      // Fetch and render tasks
       function getTasks() {
+        // Show loading state
+        taskTable.style.display = "none";
+        emptyState.style.display = "none";
+        loadingIndicator.style.display = "flex";
+        
         const payload = {
           projectID,
           priority: priorityFilter.value,
@@ -136,103 +716,132 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         })
-          .then((res) => res.json())
-          .then((tasks) => {
+          .then(res => res.json())
+          .then(tasks => {
+            // Hide loading indicator
+            loadingIndicator.style.display = "none";
+            
+            // Clear current table
             taskTableBody.innerHTML = "";
-            tasks.forEach((task) => {
+            
+            if (tasks.length === 0) {
+              // Show empty state
+              emptyState.style.display = "block";
+              return;
+            }
+            
+            // Show table and populate it
+            taskTable.style.display = "table";
+            
+            tasks.forEach(task => {
               const tr = document.createElement("tr");
 
               tr.innerHTML = `
                 <td>${task.taskType}</td>
                 <td>${task.taskName}</td>
-                <td>${task.assignedTo || 'Unassigned'}</td>
-                <td>${task.priority}</td>
-                <td>${task.endDate}</td>
-                <td>${task.status}</td>
+                <td>${task.assignedTo || "Unassigned"}</td>
+                <td>${getPriorityIndicator(task.priority)}</td>
+                <td>${formatDate(task.endDate)}</td>
+                <td>${getStatusBadge(task.status)}</td>
               `;
 
-              tr.addEventListener("mouseenter", (e) => {
-                popup.innerHTML = `
-                  <div style="padding: 10px; border-radius: 8px; background: white; 
-                  box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
-                    <strong>Task Type:</strong> ${task.taskType}<br>
-                    <strong>Task:</strong> ${task.taskName}<br>
-                    <strong>Description:</strong> ${task.description}<br>
-                    <strong>Assigned To:</strong> ${task.assignedTo || 'Unassigned'}<br>
-                    <strong>Priority:</strong> ${task.priority}<br>
-                    <strong>Status:</strong> ${task.status}<br>
-                    <strong>Start Date:</strong> ${task.startDate}<br>
-                    <strong>End Date:</strong> ${task.endDate}
-                  </div>
-                `;
-                const rect = e.target.getBoundingClientRect();
-                popup.style.visibility = 'hidden';
-                popup.style.display = 'block';
-                const popupHeight = popup.offsetHeight + 100;
-                let top = rect.bottom + window.scrollY - 110;
-
-                // If the popup would go off the screen on the bottom, show it above
-                if (top + popupHeight > window.innerHeight) {
-                  top = rect.top + window.scrollY - popupHeight - 10; // Position it above the target element
-                }
-
-                popup.style.top = `${top}px`;
-                popup.style.left = `${rect.left}px`;                 
-                popup.style.visibility = 'visible'; 
-                popup.style.display = "block";
+              // Add hover event for showing task details
+              tr.addEventListener("mouseenter", e => {
+                showTaskPopup(task, e);
               });
 
               tr.addEventListener("mouseleave", () => {
                 popup.style.display = "none";
               });
 
+              // Add click event for editing task (if manager)
               tr.addEventListener("click", () => {
                 const projectRole = sessionStorage.getItem("selectedProjectRole");
 
                 // Allow edit only if the user is a manager
                 if (projectRole === "Manager") {
-                  openEditTaskPopup(task, projectID); // task object already available
+                  openEditTaskPopup(task, projectID);
                 }
               });
 
               taskTableBody.appendChild(tr);
             });
           })
-          .catch((err) => {
+          .catch(err => {
             console.error("Error loading tasks:", err);
+            loadingIndicator.style.display = "none";
+            
+            // Show error message
+            emptyState.innerHTML = `
+              <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+              <h3>Failed to load tasks</h3>
+              <p>An error occurred while loading tasks. Please try again.</p>
+            `;
+            emptyState.style.display = "block";
           });
       }
 
+      // Initialize page when DOM is loaded
       document.addEventListener("DOMContentLoaded", () => {
         const projectName = sessionStorage.getItem("selectedProjectName");
         const projectRole = sessionStorage.getItem("selectedProjectRole");
 
         if (!projectID) {
-          alert("No project selected.");
+          alert("No project selected. Redirecting to home page.");
+          window.location.href = "homePage.php";
           return;
         }
 
-        document.querySelector(".viwes-header h1").textContent = projectName || "Project";
+        // Set project name in header
+        document.getElementById("project-title").textContent = projectName || "Project";
 
+        // Hide Add Task button if user is not a manager
         if (projectRole !== "Manager") {
           document.getElementById("openPopupBtn").style.display = "none";
         }
 
+        // Load tasks on page load
         getTasks();
+        
+        // Set up event listeners for filters
         statusFilter.addEventListener("change", getTasks);
         priorityFilter.addEventListener("change", getTasks);
         assignedCheckbox.addEventListener("change", getTasks);
+        
+        // Add Task button setup
+        const addTaskBtn = document.getElementById("openPopupBtn");
+        if (addTaskBtn) {
+          addTaskBtn.addEventListener("click", () => {
+            // Make sure we're using the correct projectID
+            const currentProjectID = sessionStorage.getItem("selectedProjectID");
+            // Call the openAddTaskPopup function from script.js
+            if (typeof openAddTaskPopup === 'function') {
+              openAddTaskPopup(currentProjectID);
+            } else {
+              console.error("openAddTaskPopup function not found. Make sure script.js is loaded properly.");
+            }
+          });
+        }
       });
 
-      // Fetch and insert navbar
-      fetch("navbar.php")
-        .then((res) => res.text())
-        .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
-    
-        document.getElementById("openPopupBtn")?.addEventListener("click", () => {
-          const projectID = sessionStorage.getItem("selectedProjectID");
-          openAddTaskPopup(projectID); // null task = new task          
-        });
+      // Close popup when clicking outside
+      document.addEventListener("click", function(e) {
+        if (!popup.contains(e.target) && !e.target.closest("tr")) {
+          popup.style.display = "none";
+        }
+      });
+
+      // Window-level function for dark mode toggle (used by navbar.php)
+      window.toggleDarkMode = function() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+      };
+      
+      // Window-level function for mobile menu toggle
+      window.toggleMenu = function() {
+        const navbar = document.querySelector(".navbar");
+        if (navbar) navbar.classList.toggle("menu-open");
+      };
     </script>
   </body>
 </html>

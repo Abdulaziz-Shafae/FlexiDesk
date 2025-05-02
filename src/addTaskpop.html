@@ -1,13 +1,51 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Task Popup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
 
     <style>
+      :root {
+        /* Color palette */
+        --primary-color: #0d2240;
+        --secondary-color: #3d5af1;
+        --accent-color: #22d1ee;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --white-color: #ffffff;
+        --black-color: #000000;
+        
+        /* UI Elements */
+        --body-bg: #f4f7fb;
+        --card-bg: #ffffff;
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-shadow: rgba(0, 0, 0, 0.12);
+        
+        /* Text colors */
+        --text-primary: #1a1a1a;
+        --text-secondary: #6c757d;
+        --text-muted: #8a94a6;
+      }
+
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --body-bg: #111927;
+        --card-bg: #1a2236;
+        --card-border: rgba(255, 255, 255, 0.1);
+        --card-shadow: rgba(0, 0, 0, 0.3);
+        --text-primary: #f1f1f1;
+        --text-secondary: #b0b7c3;
+        --text-muted: #8a94a6;
+      }
+
       .popup {
         display: none;
         position: fixed;
@@ -15,177 +53,332 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(4px);
         text-align: left;
+        z-index: 1000;
       }
 
       .popup-content {
-        background: white;
-        width: 560px;
+        background: var(--card-bg);
+        width: 600px;
+        max-width: 95%;
         padding: 0;
-        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 15px 40px var(--card-shadow);
         position: fixed; 
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%); 
         display: flex;
         flex-direction: column;
-        border-radius: 4px;
-        gap: 4px;
-        border: 2px solid #e0e5f2;
+        border-radius: 12px;
+        border: 1px solid var(--card-border);
+        overflow: hidden;
+        animation: fadeIn 0.3s ease;
+        color: var(--text-primary);
       }
 
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translate(-50%, -48%); }
+        to { opacity: 1; transform: translate(-50%, -50%); }
+      }
 
-      .popup-content h2 {
-        background-color: #e0e5f2;
-        color: black;
-        padding: 12px;
-        font-size: 16px;
+      .popup-header {
+        position: relative;
+        padding: 18px 20px;
         margin: 0;
         text-align: center;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         cursor: move;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        border-bottom: 1px solid var(--card-border);
       }
 
       .addTask-close-btn {
-        font-size: 30px;
-        color: rgb(171, 171, 171);
+        font-size: 24px;
+        color: var(--text-secondary);
         background: none;
         border: none;
         cursor: pointer;
         position: absolute;
         right: 20px;
-        top: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
       }
 
       .addTask-close-btn:hover {
-        color: #333;
+        background-color: rgba(0, 0, 0, 0.05);
+        color: var(--danger-color);
+      }
+
+      .form-content {
+        padding: 24px;
+        overflow-y: auto;
+        max-height: 70vh;
+      }
+
+      .form-section {
+        margin-bottom: 18px;
       }
 
       .addTask-label {
-        padding-left: 2%;
+        display: block;
         font-weight: 600;
-        font-size: 16px;
-        margin-bottom: 0;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        color: var(--text-secondary);
       }
 
       .addTask-input,
       .addTask-select,
       .addTask-textarea {
-        font-weight: bold;
-        margin-left: 2%;
-        height: 30px;
-        width: 94%;
-        padding: 1px;
-        margin-top: 0px;
-        border: 1px solid #ccc;
-        font-size: 16px;
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
         box-sizing: border-box;
-        background-color: #fff;
+      }
+
+      .addTask-input:focus,
+      .addTask-select:focus,
+      .addTask-textarea:focus {
+        outline: none;
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.15);
       }
 
       .addTask-textarea {
-        height: 50px;
+        min-height: 100px;
         resize: vertical;
       }
 
-      .addTask-time-period {
-        display: flex;
-        gap: 3px;
-        margin-right: 3%;
+      .addTask-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%236c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 30px;
       }
 
-      .addTask-date {
-        border-radius: 2px;
-        font-weight: bold;
-        height: 30px;
-        text-align: center;
-        border: 1px solid #ccc;
+      /* Date Picker Section */
+      .date-section {
+        margin-bottom: 20px;
       }
 
       .time-period-container {
         display: flex;
-        justify-content: space-between;
-        width: 100%;
+        flex-wrap: wrap;
+        gap: 15px;
         align-items: center;
       }
 
-      .end-date {
-        font-size: 16px;
-        padding-left: 10px;
-        text-align: left;
-        width: 50%;
+      .addTask-time-period {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .addTask-date {
+        border-radius: 6px;
+        padding: 8px;
+        border: 1px solid #dee2e6;
+        text-align: center;
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+      }
+
+      .addTask-date:focus {
+        outline: none;
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.15);
       }
 
       .day-control {
         display: flex;
-        gap: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
         align-items: center;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        overflow: hidden;
       }
 
       .day-button {
-        font-size: 18px;
-        color: #5b7bf3;
-        background-color: white;
-        border: 1px solid #ccc;
+        width: 32px;
+        height: 32px;
+        border: none;
+        background-color: var(--card-bg);
+        color: var(--secondary-color);
         cursor: pointer;
-        height: 30px;
-        width: 30px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
       }
 
+      .day-button:hover {
+        background-color: rgba(61, 90, 241, 0.1);
+      }
+
+      #days-count {
+        padding: 0 12px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .end-date {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        background-color: rgba(61, 90, 241, 0.1);
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: inline-block;
+      }
+
+      /* Checkbox styles */
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+
+      .checkbox-group input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      .checkbox-group label {
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+
+      .file-upload {
+        padding: 15px;
+        border: 1px dashed #dee2e6;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        transition: all 0.2s ease;
+      }
+
+      .file-upload:hover {
+        border-color: var(--secondary-color);
+      }
+
+      .file-upload label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+
+      /* Button container */
       .button-container {
         display: flex;
         justify-content: flex-end;
+        gap: 10px;
+        padding: 15px 24px;
+        border-top: 1px solid var(--card-border);
+        background-color: rgba(0, 0, 0, 0.02);
       }
 
-      .addTask-save-btn,
-      .addTask-cancel-btn,
-      .addTask-delete-btn {
-        margin: 2%;
-        padding: 6px 20px;
-        cursor: pointer;
+      .addTask-btn {
+        padding: 10px 20px;
         border-radius: 6px;
-        font-size: 14px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
         border: none;
-        width: 90px;
       }
 
       .addTask-save-btn {
-        width: 80px;
-        margin-left: 0;
-        background: #5b7bf3;
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
         color: white;
+        min-width: 100px;
+        box-shadow: 0 4px 10px rgba(61, 90, 241, 0.25);
       }
 
       .addTask-save-btn:hover {
-        background: #4463d4;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(61, 90, 241, 0.35);
       }
 
       .addTask-cancel-btn {
-        background: #ffffff;
-        border: 1.5px solid #5b7bf3;
-        color: #5b7bf3;
+        background-color: transparent;
+        border: 1px solid #dee2e6;
+        color: var(--text-secondary);
       }
 
       .addTask-cancel-btn:hover {
-        background: #e0e5f2;
+        background-color: rgba(0, 0, 0, 0.05);
       }
 
       .addTask-delete-btn {
-        position: absolute;
-        left: 0;
-        background: transparent;
-        color: #d03e51;
-        font-weight: bold;
+        background-color: transparent;
+        color: var(--danger-color);
+        margin-right: auto;
+        padding-left: 0;
+        padding-right: 0;
+        font-weight: 600;
       }
 
       .addTask-delete-btn:hover {
-        color: darkred;
+        color: #b92d3c;
+        text-decoration: underline;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .popup-content {
+          width: 95%;
+        }
+        
+        .time-period-container {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .addTask-time-period {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .button-container {
+          flex-wrap: wrap;
+        }
+        
+        .addTask-btn {
+          font-size: 0.9rem;
+          padding: 8px 15px;
+        }
+        
+        .addTask-delete-btn {
+          width: 100%;
+          margin-bottom: 10px;
+          text-align: center;
+        }
       }
     </style>
   </head>
@@ -193,100 +386,124 @@
     <div id="taskPopup" class="popup">
       <div class="popup-content">
         <h2 class="popup-header">New Task</h2>
-        <span class="addTask-close-btn">&times;</span>
+        <span class="addTask-close-btn"><i class="fas fa-times"></i></span>
 
-        <!-- Project Selection -->
+        <!-- Hidden inputs for data storage -->
         <input type="hidden" id="projectStartDate" />
         <input type="hidden" id="projectEndDate" />
         <input type="hidden" id="projectID" name="projectID" />
-
         <input type="hidden" id="taskStartDate" />
         <input type="hidden" id="taskEndDate" />
         
-        <!-- Task Name -->
-        <label for="taskName" class="addTask-label">Task Name</label>
-        <input type="text" id="taskName" name="taskName" class="addTask-input" placeholder="Enter task name" required/>
-        
-        <!-- Task Type -->
-        <label for="taskType" class="addTask-label">Task Type</label>
-        <select id="taskType" name="taskType" class="addTask-select" required>
-          <option value="" disabled selected hidden>Select The Type</option>
-          <option value="Task">Task</option>
-          <option value="Milestone">Milestone</option>
-        </select>
-
-        <!-- Priority -->
-        <label for="priority" class="addTask-label">Task Priority</label>
-        <select id="priority" name="priority" class="addTask-select" >
-          <option value="" disabled selected hidden>Select The Priority</option>
-          <option value="low">Low</option>
-          <option value="medium-low">Medium-low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-          <option value="critical">Critical</option>          
-        </select>
-
-        <!-- Assign to -->
-        <label for="assignTo" class="addTask-label">Assign to</label>
-        <select id="assignTo" name="assignTo" class="addTask-select" required>
-        </select>
-
-        <!-- Task Description -->
-        <label for="taskDescription" class="addTask-label">Task Description</label>
-        <textarea id="taskDescription" name="taskDescription" class="addTask-textarea" ></textarea>     
-        
-        <!-- Task status -->
-        <label for="status" class="addTask-label">Task Status</label>
-        <select id="status" name="status" class="addTask-select" >
-          <option value="" disabled selected hidden>Select The Status</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>     
-        </select>
-
-        <!-- Task Dates -->
-        <label for="time-period" class="addTask-label">Time Period</label>
-        <div class="time-period-container">
-          <div class="addTask-time-period">
-            <select id="day" class="addTask-date" style="margin-left: 5.2%; width: 50px;">
-              <!-- auto 1-31 -->
-            </select>
-        
-            <select id="month" class="addTask-date" style="width: 110px;">
-              <!-- auto 1-12-->
-            </select>
-        
-            <select id="year" class="addTask-date" style="width: 70px;">
-              <!-- auto 2020 -2040 -->
+        <div class="form-content">
+          <!-- Task Name -->
+          <div class="form-section">
+            <label for="taskName" class="addTask-label">Task Name</label>
+            <input type="text" id="taskName" name="taskName" class="addTask-input" placeholder="Enter task name" required/>
+          </div>
+          
+          <!-- Task Type -->
+          <div class="form-section">
+            <label for="taskType" class="addTask-label">Task Type</label>
+            <select id="taskType" name="taskType" class="addTask-select" required>
+              <option value="" disabled selected hidden>Select the type</option>
+              <option value="Task">Task</option>
+              <option value="Milestone">Milestone</option>
             </select>
           </div>
-        
-          <div class="day-control">
-            <button id="decrease-day" class="day-button" style="border-radius: 3px 0 0 3px;">-</button>
-            <span id="days-count">0</span>
-            <button id="increase-day" class="day-button" style="border-radius: 0 3px 3px 0;">+</button>
+
+          <!-- Priority -->
+          <div class="form-section">
+            <label for="priority" class="addTask-label">Task Priority</label>
+            <select id="priority" name="priority" class="addTask-select" required>
+              <option value="" disabled selected hidden>Select the priority</option>
+              <option value="low">Low</option>
+              <option value="medium-low">Medium-low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>          
+            </select>
           </div>
-          <div class="end-date" id="end-date"> <!-- auto Days #DAy #Mounth #years--> </div>
-        </div>
 
+          <!-- Assign to -->
+          <div class="form-section">
+            <label for="assignTo" class="addTask-label">Assign to</label>
+            <select id="assignTo" name="assignTo" class="addTask-select" required>
+              <!-- Team members will be loaded dynamically -->
+            </select>
+          </div>
 
+          <!-- Task Description -->
+          <div class="form-section">
+            <label for="taskDescription" class="addTask-label">Task Description</label>
+            <textarea id="taskDescription" name="taskDescription" class="addTask-textarea" placeholder="Describe the task..."></textarea>     
+          </div>
+          
+          <!-- Task status -->
+          <div class="form-section">
+            <label for="status" class="addTask-label">Task Status</label>
+            <select id="status" name="status" class="addTask-select" required>
+              <option value="" disabled selected hidden>Select the status</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>     
+            </select>
+          </div>
 
-        <!-- File Requirement -->
-        <div class="checkbox-group" style="margin-left: 2%; margin-top: 8px;">
-          <input type="checkbox" id="fileRequired" onclick="document.getElementById('fileUpload').style.display = this.checked ? 'block' : 'none'" />
-          <label for="fileRequired">Does this task require a file?</label>
+          <!-- Task Dates -->
+          <div class="form-section date-section">
+            <label for="time-period" class="addTask-label">Time Period</label>
+            <div class="time-period-container">
+              <div class="addTask-time-period">
+                <select id="day" class="addTask-date" style="width: 60px;">
+                  <!-- Days 1-31 will be loaded dynamically -->
+                </select>
+            
+                <select id="month" class="addTask-date" style="width: 120px;">
+                  <!-- Months 1-12 will be loaded dynamically -->
+                </select>
+            
+                <select id="year" class="addTask-date" style="width: 80px;">
+                  <!-- Years will be loaded dynamically -->
+                </select>
+              </div>
+            
+              <div class="day-control">
+                <button id="decrease-day" class="day-button" type="button">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <span id="days-count">0</span>
+                <button id="increase-day" class="day-button" type="button">
+                  <i class="fas fa-plus"></i>
+                </button>
+              </div>
+              
+              <div class="end-date" id="end-date">
+                <!-- End date will be displayed here dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- File Requirement -->
+          <div class="checkbox-group">
+            <input type="checkbox" id="fileRequired" onclick="document.getElementById('fileUpload').style.display = this.checked ? 'block' : 'none'" />
+            <label for="fileRequired">This task requires a file attachment</label>
+          </div>
+          
+          <!-- File Upload -->
+          <div class="file-upload" id="fileUpload" style="display:none;">
+            <label for="taskFile">Upload File</label>
+            <input type="file" id="taskFile" class="addTask-input" />
+          </div>
         </div>
         
-        <!-- fileUpload -->
-        <div class="file-upload" id="fileUpload" style="display:none; margin-left: 2%;">
-          <label for="taskFile">Upload File</label>
-          <input type="file" id="taskFile" class="addTask-input" />
-        </div>
-        
+        <!-- Button Container -->
         <div class="button-container">
-          <button id="delete-task" class="addTask-delete-btn">Delete</button>
-          <button id="cancel-task" class="addTask-cancel-btn">Cancel</button>
-          <button id="save-task" class="addTask-save-btn">Save</button>
+          <button id="delete-task" class="addTask-btn addTask-delete-btn" type="button">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+          <button id="cancel-task" class="addTask-btn addTask-cancel-btn" type="button">Cancel</button>
+          <button id="save-task" class="addTask-btn addTask-save-btn" type="button">Save</button>
         </div>
       </div>
     </div>
