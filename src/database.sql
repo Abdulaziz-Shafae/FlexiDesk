@@ -95,7 +95,9 @@ CREATE TABLE Messages (
     project_id INT NOT NULL,
     user_id INT NOT NULL,
     message TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES Projects(projectID) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES Users(userID) ON DELETE CASCADE
 );
 
 -- Sample Data --
@@ -193,7 +195,4 @@ INSERT INTO Messages (project_id, user_id, message, timestamp) VALUES
 (2, 2, 'Good work. Let’s finalize backend auth setup first.', '2025-05-06 09:45:00'),
 (2, 3, 'Can someone assign me tasks for notification testing?', '2025-05-07 14:00:00'),
 (3, 4, 'User roles definition completed. Uploaded to drive.', '2025-05-15 16:10:00'),
-(3, 5, 'I have updated the dashboard wireframe. Please review.', '2025-05-25 10:00:00'),
-(4, 6, 'File upload system design document is ready for review.', '2025-06-16 11:00:00'),
-(5, 7, 'Payment gateway integration has been successfully tested.', '2025-07-11 15:30:00'),
-(5, 8, 'E-commerce homepage final design uploaded to drive.', '2025-07-15 10:10:00');
+(3, 5, 'I have updated the dashboard wireframe. Please review.', '2025-05-25 10:00:00');
