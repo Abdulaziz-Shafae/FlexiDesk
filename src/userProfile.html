@@ -6,54 +6,189 @@
     <title>User Profile - FlexiDesk</title>
     <link rel="stylesheet" href="navbarStyle.css" />
     <link rel="stylesheet" href="viwesStyle.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
     <script src="script.js" defer></script>
-
+    <script>
+      // Initialize dark mode immediately before page load
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        document.documentElement.classList.add('dark-mode');
+      }
+    </script>
     <style>
+      /* ===== VARIABLES ===== */
+      :root {
+        /* Light Mode Colors */
+        --primary-color: #3d5af1;
+        --secondary-color: #22d1ee;
+        --accent-color: #0d2240;
+        --text-color: #333333;
+        --subtle-text: #666666;
+        --light-text: #888888;
+        --background-color: #f4f9ff;
+        --card-bg: #ffffff;
+        --card-shadow: 0 10px 30px rgba(61, 90, 241, 0.1);
+        --border-color: #e0e7ff;
+        --input-bg: #ffffff;
+        --input-border: #d0d8f0;
+        --input-focus: #3d5af1;
+        
+        /* Button Variables - Improved for both modes */
+        --button-bg: linear-gradient(135deg, #3d5af1, #22d1ee);
+        --button-hover: linear-gradient(135deg, #22d1ee, #3d5af1);
+        --button-text: #ffffff;
+        --button-shadow: 0 4px 15px rgba(61, 90, 241, 0.25);
+        --button-hover-shadow: 0 8px 25px rgba(61, 90, 241, 0.35);
+        
+        --tab-active: #3d5af1;
+        --tab-hover: #2b47d1;
+        --checkbox-bg: #e4eaff;
+        --checkbox-border: #d0d8f0;
+        --checkbox-checked-bg: #3d5af1;
+        --checkbox-checked-border: #3d5af1;
+        
+        --task-card-bg: #f7f9ff;
+        --task-card-border: #e0e7ff;
+        --activity-icon-bg: #e4eaff;
+        --success-color: #27ae60;
+        --error-color: #e74c3c;
+        --low-priority: #27ae60;
+        --medium-priority: #f39c12;
+        --high-priority: #e74c3c;
+        --focus-shadow: 0 0 0 3px rgba(61, 90, 241, 0.25);
+      }
+
+      /* Dark Mode Colors - Improved button variables */
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --accent-color: #f5f5f5;
+        --text-color: #f1f1f1;
+        --subtle-text: #aaaaaa;
+        --light-text: #888888;
+        --background-color: #121212;
+        --card-bg: #1e1e1e;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        --border-color: #333333;
+        --input-bg: #2c2c2c;
+        --input-border: #444444;
+        --input-focus: #22d1ee;
+        
+        /* Button Variables - Specifically tuned for dark mode */
+        --button-bg: linear-gradient(135deg, #22d1ee, #3d5af1);
+        --button-hover: linear-gradient(135deg, #3d5af1, #22d1ee);
+        --button-text: #ffffff;
+        --button-shadow: 0 4px 15px rgba(34, 209, 238, 0.25);
+        --button-hover-shadow: 0 8px 25px rgba(34, 209, 238, 0.35);
+        
+        --tab-active: #3d5af1;
+        --tab-hover: #2b47d1;
+        --checkbox-bg: #2c2c2c;
+        --checkbox-border: #444444;
+        --checkbox-checked-bg: #22d1ee;
+        --checkbox-checked-border: #22d1ee;
+        
+        --task-card-bg: #2a2a2a;
+        --task-card-border: #333333;
+        --activity-icon-bg: #2c2c2c;
+        --success-color: #6aeda8;
+        --error-color: #ff6b6b;
+        --low-priority: #6aeda8;
+        --medium-priority: #ffd343;
+        --high-priority: #ff6b6b;
+        --focus-shadow: 0 0 0 3px rgba(34, 209, 238, 0.25);
+      }
+
+      /* Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        transition: all 0.3s ease;
+        line-height: 1.6;
+      }
+
+      /* Container Layout - Proper spacing from top navbar */
       .container {
-        margin-top: 150px;
+        margin-top: 90px; /* Adjusted to ensure content doesn't get hidden under navbar */
+        padding: 30px 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-height: 100vh;
+        min-height: calc(100vh - 90px);
       }
+
       .form-container {
-        background: white;
-        padding: 2%;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
         width: 100%;
-        max-width: 600px;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        max-width: 800px;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-out;
+        margin-bottom: 40px;
       }
+
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Profile Header */
       .profile-header {
         display: flex;
         align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #eee;
+        margin-bottom: 40px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        width: 100%;
+      }
+
+      .profile-header::after {
+        content: '';
+        position: absolute;
+        bottom: -1px; /* Position exactly at the bottom border */
+        left: 0;
+        width: 100%; /* Full width line */
+        height: 3px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        border-radius: 3px;
       }
 
       .profile-pic {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
-        background-color: #e0e0e0;
+        background-color: var(--card-bg);
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-right: 30px;
+        margin-right: 40px;
         position: relative;
         overflow: hidden;
+        border: 4px solid var(--card-bg);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .profile-pic:hover {
+        transform: scale(1.03);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       }
 
       .profile-pic img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: all 0.3s ease;
       }
 
       .change-photo {
@@ -61,12 +196,20 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.7);
         color: white;
         text-align: center;
-        padding: 5px;
-        font-size: 12px;
+        padding: 8px 0;
+        font-size: 14px;
         cursor: pointer;
+        opacity: 0;
+        transform: translateY(100%);
+        transition: all 0.3s ease;
+      }
+
+      .profile-pic:hover .change-photo {
+        opacity: 1;
+        transform: translateY(0);
       }
 
       .profile-info {
@@ -74,51 +217,108 @@
       }
 
       .profile-info h1 {
-        margin: 0 0 10px 0;
-        color: #333;
+        margin: 0 0 15px 0;
+        color: var(--text-color);
+        font-size: 2.2rem;
+        font-weight: 700;
+        line-height: 1.2;
+        transition: all 0.3s ease;
       }
 
       .profile-info p {
-        margin: 5px 0;
-        color: #666;
+        margin: 10px 0;
+        color: var(--subtle-text);
+        display: flex;
+        align-items: center;
+        font-size: 1.05rem;
       }
 
+      .profile-info i {
+        width: 25px;
+        margin-right: 10px;
+        color: var(--primary-color);
+        text-align: center;
+      }
+
+      /* Profile Tabs - Improved visibility */
       .profile-tabs {
         display: flex;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 30px;
+        position: relative;
+        width: 100%;
       }
 
       .tab {
-        padding: 10px 15px;
+        padding: 15px 20px;
         cursor: pointer;
         margin-right: 10px;
-        font-weight: 500;
+        font-weight: 600;
+        color: var(--subtle-text);
+        position: relative;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tab:hover {
+        color: var(--tab-hover);
       }
 
       .tab.active {
-        border-bottom: 3px solid #4a89dc;
-        color: #4a89dc;
+        color: var(--tab-active);
+        border-bottom: 3px solid var(--tab-active);
       }
 
       .tab-content {
         display: none;
-        padding: 10px 0;
+        padding: 20px 0;
+        animation: fadeIn 0.4s ease-out;
+        width: 100%;
       }
 
       .tab-content.active {
         display: block;
       }
 
+      /* Form Elements */
       .form-group {
+        margin-bottom: 25px;
+        position: relative;
+        width: 100%;
+      }
+
+      .form-group h2 {
+        color: var(--text-color);
+        font-size: 1.6rem;
         margin-bottom: 20px;
+        margin-top: 35px;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .form-group h2:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        border-radius: 3px;
+      }
+
+      .form-group h3 {
+        color: var(--text-color);
+        font-size: 1.3rem;
+        margin: 25px 0 15px;
       }
 
       label {
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-        color: #333;
+        color: var(--text-color);
+        transition: all 0.3s ease;
       }
 
       input[type='text'],
@@ -126,94 +326,371 @@
       input[type='password'],
       select,
       textarea {
-        width: 96%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--input-border);
+        border-radius: 8px;
+        font-size: 15px;
+        background-color: var(--input-bg);
+        color: var(--text-color);
+        transition: all 0.3s ease;
       }
 
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--input-focus);
+        box-shadow: var(--focus-shadow);
+      }
+
+      input:disabled,
+      select:disabled,
+      textarea:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        background-color: var(--background-color);
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* Button Styles - COMPLETELY REDESIGNED FOR DARK MODE COMPATIBILITY */
       .save-btn {
-        background-color: #4a89dc;
-        color: white;
+        background: var(--button-bg);
+        color: var(--button-text);
         border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
+        padding: 12px 25px;
+        border-radius: 8px;
         cursor: pointer;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: var(--button-shadow);
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        text-align: center;
       }
 
       .save-btn:hover {
-        background-color: #3a70c0;
+        background: var(--button-hover);
+        transform: translateY(-3px);
+        box-shadow: var(--button-hover-shadow);
       }
 
+      .save-btn:active {
+        transform: translateY(-1px);
+      }
+
+      /* Create ripple effect */
+      .save-btn::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform 0.5s, opacity 0.5s;
+      }
+
+      .save-btn:active::after {
+        transform: scale(0, 0);
+        opacity: 0.3;
+        transition: 0s;
+      }
+
+      /* Disabled button state */
+      .save-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        background: linear-gradient(135deg, #999, #777);
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Saving state */
+      .save-btn.saving {
+        background: linear-gradient(135deg, var(--primary-color) 30%, transparent 30%, transparent 70%, var(--secondary-color) 70%);
+        background-size: 200% 100%;
+        animation: loading 2s infinite linear;
+      }
+
+      @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: 0 0; }
+      }
+
+      /* Checkboxes - COMPLETELY REDESIGNED */
       .checkbox-container {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        position: relative;
+        padding-left: 35px;
+        cursor: pointer;
+        font-size: 15px;
+        user-select: none;
+        color: var(--text-color);
       }
 
-      .checkbox-c input {
-        margin-right: 10px;
+      .checkbox-container input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
       }
 
-      .task-card {
-        border: 1px solid #eee;
-        border-radius: 6px;
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 22px;
+        width: 22px;
+        background-color: var(--checkbox-bg);
+        border: 1px solid var(--checkbox-border);
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .checkbox-container:hover input ~ .checkmark {
+        border-color: var(--primary-color);
+      }
+
+      .checkbox-container input:checked ~ .checkmark {
+        background-color: var(--checkbox-checked-bg);
+        border-color: var(--checkbox-checked-border);
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+      }
+
+      .checkbox-container input:checked ~ .checkmark:after {
+        display: block;
+      }
+
+      .checkbox-container .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      /* Password Toggle */
+      .password-container {
+        position: relative;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        transition: all 0.2s ease;
+        z-index: 2;
+      }
+
+      .password-toggle:hover {
+        opacity: 0.8;
+        color: var(--secondary-color);
+      }
+
+      /* Password Requirements */
+      .password-requirements {
+        font-size: 0.9rem;
+        color: var(--subtle-text);
+        margin: 15px 0 20px;
         padding: 15px;
-        margin-bottom: 15px;
-        background-color: #f9f9f9;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .password-requirements p {
+        margin-bottom: 10px;
+        font-weight: 500;
+      }
+
+      .password-requirements ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      .password-requirements li {
+        margin-bottom: 6px;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .password-requirements li.valid {
+        color: var(--success-color);
+      }
+
+      .password-requirements li.valid::before {
+        content: '✓';
+        position: absolute;
+        left: -20px;
+        color: var(--success-color);
+      }
+
+      .password-requirements li.invalid {
+        color: var(--error-color);
+      }
+
+      .password-requirements li.invalid::before {
+        content: '×';
+        position: absolute;
+        left: -20px;
+        color: var(--error-color);
+      }
+
+      /* Task Cards */
+      .task-card {
+        border: 1px solid var(--task-card-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background-color: var(--task-card-bg);
+        transition: all 0.3s ease;
+        transform: translateZ(0);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .task-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .task-card::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 5px;
+        background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
       }
 
       .task-card h4 {
-        margin: 0 0 10px 0;
-        color: #333;
+        margin: 0 0 15px 0;
+        color: var(--text-color);
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .task-card p {
+        color: var(--subtle-text);
+        margin-bottom: 15px;
+        font-size: 0.95rem;
       }
 
       .task-info {
         display: flex;
         justify-content: space-between;
-        color: #666;
+        color: var(--light-text);
         font-size: 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .task-info span {
+        display: flex;
+        align-items: center;
+      }
+
+      .task-info i {
+        margin-right: 6px;
+        font-size: 1rem;
       }
 
       .priority {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 3px;
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 50px;
         font-size: 12px;
+        font-weight: 600;
         color: white;
       }
 
-      .high {
-        background-color: #ff5252;
+      .priority.low {
+        background-color: var(--low-priority);
       }
 
-      .medium {
-        background-color: #ffb142;
+      .priority.medium {
+        background-color: var(--medium-priority);
       }
 
-      .low {
-        background-color: #2ed573;
+      .priority.high {
+        background-color: var(--high-priority);
       }
 
+      /* Activity Feed */
       .activity-item {
         display: flex;
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
       }
 
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .activity-item:nth-child(1) { animation-delay: 0.1s; }
+      .activity-item:nth-child(2) { animation-delay: 0.2s; }
+      .activity-item:nth-child(3) { animation-delay: 0.3s; }
+      .activity-item:nth-child(4) { animation-delay: 0.4s; }
+      .activity-item:nth-child(5) { animation-delay: 0.5s; }
+
       .activity-icon {
-        width: 40px;
-        height: 40px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
-        background-color: #f0f7ff;
+        background-color: var(--activity-icon-bg);
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-right: 15px;
-        color: #4a89dc;
+        margin-right: 20px;
+        color: var(--primary-color);
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+      }
+
+      .activity-item:hover .activity-icon {
+        transform: scale(1.1);
+        background-color: var(--primary-color);
+        color: white;
       }
 
       .activity-details {
@@ -222,58 +699,241 @@
 
       .activity-details p {
         margin: 0;
-        color: #666;
+        color: var(--text-color);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+
+      .activity-details strong {
+        color: var(--primary-color);
+        font-weight: 600;
       }
 
       .activity-time {
-        font-size: 12px;
-        color: #999;
+        font-size: 0.8rem;
+        color: var(--light-text);
+        margin-top: 5px;
+        display: inline-block;
       }
 
-      /* Password Toggle Eye Icon */
-        .password-container {
-        position: relative;
+      /* Task Filters */
+      #task-filters {
+        background-color: var(--card-bg);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 20px;
       }
 
-      .password-toggle {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
+      #task-filters label {
+        font-weight: 600;
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+
+      #task-filters select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        min-width: 150px;
+      }
+
+      #task-count {
+        margin-left: auto;
+        background: var(--primary-color);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      /* Error Messages */
+      .error-message {
+        color: var(--error-color);
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: none;
+      }
+
+      /* Loading Indicator */
+      .loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 40px 0;
+      }
+
+      .loading h1 {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-size: 28px;
+      }
+
+      .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid var(--border-color);
+        border-top: 6px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* Notification System */
+      #notification-container {
+        position: fixed;
+        top: 100px; /* Position below the navbar */
+        right: 20px;
+        max-width: 350px;
+        z-index: 9999;
+      }
+
+      .notification {
+        margin-bottom: 10px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        animation: slideIn 0.3s ease-out forwards;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .notification.success {
+        border-left-color: var(--success-color);
+      }
+
+      .notification.error {
+        border-left-color: var(--error-color);
+      }
+
+      .notification.warning {
+        border-left-color: var(--medium-priority);
+      }
+
+      .notification-icon {
+        margin-right: 15px;
+        font-size: 1.5rem;
+      }
+
+      .notification.success .notification-icon {
+        color: var(--success-color);
+      }
+
+      .notification.error .notification-icon {
+        color: var(--error-color);
+      }
+
+      .notification.warning .notification-icon {
+        color: var(--medium-priority);
+      }
+
+      .notification-content {
+        flex: 1;
+      }
+
+      .notification-close {
         cursor: pointer;
         font-size: 1.2rem;
-        color: #3498db;
+        opacity: 0.6;
+        transition: all 0.2s ease;
+        margin-left: 15px;
       }
 
-      .password-toggle:hover {
-        opacity: 0.8;
+      .notification-close:hover {
+        opacity: 1;
       }
 
-      /* Password Requirements */
-      .password-requirements {
-        font-size: 0.9rem;
-        color: #666;
-        margin-bottom: 1rem;
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
 
-      .password-requirements li {
-        margin-bottom: 0.5rem;
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        .profile-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .profile-pic {
+          margin: 0 auto 20px;
+        }
+
+        .profile-info p {
+          justify-content: center;
+        }
+
+        .tab {
+          padding: 12px 15px;
+          font-size: 0.9rem;
+        }
+
+        #task-filters {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+
+        #task-count {
+          margin-left: 0;
+          align-self: flex-start;
+        }
+
+        .task-info {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
       }
 
-      .password-requirements li.valid {
-        color: #27ae60;
+      @media (max-width: 480px) {
+        .container {
+          padding: 15px;
+        }
+        
+        .form-container {
+          padding: 25px;
+        }
+        
+        .profile-header {
+          padding-bottom: 20px;
+        }
+        
+        .profile-pic {
+          width: 100px;
+          height: 100px;
+        }
+        
+        .profile-info h1 {
+          font-size: 1.8rem;
+        }
       }
-
-      .password-requirements li.invalid {
-        color: #e74c3c;
-      }
-      
     </style>
   </head>
   <body>
-    <!-- Include navbar using JavaScript or server-side includes -->
+    <!-- Include navbar using JavaScript -->
     <div id="navbar-placeholder"></div>
 
+    <!-- Notification container -->
+    <div id="notification-container"></div>
 
     <div class="container">
       <div class="form-container">
@@ -292,7 +952,6 @@
             </div>
           </div>
 
-
           <div class="profile-tabs">
             <div class="tab active" data-tab="settings">Settings</div>
             <div class="tab" data-tab="my-tasks">My Tasks</div>
@@ -304,15 +963,15 @@
           
         <!-- Personal Info -->
         <form id="personal-info-form">
-            <h2>Personal Info</h2>
             <div class="form-group">
+                <h2>Personal Info</h2>
                 <label for="full-name">Full Name</label>
                 <input type="text" id="full-name" disabled/>
             </div>
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" disabled/>
-                <small id="no-edit-email" style="color: #e74c3c; display: none;">
+                <small id="no-edit-email" style="color: var(--error-color); display: none;">
                   Email address cannot be changed.
                 </small>
             </div>
@@ -338,28 +997,32 @@
         <div class="form-group">
             <h2>Notifications Settings</h2>
             <h3>Email Notifications</h3>
-            <div class="checkbox-container">
-            <input type="checkbox" id="task-assigned" checked />
-            <label for="task-assigned">When a task is assigned to me</label>
-            </div>
-            <div class="checkbox-container">
-            <input type="checkbox" id="task-completed" checked />
-            <label for="task-completed"
-                >When a task I created is completed</label
-            >
-            </div>
-            <div class="checkbox-container">
-            <input type="checkbox" id="task-due" checked />
-            <label for="task-due">Task due date reminders</label>
-            </div>
-            <div class="checkbox-container">
-            <input type="checkbox" id="project-updates" />
-            <label for="project-updates">Project updates</label>
-            </div>
-            <div class="checkbox-container">
-            <input type="checkbox" id="team-messages" checked />
-            <label for="team-messages">Team messages</label>
-            </div>
+            
+            <label class="checkbox-container">When a task is assigned to me
+              <input type="checkbox" id="task-assigned" checked>
+              <span class="checkmark"></span>
+            </label>
+            
+            <label class="checkbox-container">When a task I created is completed
+              <input type="checkbox" id="task-completed" checked>
+              <span class="checkmark"></span>
+            </label>
+            
+            <label class="checkbox-container">Task due date reminders
+              <input type="checkbox" id="task-due" checked>
+              <span class="checkmark"></span>
+            </label>
+            
+            <label class="checkbox-container">Project updates
+              <input type="checkbox" id="project-updates">
+              <span class="checkmark"></span>
+            </label>
+            
+            <label class="checkbox-container">Team messages
+              <input type="checkbox" id="team-messages" checked>
+              <span class="checkmark"></span>
+            </label>
+            
             <button type="submit" class="save-btn">Save Preferences</button>
         </div>
 
@@ -368,68 +1031,65 @@
             <h2>Security Settings</h2>
             <h3>Change Password</h3>
             <div class="form-group">
-            <label for="current-password">Current Password</label>
-            <div class="password-container">
+              <label for="current-password">Current Password</label>
+              <div class="password-container">
                 <input type="password" id="current-password" />
                 <span class="password-toggle" onclick="togglePasswordVisibility('current-password', this)">👁️</span>
+              </div>
+              <small id="Current-Password-required" class="error-message">
+                Please enter the Current Password.
+              </small>
             </div>
-            </div>
-
-            <small id="Current-Password-required" style="color: red; display: none;">
-             Please enter the Current Password.
-            </small>
             
             <div class="form-group">
-            <label for="new-password">New Password</label>
-            <div class="password-container">
+              <label for="new-password">New Password</label>
+              <div class="password-container">
                 <input type="password" id="new-password" />
                 <span class="password-toggle" onclick="togglePasswordVisibility('new-password', this)">👁️</span>
-            </div>
+              </div>
             </div>
             
             <div class="form-group">
-            <label for="confirm-password">Confirm New Password</label>
-            <div class="password-container">
+              <label for="confirm-password">Confirm New Password</label>
+              <div class="password-container">
                 <input type="password" id="confirm-password" />
                 <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">👁️</span>
+              </div>
+              <small id="security-password-match-error" class="error-message">
+                Passwords do not match.
+              </small>
             </div>
-            </div>
-            
-            <small id="security-password-match-error" style="color: red; display: none;">
-            Passwords do not match.
-            </small>
             
             <div class="password-requirements">
-            <p style="margin-top: 1rem;">Password must contain:</p>
-            <ul>
+              <p>Password must contain:</p>
+              <ul>
                 <li id="sec-length">At least 8 characters</li>
                 <li id="sec-lowercase">A lowercase letter</li>
                 <li id="sec-uppercase">An uppercase letter</li>
                 <li id="sec-number">A number</li>
                 <li id="sec-special">A special character ( !@#$%^&*(),.?":{}|<> )</li>
-            </ul>
+              </ul>
             </div>
             
             <div class="form-group">
-                <h3>Two-Factor Authentication</h3>
-                <div class="checkbox-container">
-                <input type="checkbox" id="two-factor" />
-                <label for="two-factor">Enable Two-Factor Authentication</label>
-                </div>
-                <p style="color: #666; font-size: 14px">
-                Adding a second layer of security to your account helps protect your
-                data.
-                </p>
+              <h3>Two-Factor Authentication</h3>
+              <label class="checkbox-container">Enable Two-Factor Authentication
+                <input type="checkbox" id="two-factor">
+                <span class="checkmark"></span>
+              </label>
+              <p style="color: var(--subtle-text); font-size: 14px; margin-top: 8px;">
+                Adding a second layer of security to your account helps protect your data.
+              </p>
             </div>
+            
             <button onclick="handlePasswordUpdate()" class="save-btn">Save Security Settings</button>
         </div>
-
       </div>
 
       <!-- My Tasks Tab -->
       <div class="tab-content" id="my-tasks">
-        <div id="task-filters" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin-bottom: 15px;">
-          <div style="display: flex; align-items: center; gap: 8px;">
+        <div id="task-filters">
+          <div>
             <label for="filter-priority">Priority:</label>
             <select id="filter-priority">
               <option value="">All</option>
@@ -441,7 +1101,7 @@
             </select>
           </div>
         
-          <div style="display: flex; align-items: center; gap: 8px;">
+          <div>
             <label for="filter-status">Status:</label>
             <select id="filter-status">
               <option value="">All</option>
@@ -451,16 +1111,16 @@
             </select>
           </div>
         
-          <h4 id="task-count" style="margin-left: auto; white-space: nowrap;"></h4>
+          <h4 id="task-count"></h4>
         </div>
         
-        <!-- Cards go here -->
+        <!-- Task cards will be loaded here -->
         <div id="task-results"></div>
       </div>  
       
 
       <!-- Notifications Tab -->
-      <div class="tab-content" id="notifications" >
+      <div class="tab-content" id="notifications">
         <div class="activity-item">
           <div class="activity-icon">
             <i class="fas fa-tasks"></i>
@@ -514,411 +1174,624 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
-    <script>
-      // Fetch navbar 
-      fetch('navbar.php')
-        .then(res => res.text())
-        .then(data => document.getElementById('navbar-placeholder').innerHTML = data);
+  <script>
+    // Apply dark mode immediately if set in localStorage
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.documentElement.classList.add('dark-mode');
+      document.body.classList.add('dark-mode');
+    }
 
-      // Load user data from backend
-      function loadUserProfile() {
-        fetch('getUser.php')
-          .then(res => res.json())
-          .then(user => {
-            if (user.error) return console.error(user.error);
+    // Fetch navbar 
+    fetch('navbar.php')
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('navbar-placeholder').innerHTML = data;
+        // Re-apply dark mode after navbar loads to ensure consistency
+        if (localStorage.getItem('darkMode') === 'enabled') {
+          document.body.classList.add('dark-mode');
+          document.documentElement.classList.add('dark-mode');
+          
+          // Update UI elements for dark mode
+          const toggleIcon = document.querySelector('.toggle-icon');
+          if (toggleIcon) toggleIcon.textContent = '🌙';
+          
+          const toggleThumb = document.querySelector('.toggle-thumb');
+          if (toggleThumb) toggleThumb.style.left = '26px';
+        }
+      });
 
-            document.getElementById('profile-name').textContent = user.name;
-            document.getElementById('profile-email').textContent = user.email;
-            document.getElementById('profile-job').textContent = user.jobTitle;
-            document.getElementById('profile-department').textContent = user.department;
-
-            document.getElementById('full-name').value = user.name;
-            document.getElementById('email').value = user.email;
-            document.getElementById('job-title').value = user.jobTitle;
-            document.getElementById('department').value = user.department;
-            document.getElementById('bio').value = user.bio;
-
-            // Load profile picture
-            document.getElementById('profile-image').src = user.profileImage + "?t=" + new Date().getTime();
-
-          });
+    // Notification system
+    function showNotification(type, message, duration = 4000) {
+      // Create notification container if it doesn't exist
+      let container = document.getElementById('notification-container');
+      
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        document.body.appendChild(container);
       }
+      
+      // Create notification element
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      
+      // Set icon based on type
+      let icon = 'info-circle';
+      if (type === 'success') icon = 'check-circle';
+      else if (type === 'error') icon = 'exclamation-circle';
+      else if (type === 'warning') icon = 'exclamation-triangle';
+      
+      notification.innerHTML = `
+        <div class="notification-icon"><i class="fas fa-${icon}"></i></div>
+        <div class="notification-content">${message}</div>
+        <div class="notification-close" onclick="this.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </div>
+      `;
+      
+      // Add to container
+      container.appendChild(notification);
+      
+      // Auto-remove after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          if (notification.parentNode === container) {
+            // Add fade-out animation
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(50px)';
+            
+            // Remove after animation completes
+            setTimeout(() => {
+              if (notification.parentNode === container) {
+                container.removeChild(notification);
+              }
+            }, 300);
+          }
+        }, duration);
+      }
+    }
 
+    // Load user data from backend
+    function loadUserProfile() {
+      fetch('getUser.php')
+        .then(res => res.json())
+        .then(user => {
+          if (user.error) {
+            console.error(user.error);
+            showNotification('error', 'Failed to load profile data');
+            return;
+          }
 
-      // On load
-      document.addEventListener('DOMContentLoaded', loadUserProfile);
+          // Update profile display elements
+          document.getElementById('profile-name').textContent = user.name;
+          document.getElementById('profile-email').textContent = user.email;
+          document.getElementById('profile-job').textContent = user.jobTitle || 'Not specified';
+          document.getElementById('profile-department').textContent = user.department || 'Not specified';
 
-      // Save changes
-      document.getElementById('personal-info-form').addEventListener('submit', function (e) {
-        e.preventDefault();
+          // Update form fields
+          document.getElementById('full-name').value = user.name;
+          document.getElementById('email').value = user.email;
+          document.getElementById('job-title').value = user.jobTitle || '';
+          document.getElementById('department').value = user.department || '';
+          document.getElementById('bio').value = user.bio || '';
 
+          // Load profile picture with cache-busting
+          document.getElementById('profile-image').src = user.profileImage + "?t=" + new Date().getTime();
+
+          // Check if 2FA is enabled
+          if (user.twoFactorEnabled) {
+            document.getElementById('two-factor').checked = true;
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching user data:", err);
+          showNotification('error', 'Failed to load user profile');
+        });
+    }
+
+    // Tab switching with improved animations
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and contents
+        tabs.forEach((t) => t.classList.remove('active'));
+        tabContents.forEach((content) => {
+          content.classList.remove('active');
+          content.style.display = 'none';
+        });
+
+        // Add active class to clicked tab
+        tab.classList.add('active');
+        
+        // Get corresponding content and animate it
+        const tabId = tab.getAttribute('data-tab');
+        const activeContent = document.getElementById(tabId);
+        
+        // Trigger reflow for animation
+        void activeContent.offsetWidth;
+        
+        activeContent.classList.add('active');
+        activeContent.style.display = 'block';
+        
+        // Load specific tab content if needed
+        if (tabId === 'my-tasks') {
+          loadMyTasks();
+        }
+      });
+    });
+
+    // Preview + Upload Profile Picture with enhanced UX
+    document.getElementById('change-photo-btn').addEventListener('click', () => {
+      document.getElementById('profile-pic-upload').click();
+    });
+
+    document.getElementById('profile-pic-upload').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) {
+        return;
+      }
+      
+      // Show loading state
+      const profileImg = document.getElementById('profile-image');
+      profileImg.style.opacity = '0.5';
+      
+      // Preview image instantly
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        profileImg.src = e.target.result;
+        profileImg.style.opacity = '1';
+      };
+      reader.readAsDataURL(file);
+
+      // Upload to server
+      const formData = new FormData();
+      formData.append('profilePic', file);
+
+      fetch('uploadProfilePic.php', {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Show success message
+            showNotification('success', 'Profile picture updated successfully!');
+            
+            // Refresh navbar to update profile pic there too
+            fetch('navbar.php')
+              .then(res => res.text())
+              .then(data => {
+                document.getElementById('navbar-placeholder').innerHTML = data;
+                // Re-apply dark mode after navbar refresh
+                if (localStorage.getItem('darkMode') === 'enabled') {
+                  document.body.classList.add('dark-mode');
+                  
+                  const toggleIcon = document.querySelector('.toggle-icon');
+                  if (toggleIcon) toggleIcon.textContent = '🌙';
+                  
+                  const toggleThumb = document.querySelector('.toggle-thumb');
+                  if (toggleThumb) toggleThumb.style.left = '26px';
+                }
+              });
+          } else {
+            // Show error message
+            showNotification('error', 'Failed to upload: ' + data.message);
+            profileImg.style.opacity = '1';
+          }
+        })
+        .catch(err => {
+          console.error("Upload error:", err);
+          showNotification('error', 'Upload failed. Please try again.');
+          profileImg.style.opacity = '1';
+        });
+    });
+
+    // Edit/Save personal info with improved UX
+    const form = document.getElementById('personal-info-form');
+    const editBtn = document.getElementById('edit-save-btn');
+    let isEditing = false;
+
+    editBtn.addEventListener('click', () => {
+      if (!isEditing) {
+        // Enable editing mode
+        form.querySelectorAll('input, select, textarea').forEach(el => {
+          el.disabled = false;
+          el.classList.add('editable');
+        });
+        
+        // Keep email disabled
+        document.getElementById('email').disabled = true;
+        document.getElementById('no-edit-email').style.display = 'block';
+
+        // Update button
+        editBtn.textContent = 'Save Changes';
+        editBtn.classList.add('saving');
+        isEditing = true;
+      } else {
+        // Save changes
         const payload = {
-          name: document.getElementById('full-name').value,
-          email: document.getElementById('email').value,
-          jobTitle: document.getElementById('job-title').value,
-          department: document.getElementById('department').value,
-          bio: document.getElementById('bio').value
+          name: document.getElementById('full-name').value.trim(),
+          jobTitle: document.getElementById('job-title').value.trim(),
+          department: document.getElementById('department').value.trim(),
+          bio: document.getElementById('bio').value.trim()
         };
 
-        // Add department if new
-        fetch('getMetaValues.php?type=Department')
-          .then(res => res.json())
-          .then(data => {
-            const datalist = document.getElementById('department-list');
-            if (datalist) {
-              datalist.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
-            }
-         });
-        // Add department if new
-        fetch('getMetaValues.php?type=JobTitle')
-          .then(res => res.json())
-          .then(data => {
-            const datalist = document.getElementById('job-title-list');
-            if (datalist) {
-              datalist.innerHTML = data.map(job => `<option value="${job}">`).join('');
-            }
-        });
+        // Show loading state
+        editBtn.textContent = 'Saving...';
+        editBtn.disabled = true;
 
         fetch('updateUser.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         })
-          .then(res => res.json())
-          .then(data => {
-            if (data.status === 'success') {
-              alert('Profile updated successfully!');
-              loadUserProfile(); // Refresh UI
-            } else {
-              alert('Error: ' + data.message);
-            }
-          });
-      });
-
-      // Tab switching
-      const tabs = document.querySelectorAll('.tab');
-      const tabContents = document.querySelectorAll('.tab-content');
-
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          tabs.forEach((t) => t.classList.remove('active'));
-          tabContents.forEach((content) => content.classList.remove('active'));
-
-          tab.classList.add('active');
-          const tabId = tab.getAttribute('data-tab');
-          document.getElementById(tabId).classList.add('active');
-        });
-      });
-
-      // Preview + Upload Profile Picture
-      document.getElementById('change-photo-btn').addEventListener('click', () => {
-        document.getElementById('profile-pic-upload').click();
-      });
-
-      document.getElementById('profile-pic-upload').addEventListener('change', function () {
-        const file = this.files[0];
-        if (!file) {
-          alert("No file selected");
-          return;
-        }
-        // Preview image instantly
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          document.getElementById('profile-image').src = e.target.result + '?t=' + new Date().getTime();
-        };
-        reader.readAsDataURL(file);
-
-        // Upload to server
-        const formData = new FormData();
-        formData.append('profilePic', file);
-
-        fetch('uploadProfilePic.php', {
-          method: 'POST',
-          body: formData
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.status === 'success') {
-              console.log('Profile picture updated.');
-              fetch('navbar.php')
-                .then(res => res.text())
-                .then(data => {
-                  document.getElementById('navbar-placeholder').innerHTML = data;
-                });
-
-            } else {
-              alert('Upload failed: ' + data.message);
-            }
-          });
-      });
-
-      const form = document.getElementById('personal-info-form');
-      const editBtn = document.getElementById('edit-save-btn');
-      let isEditing = false;
-
-      editBtn.addEventListener('click', () => {
-        if (!isEditing) {
-          // 🔓 Enable fields
-          form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = false);
-            document.getElementById('email').disabled = true;
-            document.getElementById('no-edit-email').style.display = 'block';
-
-          editBtn.textContent = 'Save Changes';
-          isEditing = true;
-        } else {
-          // ✅ Save changes
-
-          const payload = {
-            name: document.getElementById('full-name').value.trim(),
-            jobTitle: document.getElementById('job-title').value.trim(),
-            department: document.getElementById('department').value.trim(),
-            bio: document.getElementById('bio').value.trim()
-          };
-
-          fetch('updateUser.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-          .then(res => res.json())
-          .then(data => {
-
-            if (data.status === 'success') {
-              alert('Profile updated successfully!');
-              loadUserProfile();
-              form.querySelectorAll('input, select, textarea').forEach(el => el.disabled = true);
-              document.getElementById('no-edit-email').style.display = 'none';
-              editBtn.textContent = 'Edit';
-              isEditing = false;
-            } else {
-              alert('Error: ' + data.message);
-            }
-          });
-
-          };
-          // Add department if new
-          fetch('addMetaValueIfNew.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'Department', value: payload.department })
-          });
-          // Add jobTitle if new
-          fetch('addMetaValueIfNew.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'JobTitle', value: payload.jobTitle })
-          });
-      });
-
-      function getQueryParam(name) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(name);
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        const tabParam = getQueryParam('tab');
-        fetch('getMetaValues.php?type=Department')
-          .then(res => res.json())
-          .then(data => {
-            const datalist = document.getElementById('department-list');
-            if (datalist) {
-              datalist.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
-            }
-          });
-
-        fetch('getMetaValues.php?type=JobTitle')
-          .then(res => res.json())
-          .then(data => {
-            const datalist = document.getElementById('job-title-list');
-            if (datalist) {
-              datalist.innerHTML = data.map(job => `<option value="${job}">`).join('');
-            }
-          });
-
-        if (tabParam) {
-          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-          const tabBtn = document.querySelector(`.tab[data-tab="${tabParam}"]`);
-          const tabContent = document.getElementById(tabParam);
-
-          if (tabBtn && tabContent) {
-            tabBtn.classList.add('active');
-            tabContent.classList.add('active');
-          }
-        }
-      });
-
-      function togglePasswordVisibility(inputId, icon) {
-        const input = document.getElementById(inputId);
-        input.type = input.type === 'password' ? 'text' : 'password';
-        icon.textContent = input.type === 'password' ? '👁️' : '🙈';
-      }
-
-      // Password validation for "new-password"
-      const secPasswordInput = document.getElementById('new-password');
-      const secRequirements = {
-        length: document.getElementById('sec-length'),
-        lowercase: document.getElementById('sec-lowercase'),
-        uppercase: document.getElementById('sec-uppercase'),
-        number: document.getElementById('sec-number'),
-        special: document.getElementById('sec-special'),
-      };
-
-      secPasswordInput.addEventListener('input', () => {
-        const password = secPasswordInput.value;
-
-        secRequirements.length.classList.toggle('valid', password.length >= 8);
-        secRequirements.length.classList.toggle('invalid', password.length < 8);
-
-        secRequirements.lowercase.classList.toggle('valid', /[a-z]/.test(password));
-        secRequirements.lowercase.classList.toggle('invalid', !/[a-z]/.test(password));
-
-        secRequirements.uppercase.classList.toggle('valid', /[A-Z]/.test(password));
-        secRequirements.uppercase.classList.toggle('invalid', !/[A-Z]/.test(password));
-
-        secRequirements.number.classList.toggle('valid', /\d/.test(password));
-        secRequirements.number.classList.toggle('invalid', !/\d/.test(password));
-
-        secRequirements.special.classList.toggle('valid', /[!@#$%^&*(),.?":{}|<>]/.test(password));
-        secRequirements.special.classList.toggle('invalid', !/[!@#$%^&*(),.?":{}|<>]/.test(password));
-      });
-
-      function handlePasswordUpdate() {
-        const currentPassword = document.getElementById('current-password').value.trim();
-        const newPassword = document.getElementById('new-password').value.trim();
-        const confirmPassword = document.getElementById('confirm-password').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const twoFactorEnabled = document.getElementById('two-factor').checked;
-
-        if (!email || !currentPassword) {
-          document.getElementById('Current-Password-required').style.display = 'block';
-          return;
-        }
-        document.getElementById('Current-Password-required').style.display = 'none';
-
-        // If new password is provided, confirm match
-        if (newPassword || confirmPassword) {
-          if (newPassword !== confirmPassword) {
-            document.getElementById('security-password-match-error').style.display = 'block';
-            return;
-          }
-        }
-
-        document.getElementById('security-password-match-error').style.display = 'none';
-
-        fetch('updatePassword.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email,
-            currentPassword,
-            newPassword, // may be empty
-            mode: 'profile',
-            twoFactorEnabled
-          })
-        })
         .then(res => res.json())
         .then(data => {
           if (data.status === 'success') {
-            alert("Security settings updated.");
-            ['current-password', 'new-password', 'confirm-password'].forEach(id => {
-              document.getElementById(id).value = '';
+            // Show success notification
+            showNotification('success', 'Profile updated successfully!');
+            
+            // Refresh data and UI
+            loadUserProfile();
+            
+            // Disable editing
+            form.querySelectorAll('input, select, textarea').forEach(el => {
+              el.disabled = true;
+              el.classList.remove('editable');
             });
+            
+            document.getElementById('no-edit-email').style.display = 'none';
+            
+            // Reset button
+            editBtn.textContent = 'Edit';
+            editBtn.disabled = false;
+            editBtn.classList.remove('saving');
+            isEditing = false;
           } else {
-            alert(data.message || "Failed to update settings.");
+            // Show error
+            showNotification('error', 'Error: ' + data.message);
+            editBtn.disabled = false;
+            editBtn.textContent = 'Try Again';
           }
         })
         .catch(err => {
-          console.error("Request error:", err);
-          alert("An error occurred.");
+          console.error("Update error:", err);
+          showNotification('error', 'Failed to update profile. Please try again.');
+          editBtn.disabled = false;
+          editBtn.textContent = 'Try Again';
         });
-      }
 
-      document.getElementById('filter-priority').addEventListener('change', loadMyTasks);
-      document.getElementById('filter-status').addEventListener('change', loadMyTasks);
-
-      function loadMyTasks() {
-        const priority = document.getElementById('filter-priority').value;
-        const status = document.getElementById('filter-status').value;
-
-        fetch('getMyTasks.php', {
+        // Add metadata values
+        fetch('addMetaValueIfNew.php', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            priority: priority,
-            status: status
-          })
-        })
-        .then(res => res.json())
-        .then(tasks => {
-          const container = document.getElementById('task-results');
-          const taskCountEl = document.getElementById('task-count');
-          container.innerHTML = '';
-
-          if (!tasks.length) {
-            taskCountEl.textContent = "No tasks match the current filter.";
-            container.innerHTML = "<p>No tasks found.</p>";
-            return;
-          }
-
-          taskCountEl.textContent = `You have ${tasks.length} task(s).`;
-
-          tasks.forEach(task => {
-            const card = document.createElement('div');
-            card.classList.add('task-card');
-
-            card.innerHTML = `
-              <h4>${task.taskName}</h4>
-              <p>${task.description || 'No description available.'}</p>
-              <div class="task-info">
-                <span>Project: ${task.projectTitle}</span>
-                <span>Due: ${new Date(task.endDate).toLocaleDateString()}</span>
-                <span class="priority ${getPriorityClass(task.priority)}">${formatPriority(task.priority)} Priority</span>
-              </div>
-            `;
-            container.appendChild(card);
-          });
-        })
-        .catch(err => {
-          console.error("Error loading tasks:", err);
-          document.getElementById('my-tasks').innerHTML = "<p>Error loading tasks.</p>";
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'Department', value: payload.department })
+        });
+        
+        fetch('addMetaValueIfNew.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'JobTitle', value: payload.jobTitle })
         });
       }
+    });
 
+    // Password toggle with improved visual feedback
+    function togglePasswordVisibility(inputId, icon) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      icon.textContent = input.type === 'password' ? '👁️' : '🙈';
+      
+      // Add a brief highlight effect
+      input.style.borderColor = 'var(--primary-color)';
+      setTimeout(() => {
+        input.style.borderColor = '';
+      }, 300);
+    }
 
+    // Password validation with improved visual feedback
+    const secPasswordInput = document.getElementById('new-password');
+    const secRequirements = {
+      length: document.getElementById('sec-length'),
+      lowercase: document.getElementById('sec-lowercase'),
+      uppercase: document.getElementById('sec-uppercase'),
+      number: document.getElementById('sec-number'),
+      special: document.getElementById('sec-special'),
+    };
 
-      function getPriorityClass(priority) {
-        switch (priority) {
-          case 'low': return 'low';
-          case 'medium-low': return 'medium';
-          case 'medium': return 'medium';
-          case 'high': return 'high';
-          case 'critical': return 'high';
-          default: return 'medium';
+    secPasswordInput.addEventListener('input', () => {
+      const password = secPasswordInput.value;
+
+      // Check each requirement and update visual feedback
+      secRequirements.length.className = password.length >= 8 ? 'valid' : 'invalid';
+      secRequirements.lowercase.className = /[a-z]/.test(password) ? 'valid' : 'invalid';
+      secRequirements.uppercase.className = /[A-Z]/.test(password) ? 'valid' : 'invalid';
+      secRequirements.number.className = /\d/.test(password) ? 'valid' : 'invalid';
+      secRequirements.special.className = /[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'valid' : 'invalid';
+      
+      // Also check confirm password match
+      const confirmPassword = document.getElementById('confirm-password').value;
+      if (confirmPassword && password !== confirmPassword) {
+        document.getElementById('security-password-match-error').style.display = 'block';
+      } else {
+        document.getElementById('security-password-match-error').style.display = 'none';
+      }
+    });
+
+    // Confirm password validation
+    document.getElementById('confirm-password').addEventListener('input', function() {
+      const password = document.getElementById('new-password').value;
+      const confirmPassword = this.value;
+      
+      if (password && confirmPassword && password !== confirmPassword) {
+        document.getElementById('security-password-match-error').style.display = 'block';
+      } else {
+        document.getElementById('security-password-match-error').style.display = 'none';
+      }
+    });
+
+    // Handle password update with improved user feedback
+    function handlePasswordUpdate() {
+      const currentPassword = document.getElementById('current-password').value.trim();
+      const newPassword = document.getElementById('new-password').value.trim();
+      const confirmPassword = document.getElementById('confirm-password').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const twoFactorEnabled = document.getElementById('two-factor').checked;
+
+      // Validate inputs
+      if (!email || !currentPassword) {
+        document.getElementById('Current-Password-required').style.display = 'block';
+        return;
+      }
+      document.getElementById('Current-Password-required').style.display = 'none';
+
+      // If new password is provided, confirm match
+      if (newPassword || confirmPassword) {
+        if (newPassword !== confirmPassword) {
+          document.getElementById('security-password-match-error').style.display = 'block';
+          return;
         }
       }
+      document.getElementById('security-password-match-error').style.display = 'none';
 
-      function formatPriority(priority) {
-        return priority.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
-      }
+      // Show loading state
+      const saveBtn = event.target;
+      const originalText = saveBtn.textContent;
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
 
-      // Run when tab is clicked or on load
-      document.addEventListener('DOMContentLoaded', () => {
-        loadMyTasks();
-
-        document.querySelector('[data-tab="my-tasks"]').addEventListener('click', () => {
-          loadMyTasks();
-        });
+      fetch('updatePassword.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          currentPassword,
+          newPassword, // may be empty
+          mode: 'profile',
+          twoFactorEnabled
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          showNotification('success', 'Security settings updated successfully');
+          
+          // Clear form fields
+          ['current-password', 'new-password', 'confirm-password'].forEach(id => {
+            document.getElementById(id).value = '';
+          });
+          
+          // Reset password requirement indicators
+          Object.values(secRequirements).forEach(el => {
+            el.className = '';
+          });
+        } else {
+          showNotification('error', data.message || 'Failed to update settings');
+        }
+        
+        // Reset button state
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
+      })
+      .catch(err => {
+        console.error("Request error:", err);
+        showNotification('error', 'An error occurred. Please try again.');
+        saveBtn.textContent = originalText;
+        saveBtn.disabled = false;
       });
+    }
 
+    // Load tasks with filter functionality
+    document.getElementById('filter-priority').addEventListener('change', loadMyTasks);
+    document.getElementById('filter-status').addEventListener('change', loadMyTasks);
 
-    </script>
-  </body>
+    function loadMyTasks() {
+      const priority = document.getElementById('filter-priority').value;
+      const status = document.getElementById('filter-status').value;
+      const container = document.getElementById('task-results');
+      const taskCountEl = document.getElementById('task-count');
+      
+      // Show loading state
+      container.innerHTML = '<div style="text-align: center; padding: 30px;"><i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary-color);"></i><p style="margin-top: 15px;">Loading your tasks...</p></div>';
+
+      fetch('getMyTasks.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          priority: priority,
+          status: status
+        })
+      })
+      .then(res => res.json())
+      .then(tasks => {
+        container.innerHTML = '';
+
+        if (!tasks.length) {
+          taskCountEl.textContent = "No tasks found";
+          container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--subtle-text);">
+              <i class="fas fa-clipboard-list" style="font-size: 3rem; margin-bottom: 15px;"></i>
+              <p>No tasks match your current filters.</p>
+              <p style="font-size: 0.9rem;">Try changing the filter settings or check back later.</p>
+            </div>`;
+          return;
+        }
+
+        taskCountEl.textContent = `${tasks.length} Task${tasks.length > 1 ? 's' : ''}`;
+
+        tasks.forEach((task, index) => {
+          const card = document.createElement('div');
+          card.classList.add('task-card');
+          
+          // Add animation delay
+          card.style.animation = `fadeIn 0.5s ease-out ${0.1 * index}s both`;
+
+          // Format due date
+          const dueDate = new Date(task.endDate);
+          const formattedDate = dueDate.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          });
+
+          card.innerHTML = `
+            <h4>${task.taskName}</h4>
+            <p>${task.description || 'No description available.'}</p>
+            <div class="task-info">
+              <span><i class="fas fa-project-diagram"></i> ${task.projectTitle}</span>
+              <span><i class="fas fa-calendar-alt"></i> ${formattedDate}</span>
+              <span class="priority ${getPriorityClass(task.priority)}">${formatPriority(task.priority)}</span>
+            </div>
+          `;
+          
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading tasks:", err);
+        container.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--error-color);">
+            <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+            <p>Error loading tasks. Please try again.</p>
+          </div>`;
+      });
+    }
+
+    // Helper functions for task display
+    function getPriorityClass(priority) {
+      switch (priority) {
+        case 'low': return 'low';
+        case 'medium-low': return 'medium';
+        case 'medium': return 'medium';
+        case 'high': return 'high';
+        case 'critical': return 'high';
+        default: return 'medium';
+      }
+    }
+
+    function formatPriority(priority) {
+      return priority.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    // Check URL parameters to select tab
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Make sure these functions are available globally for the navbar
+    window.toggleDarkMode = function() {
+      document.body.classList.toggle('dark-mode');
+      document.documentElement.classList.toggle('dark-mode');
+      
+      // Save preference to localStorage
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+      
+      // Update icon based on dark mode state
+      const toggleIcon = document.querySelector('.toggle-icon');
+      if (toggleIcon) {
+        toggleIcon.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️';
+      }
+      
+      // Update toggle thumb position
+      const toggleThumb = document.querySelector('.toggle-thumb');
+      if (toggleThumb) {
+        toggleThumb.style.left = document.body.classList.contains('dark-mode') ? '26px' : '2px';
+      }
+    };
+    
+    window.toggleMenu = function() {
+      document.querySelector('.navbar').classList.toggle('menu-open');
+    };
+    
+    window.profiledropdown = function() {
+      const profileList = document.getElementById('profileList');
+      if (profileList) {
+        profileList.style.display = profileList.style.display === 'flex' ? 'none' : 'flex';
+      }
+    };
+
+    // Initialize page on load
+    document.addEventListener('DOMContentLoaded', function () {
+      // Apply dark mode immediately if enabled
+      if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark-mode');
+        document.documentElement.classList.add('dark-mode');
+      }
+      
+      // Load user profile data
+      loadUserProfile();
+      
+      // Load metadata for dropdowns
+      fetch('getMetaValues.php?type=Department')
+        .then(res => res.json())
+        .then(data => {
+          const datalist = document.getElementById('department-list');
+          if (datalist) {
+            datalist.innerHTML = data.map(dep => `<option value="${dep}">`).join('');
+          }
+        });
+
+      fetch('getMetaValues.php?type=JobTitle')
+        .then(res => res.json())
+        .then(data => {
+          const datalist = document.getElementById('job-title-list');
+          if (datalist) {
+            datalist.innerHTML = data.map(job => `<option value="${job}">`).join('');
+          }
+        });
+
+      // Check if specific tab is requested in URL
+      const tabParam = getQueryParam('tab');
+      if (tabParam) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => {
+          c.classList.remove('active');
+          c.style.display = 'none';
+        });
+
+        const tabBtn = document.querySelector(`.tab[data-tab="${tabParam}"]`);
+        const tabContent = document.getElementById(tabParam);
+
+        if (tabBtn && tabContent) {
+          tabBtn.classList.add('active');
+          tabContent.classList.add('active');
+          tabContent.style.display = 'block';
+          
+          // Load data for the selected tab
+          if (tabParam === 'my-tasks') {
+            loadMyTasks();
+          }
+        }
+      }
+    });
+  </script>
+</body>
 </html>

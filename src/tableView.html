@@ -27,6 +27,7 @@
         --card-bg: #ffffff;
         --card-border: rgba(0, 0, 0, 0.08);
         --card-shadow: rgba(0, 0, 0, 0.08);
+        --toolbar-bg: rgba(248, 249, 250, 0.5);
         
         /* Text colors */
         --text-primary: #1a1a1a;
@@ -46,6 +47,7 @@
         --card-bg: #1a2236;
         --card-border: rgba(255, 255, 255, 0.1);
         --card-shadow: rgba(0, 0, 0, 0.3);
+        --toolbar-bg: rgba(26, 36, 56, 0.7);
         --text-primary: #f1f1f1;
         --text-secondary: #b0b7c3;
         --text-muted: #8a94a6;
@@ -160,7 +162,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background-color: rgba(248, 249, 250, 0.5);
+        background-color: var(--toolbar-bg);
         padding: 12px 15px;
         border-radius: 10px;
         margin-bottom: 20px;
@@ -177,8 +179,8 @@
       }
 
       .toolbar-select {
-        background-color: var(--white-color);
-        border: 1px solid #dee2e6;
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
         border-radius: 6px;
         padding: 8px 12px;
         font-size: 0.9rem;
@@ -304,7 +306,7 @@
 
       /* Task popup styling */
       .task-popup {
-        position: absolute;
+        position: fixed; /* Changed from absolute to fixed for better positioning */
         z-index: 1000;
         background-color: var(--card-bg);
         border-radius: 10px;
@@ -638,7 +640,11 @@
 
       // Show task details in popup
       function showTaskPopup(task, event) {
+        const popup = document.getElementById("task-popup");
         const popupContent = document.querySelector(".task-popup-content");
+        
+        // Store the current task ID on the popup element for reference
+        popup.dataset.currentTask = task.taskID;
         
         popupContent.innerHTML = `
           <div class="task-popup-field">
@@ -679,24 +685,76 @@
         
         document.querySelector(".task-popup-header").textContent = task.taskName;
         
-        // Position popup
-        const rect = event.target.getBoundingClientRect();
+        // Position popup near the cursor
         popup.style.display = "block";
         
-        // Calculate position
-        const popupHeight = popup.offsetHeight;
-        const viewportHeight = window.innerHeight;
-        let top = rect.bottom + window.scrollY + 5;
+        // Calculate position based on the mouse position
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
         
-        // Check if popup would go off screen
-        if (top + popupHeight > window.scrollY + viewportHeight) {
-          top = rect.top + window.scrollY - popupHeight - 5;
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Get popup dimensions
+        const popupWidth = popup.offsetWidth;
+        const popupHeight = popup.offsetHeight;
+        
+        // Calculate optimal position (prefer right side of cursor, but avoid going off-screen)
+        // Add some padding (10px) for better visual appearance
+        let left = mouseX + 10;
+        let top = mouseY + 10;
+        
+        // Check right edge
+        if (left + popupWidth > viewportWidth - 10) {
+          left = mouseX - popupWidth - 10; // Position to the left of the cursor
         }
         
+        // Check bottom edge
+        if (top + popupHeight > viewportHeight - 10) {
+          top = mouseY - popupHeight - 10; // Position above the cursor
+        }
+        
+        // Ensure popup is never positioned outside the viewport
+        left = Math.max(10, left); // At least 10px from left edge
+        top = Math.max(10, top);   // At least 10px from top edge
+        
+        // Apply position
+        popup.style.position = "fixed";
         popup.style.top = `${top}px`;
-        popup.style.left = `${rect.left}px`;
+        popup.style.left = `${left}px`;
+      }
+      
+      function setupTaskClickHandler() {
+        // Get all task rows
+        const taskRows = document.querySelectorAll("#task-table tbody tr");
+        
+        // Add click event for editing
+        taskRows.forEach(row => {
+          row.addEventListener("click", function(e) {
+            // Get the task data from the row's dataset
+            const taskID = this.dataset.taskId;
+            const projectRole = sessionStorage.getItem("selectedProjectRole");
+            const projectID = sessionStorage.getItem("selectedProjectID");
+
+            // Only allow managers to edit tasks
+            if (projectRole === "Manager") {
+              // If the task popup is already open, close it first to prevent issues
+              const popup = document.getElementById("task-popup");
+              popup.style.display = "none";
+              
+              // Find the task data from our table by ID
+              const task = window.taskData.find(t => t.taskID === taskID);
+              
+              if (task && typeof openEditTaskPopup === 'function') {
+                openEditTaskPopup(task, projectID);
+              }
+            }
+          });
+        });
       }
 
+      // Fetch and render tasks
       // Fetch and render tasks
       function getTasks() {
         // Show loading state
@@ -716,15 +774,17 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         })
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) {
+              throw new Error('Server responded with an error');
+            }
+            return res.json();
+          })
           .then(tasks => {
             // Hide loading indicator
             loadingIndicator.style.display = "none";
             
-            // Clear current table
-            taskTableBody.innerHTML = "";
-            
-            if (tasks.length === 0) {
+            if (!tasks || tasks.length === 0) {
               // Show empty state
               emptyState.style.display = "block";
               return;
@@ -733,39 +793,8 @@
             // Show table and populate it
             taskTable.style.display = "table";
             
-            tasks.forEach(task => {
-              const tr = document.createElement("tr");
-
-              tr.innerHTML = `
-                <td>${task.taskType}</td>
-                <td>${task.taskName}</td>
-                <td>${task.assignedTo || "Unassigned"}</td>
-                <td>${getPriorityIndicator(task.priority)}</td>
-                <td>${formatDate(task.endDate)}</td>
-                <td>${getStatusBadge(task.status)}</td>
-              `;
-
-              // Add hover event for showing task details
-              tr.addEventListener("mouseenter", e => {
-                showTaskPopup(task, e);
-              });
-
-              tr.addEventListener("mouseleave", () => {
-                popup.style.display = "none";
-              });
-
-              // Add click event for editing task (if manager)
-              tr.addEventListener("click", () => {
-                const projectRole = sessionStorage.getItem("selectedProjectRole");
-
-                // Allow edit only if the user is a manager
-                if (projectRole === "Manager") {
-                  openEditTaskPopup(task, projectID);
-                }
-              });
-
-              taskTableBody.appendChild(tr);
-            });
+            // Use the improved rendering function
+            renderTasks(tasks);
           })
           .catch(err => {
             console.error("Error loading tasks:", err);
@@ -778,7 +807,53 @@
               <p>An error occurred while loading tasks. Please try again.</p>
             `;
             emptyState.style.display = "block";
+            
+            // Show error notification if available
+            if (typeof showNotification === 'function') {
+              showNotification('error', 'Error', 'Failed to load tasks. Please try again.');
+            }
           });
+      }
+      // Improved task rendering function
+      function renderTasks(tasks) {
+        const taskTableBody = document.querySelector("#task-table tbody");
+        const popup = document.getElementById("task-popup");
+        
+        // Clear current table
+        taskTableBody.innerHTML = "";
+        
+        // Store tasks data globally for reference
+        window.taskData = tasks;
+        
+        tasks.forEach(task => {
+          const tr = document.createElement("tr");
+          
+          // Store the task ID in the row's dataset
+          tr.dataset.taskId = task.taskID;
+
+          tr.innerHTML = `
+            <td>${task.taskType}</td>
+            <td>${task.taskName}</td>
+            <td>${task.assignedTo || "Unassigned"}</td>
+            <td>${getPriorityIndicator(task.priority)}</td>
+            <td>${formatDate(task.endDate)}</td>
+            <td>${getStatusBadge(task.status)}</td>
+          `;
+
+          // Add hover event for showing task details
+          tr.addEventListener("mouseenter", e => {
+            showTaskPopup(task, e);
+          });
+
+          tr.addEventListener("mouseleave", () => {
+            popup.style.display = "none";
+          });
+
+          taskTableBody.appendChild(tr);
+        });
+        
+        // Set up click handlers after rendering all rows
+        setupTaskClickHandler();
       }
 
       // Initialize page when DOM is loaded
@@ -826,7 +901,9 @@
 
       // Close popup when clicking outside
       document.addEventListener("click", function(e) {
-        if (!popup.contains(e.target) && !e.target.closest("tr")) {
+        const popup = document.getElementById("task-popup");
+        // Check if the click is outside both the popup and task rows
+        if (popup && !popup.contains(e.target) && !e.target.closest("tr")) {
           popup.style.display = "none";
         }
       });
@@ -842,6 +919,152 @@
         const navbar = document.querySelector(".navbar");
         if (navbar) navbar.classList.toggle("menu-open");
       };
+
+      // Make the getTasks function globally available, so it can be called from script.js
+      window.loadTableTasks = function() {
+        // Show loading state
+        const taskTable = document.getElementById("task-table");
+        const emptyState = document.getElementById("empty-state");
+        const loadingIndicator = document.getElementById("loading-indicator");
+        const taskTableBody = document.querySelector("#task-table tbody");
+        const statusFilter = document.getElementById("status-filter");
+        const priorityFilter = document.getElementById("priority-filter");
+        const assignedCheckbox = document.getElementById("assigned-to-me");
+        const projectID = sessionStorage.getItem("selectedProjectID");
+        
+        taskTable.style.display = "none";
+        emptyState.style.display = "none";
+        loadingIndicator.style.display = "flex";
+        
+        const payload = {
+          projectID,
+          priority: priorityFilter.value,
+          status: statusFilter.value,
+          onlyMine: assignedCheckbox.checked
+        };
+
+        fetch("getProjectTask.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error('Server responded with an error');
+            }
+            return res.json();
+          })
+          .then(tasks => {
+            // Hide loading indicator
+            loadingIndicator.style.display = "none";
+            
+            // Clear current table
+            taskTableBody.innerHTML = "";
+            
+            if (!tasks || tasks.length === 0) {
+              // Show empty state
+              emptyState.style.display = "block";
+              return;
+            }
+            
+            // Show table and populate it
+            taskTable.style.display = "table";
+            
+            tasks.forEach(task => {
+              const tr = document.createElement("tr");
+
+              tr.innerHTML = `
+                <td>${task.taskType}</td>
+                <td>${task.taskName}</td>
+                <td>${task.assignedTo || "Unassigned"}</td>
+                <td>${getPriorityIndicator(task.priority)}</td>
+                <td>${formatDate(task.endDate)}</td>
+                <td>${getStatusBadge(task.status)}</td>
+              `;
+
+              // Add hover event for showing task details
+              tr.addEventListener("mouseenter", e => {
+                showTaskPopup(task, e);
+              });
+
+              tr.addEventListener("mouseleave", () => {
+                const popup = document.getElementById("task-popup");
+                popup.style.display = "none";
+              });
+
+              // Add click event for editing task (if manager)
+              tr.addEventListener("click", () => {
+                const projectRole = sessionStorage.getItem("selectedProjectRole");
+
+                // Allow edit only if the user is a manager
+                if (projectRole === "Manager") {
+                  openEditTaskPopup(task, projectID);
+                }
+              });
+
+              taskTableBody.appendChild(tr);
+            });
+          })
+          .catch(err => {
+            console.error("Error loading tasks:", err);
+            loadingIndicator.style.display = "none";
+            
+            // Show error message
+            emptyState.innerHTML = `
+              <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+              <h3>Failed to load tasks</h3>
+              <p>An error occurred while loading tasks. Please try again.</p>
+            `;
+            emptyState.style.display = "block";
+            
+            // Show error notification if available
+            if (typeof showNotification === 'function') {
+              showNotification('error', 'Error', 'Failed to load tasks. Please try again.');
+            }
+          });
+      };
+
+      // Add a function to serve as a refreshTableData endpoint for script.js
+      window.refreshTableData = function() {
+        if (typeof window.loadTableTasks === 'function') {
+          window.loadTableTasks();
+        } else {
+          console.warn("loadTableTasks function not found, using page reload fallback");
+          location.reload();
+        }
+      };
+
+      // Override getTasks to use the global function
+      function getTasks() {
+        window.loadTableTasks();
+      }
+
+      
+      
+      // Auto-refresh setup
+      function setupAutoRefresh() {
+        // Refresh table data every 30 seconds when visible
+        setInterval(function() {
+          if (document.visibilityState === 'visible') {
+            getTasks();
+          }
+        }, 30000);
+      }
+      
+      // Call auto-refresh setup
+      setupAutoRefresh();
+      
+      // Expose the refresh function globally
+      // Set up global refresh function
+      window.refreshTableData = function() {
+        getTasks();
+      };
+      if (typeof getTasks === 'function') { 
+        getTasks = function() { 
+          window.loadTableTasks(); 
+        }; 
+      }
+      window.refreshTableData = window.refreshTableData || function() { getTasks(); };
     </script>
   </body>
 </html>

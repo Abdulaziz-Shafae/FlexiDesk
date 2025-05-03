@@ -9,6 +9,10 @@ let isDragging = false;
 
 // Function to open the popup for adding a new task
 function openAddTaskPopup(projectID) {
+  // Hide the tooltip if it's visible
+  const tooltip = document.getElementById("custom-tooltip");
+  if (tooltip) tooltip.style.display = "none";
+
   fetch("addTaskpop.html")
     .then(response => response.text())
     .then(data => {
@@ -45,6 +49,14 @@ function openAddTaskPopup(projectID) {
 
 // Function to open the popup for editing an existing task
 function openEditTaskPopup(task, projectID) {
+  // Hide the tooltip first
+  const tooltip = document.getElementById("custom-tooltip");
+  if (tooltip) tooltip.style.display = "none";
+  
+  // Hide any task-popup that might be open (for table view)
+  const taskPopup = document.getElementById("task-popup");
+  if (taskPopup) taskPopup.style.display = "none";
+
   fetch("addTaskpop.html")
     .then(response => response.text())
     .then(data => {
@@ -64,13 +76,13 @@ function openEditTaskPopup(task, projectID) {
       // Set the popup header for editing a task
       document.querySelector(".popup-header").textContent = "Edit Task";
       document.getElementById("projectID").value = task.projectID;
-      document.getElementById("taskName").value = task.taskName; // Task Name
-      document.getElementById("taskType").value = task.taskType; // Task Type
-      document.getElementById("priority").value = task.priority; // Priority
-      document.getElementById("taskDescription").value = task.description; // Task Description
-      document.getElementById("status").value = task.status; // Task Status
-      document.getElementById("taskStartDate").value = task.startDate; // Task start date
-      document.getElementById("taskEndDate").value = task.endDate; // Task ennd date
+      document.getElementById("taskName").value = task.taskName || ''; // Task Name
+      document.getElementById("taskType").value = task.taskType || 'Task'; // Task Type
+      document.getElementById("priority").value = task.priority || 'Medium'; // Priority
+      document.getElementById("taskDescription").value = task.description || ''; // Task Description
+      document.getElementById("status").value = task.status || 'Pending'; // Task Status
+      document.getElementById("taskStartDate").value = task.startDate || ''; // Task start date
+      document.getElementById("taskEndDate").value = task.endDate || ''; // Task end date
 
       // Load Assign To List and preselect the current assignee
       loadAssignToList(projectID, task.assignedTo); // Pass the current assignee to preselect
@@ -88,7 +100,6 @@ function openEditTaskPopup(task, projectID) {
       makePopupDraggable(popup); // Make popup draggable
     });
 }
-
 // Function to load the "Assign To" dropdown with team members
 function loadAssignToList(projectID, selectedUserName = null) {
   const assignToSelect = document.getElementById("assignTo");
@@ -114,30 +125,44 @@ function loadAssignToList(projectID, selectedUserName = null) {
     .catch(error => console.error("Error loading team members:", error));
 }
 
-// Add interactions to popup buttons (Save, Cancel, Delete)
+// Function to update the task popup event listeners
 function attachPopupEventListeners() {
   // Delete task
   document.getElementById("delete-task").onclick = function () {
     const id = this.dataset.taskID;
     if (confirm("Are you sure you want to delete this task?")) {
+      // Show a loading notification
+      showNotification('info', 'Processing', 'Deleting task...');
+      
       fetch(`deleteTask.php?id=${id}`)
-        .then(res => res.text())
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Server responded with an error');
+          }
+          return res.text();
+        })
         .then(data => {
-          // Show success notification instead of alert
-          showNotification('success', 'Success', 'Task deleted successfully');
+          // Close the popup first
           document.getElementById("taskPopup").style.display = "none";
-          setTimeout(() => {
-            location.reload();
-          }, 1500);
+          
+          // Show success notification
+          showNotification('success', 'Success', 'Task deleted successfully');
+          
+          // Refresh the appropriate view based on the current page
+          refreshCurrentView();
         })
         .catch(error => {
-          showNotification('error', 'Error', 'Failed to delete task');
+          console.error("Delete task error:", error);
+          showNotification('error', 'Error', 'Failed to delete task. Please try again.');
         });
     }
   };
 
   // Save task (either create or update)
   document.getElementById("save-task").onclick = function () {
+    // Show a loading notification
+    showNotification('info', 'Processing', 'Saving task...');
+    
     const formData = new FormData();
     formData.append("projectID", document.getElementById("projectID").value);
     formData.append("taskName", document.getElementById("taskName").value);
@@ -146,7 +171,7 @@ function attachPopupEventListeners() {
     formData.append("assignedTo", document.getElementById("assignTo").value);
     formData.append("status", document.getElementById("status").value);
     formData.append("taskDescription", document.getElementById("taskDescription").value);
-    formData.append("startDate", document.getElementById('taskStartDate').value ); 
+    formData.append("startDate", document.getElementById('taskStartDate').value); 
     formData.append("endDate", document.getElementById('taskEndDate').value); 
 
     // Check if a file is uploaded
@@ -162,33 +187,86 @@ function attachPopupEventListeners() {
     if (isEdit) formData.append("taskID", taskID);
 
     // Submit the form data
-    fetch(url, { method: "POST", body: formData })
-      .then(res => res.text())
-      .then(data => {
-        // Show success notification instead of alert
-        if(isEdit){
-          showNotification('success', 'Success', 'Task updated successfully');
-        } else {
-          showNotification('success', 'Success', 'Task added successfully');
-        }
-        
-        document.getElementById("taskPopup").style.display = "none"; // Close popup
-        
-        // Delay reload slightly to allow notification to be seen
-        setTimeout(() => {
-          location.reload();
-        }, 1500);
-      })
-      .catch(error => {
-        // Show error notification
-        showNotification('error', 'Error', 'Failed to save task');
-      });
+    fetch(url, { 
+      method: "POST", 
+      body: formData 
+    })
+    .then(res => {
+      if (!res.ok) {
+        throw new Error('Server responded with an error');
+      }
+      return res.text();
+    })
+    .then(data => {
+      // Close the popup first
+      document.getElementById("taskPopup").style.display = "none";
+      
+      // Show success notification
+      if(isEdit){
+        showNotification('success', 'Success', 'Task updated successfully');
+      } else {
+        showNotification('success', 'Success', 'Task added successfully');
+      }
+      
+      // Refresh the appropriate view based on the current page
+      refreshCurrentView();
+    })
+    .catch(error => {
+      console.error("Save task error:", error);
+      showNotification('error', 'Error', 'Failed to save task. Please try again.');
+    });
   };
 
-  // Cancel task
+  // Cancel task with improved handling
   document.getElementById("cancel-task").onclick = function () {
-    document.getElementById("taskPopup").style.display = "none"; // Close the popup
+    // Hide the task popup
+    document.getElementById("taskPopup").style.display = "none";
   };
+}
+
+// Function to detect the current view and refresh it
+function refreshCurrentView() {
+  // Check if we're on the Gantt view page
+  if (document.getElementById('gantt_here')) {
+    // Use the Gantt refresh function
+    if (typeof window.refreshGanttData === 'function') {
+      window.refreshGanttData();
+    } else if (typeof refreshGanttData === 'function') {
+      refreshGanttData();
+    } else {
+      console.warn("Gantt refresh function not found, using fallback");
+      setTimeout(() => {
+        if (typeof loadGanttTasks === 'function') {
+          loadGanttTasks();
+        } else {
+          location.reload();
+        }
+      }, 500);
+    }
+  } 
+  // Check if we're on the Table view page
+  else if (document.querySelector('#task-table')) {
+    // Use the Table refresh function
+    if (typeof window.refreshTableData === 'function') {
+      window.refreshTableData();
+    } else if (typeof refreshTableData === 'function') {
+      refreshTableData();
+    } else {
+      console.warn("Table refresh function not found, using fallback");
+      if (typeof getTasks === 'function') {
+        getTasks();
+      } else {
+        location.reload();
+      }
+    }
+  }
+  // If we can't identify the view, try a generic refresh approach
+  else {
+    console.warn("Unknown view type, attempting page reload");
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  }
 }
 
 // Make the popup draggable
@@ -196,8 +274,13 @@ function makePopupDraggable(popup) {
   const header = popup.querySelector("h2");
   const content = popup.querySelector(".popup-content");
   let offsetX, offsetY;
+  let isDragging = false;
 
   header.addEventListener("mousedown", function (e) {
+    // Only start dragging on primary mouse button (prevent issues with right-click)
+    if (e.button !== 0) return;
+    
+    isDragging = true;
     const rect = content.getBoundingClientRect();
     content.style.left = `${rect.left}px`;
     content.style.top = `${rect.top}px`;
@@ -208,11 +291,13 @@ function makePopupDraggable(popup) {
     offsetY = e.clientY - rect.top;
 
     function onMouseMove(e) {
+      if (!isDragging) return;
       content.style.left = `${e.clientX - offsetX}px`;
       content.style.top = `${e.clientY - offsetY}px`;
     }
 
     function onMouseUp() {
+      isDragging = false;
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     }
@@ -222,10 +307,23 @@ function makePopupDraggable(popup) {
   });
 }
 
+// Hide popup on outside click with improved handling
+window.addEventListener("click", function (event) {
+  const taskPopup = document.getElementById("taskPopup");
+  if (!taskPopup) return;
+  
+  const content = taskPopup.querySelector(".popup-content");
+  
+  // Check if the click is outside the popup content
+  if (content && !content.contains(event.target) && event.target.tagName !== 'TR' && !event.target.closest('tr')) {
+    taskPopup.style.display = "none";
+  }
+});
+
 // Hide popup on outside click
 window.addEventListener("click", function (event) {
   const content = document.querySelector(".popup-content");
-  if (!content?.contains(event.target)) {
+  if (content && !content.contains(event.target)) {
     const popup = document.getElementById("taskPopup");
     if (popup) popup.style.display = "none";
   }
@@ -520,6 +618,11 @@ function showNotification(type, title, message, duration = 3000) {
           border-left: 4px solid #dc3545;
           color: #721c24;
         }
+        .notification-banner.info {
+          background-color: #e6f7ff;
+          border-left: 4px solid #1890ff;
+          color: #0c53a3;
+        }
         .notification-banner i {
           font-size: 24px;
         }
@@ -565,6 +668,8 @@ function showNotification(type, title, message, duration = 3000) {
     icon.className = 'fas fa-check-circle';
   } else if (type === 'error') {
     icon.className = 'fas fa-exclamation-circle';
+  } else if (type === 'info') {
+    icon.className = 'fas fa-info-circle';
   }
   
   // Auto-hide after duration
@@ -581,6 +686,101 @@ function hideNotification() {
   }
 }
 
+// Function to refresh Gantt chart after task operations
+function refreshGanttData() {
+  // If we're on the Gantt view page
+  if (document.getElementById('gantt_here')) {
+    // Check if the gantt global variable is available
+    if (typeof gantt !== 'undefined') {
+      // Check if the Gantt-specific refresh function exists
+      if (typeof window.loadGanttTasks === 'function') {
+        window.loadGanttTasks();
+        return;
+      }
+      
+      // If the specific refresh function isn't available, fetch and update directly
+      const projectID = sessionStorage.getItem("selectedProjectID");
+      const status = document.getElementById("status-filter")?.value || "";
+      const priority = document.getElementById("priority-filter")?.value || "";
+      const onlyMine = document.getElementById("assigned-to-me")?.checked || false;
+
+      fetch("getProjectTask.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectID, status, priority, onlyMine })
+      })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Server responded with an error');
+        }
+        return res.json();
+      })
+      .then(tasks => {
+        if (gantt && typeof gantt.clearAll === 'function') {
+          const data = tasks.map((task) => {
+            let startDate = new Date(task.startDate);
+            let endDate = new Date(task.endDate);
+            
+            if (isNaN(startDate.getTime())) startDate = new Date();
+            if (isNaN(endDate.getTime()) || endDate < startDate) {
+              endDate = new Date(startDate);
+              endDate.setDate(endDate.getDate() + 1);
+            }
+
+            // Calculate duration in days
+            const diffTime = Math.abs(endDate - startDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            return {
+              id: task.taskID,
+              text: task.taskName,
+              start_date: startDate,
+              end_date: endDate,
+              duration: diffDays,
+              type: task.taskType === 'Milestone' ? 'milestone' : 'task',
+              priority: convertPriorityToNumber(task.priority),
+              description: task.description,
+              assignedTo: task.assignedTo,
+              status: task.status,
+              taskType: task.taskType,
+              projectID: projectID
+            };
+          });
+          
+          gantt.clearAll();
+          gantt.parse({ data });
+          gantt.render();
+        }
+      })
+      .catch(err => {
+        console.error("Failed to refresh tasks:", err);
+        showNotification('error', 'Error', 'Failed to refresh tasks. Please try again.');
+      });
+    } else {
+      console.warn("Gantt object not found, attempting page reload as fallback");
+      setTimeout(() => {
+        // As a fallback, if everything else fails, reload the page
+        window.location.reload();
+      }, 1000);
+    }
+  }
+}
+
+// Helper function to convert priority string to number
+function convertPriorityToNumber(priority) {
+  if (typeof priority === 'number') return priority;
+  
+  switch (priority?.toLowerCase()) {
+    case "low": return 1;
+    case "medium-low": return 2;
+    case "medium": return 3;
+    case "high": return 4;
+    case "critical": return 5;
+    default: return 3;
+  }
+}
+
 // Make functions globally available
 window.showNotification = showNotification;
 window.hideNotification = hideNotification;
+window.refreshGanttData = refreshGanttData;

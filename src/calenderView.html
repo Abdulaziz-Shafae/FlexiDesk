@@ -3,148 +3,622 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calendar View - Project Management</title>
+    <title>Calendar View - FlexiDesk</title>
     <link rel="stylesheet" href="navbarStyle.css" />
-    <link rel="stylesheet" href="viwesStyle.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="script.js" defer></script>
-  </head>
-  <body>
     <style>
+      :root {
+        /* Color palette */
+        --primary-color: #0d2240;
+        --secondary-color: #3d5af1;
+        --accent-color: #22d1ee;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --white-color: #ffffff;
+        --black-color: #000000;
+        
+        /* UI Elements */
+        --body-bg: #f4f7fb;
+        --card-bg: #ffffff;
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-shadow: rgba(0, 0, 0, 0.08);
+        --toolbar-bg: rgba(248, 249, 250, 0.5);
+        
+        /* Text colors */
+        --text-primary: #1a1a1a;
+        --text-secondary: #6c757d;
+        --text-muted: #8a94a6;
+        
+        /* Status colors */
+        --status-pending: #ffc107;
+        --status-in-progress: #3d5af1;
+        --status-completed: #28a745;
+      }
+
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --body-bg: #111927;
+        --card-bg: #1a2236;
+        --card-border: rgba(255, 255, 255, 0.1);
+        --card-shadow: rgba(0, 0, 0, 0.3);
+        --toolbar-bg: rgba(26, 36, 56, 0.7);
+        --text-primary: #f1f1f1;
+        --text-secondary: #b0b7c3;
+        --text-muted: #8a94a6;
+      }
+
+      body {
+        font-family: 'Inter', 'Arial', sans-serif;
+        background-color: var(--body-bg);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .main-content {
+        padding-top: 100px;
+        padding-bottom: 40px;
+      }
+
+      .views-container {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px var(--card-shadow);
+        border: 1px solid var(--card-border);
+      }
+
+      /* Header */
+      .views-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .views-header h1 {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin: 0;
+        font-weight: 700;
+      }
+
+      /* Improved Tabs Navigation */
+      .tabs-navigation {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* For Firefox */
+      }
+
+      .tabs-navigation::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+      }
+
+      .tab {
+        text-decoration: none;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab:hover {
+        color: var(--secondary-color);
+        background-color: rgba(61, 90, 241, 0.05);
+      }
+
+      .tab.active {
+        color: var(--secondary-color);
+        border-bottom: 3px solid var(--secondary-color);
+      }
+
+      .tab i {
+        font-size: 1rem;
+      }
+
+      /* Add Task Button */
+      .add-task-btn {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 10px rgba(61, 90, 241, 0.2);
+      }
+
+      .add-task-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(61, 90, 241, 0.3);
+      }
+
+      /* Toolbar */
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--toolbar-bg);
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--card-border);
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-select {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-width: 140px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%236c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 30px;
+      }
+
+      .toolbar-select:hover, .toolbar-select:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.1);
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-container input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      .checkbox-container label {
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+      }
+
       /* Calendar Header */
       .calendar-header {
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .calendar-header button {
+        background-color: var(--card-bg);
+        color: var(--secondary-color);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .calendar-header button:hover {
+        background-color: rgba(61, 90, 241, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .calendar-header button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .calendar-header h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--primary-color);
+        min-width: 140px;
+        text-align: center;
       }
 
       /* Modern Calendar Grid */
+      .calendar-container {
+        width: 100%;
+        background: var(--card-bg);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
+      }
+
+      .weekday-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background-color: rgba(0, 0, 0, 0.02);
+        border-bottom: 1px solid var(--card-border);
+      }
+
+      .weekday-header span {
+        text-align: center;
+        padding: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
       .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 10px;
-        padding: 0 10px;
+        gap: 1px;
+        background-color: var(--card-border);
+        padding: 1px;
       }
 
       .calendar-cell {
-        background: #f9f9f9;
-        border: 1px solid #ddd;
+        background: var(--card-bg);
         padding: 10px;
         min-height: 100px;
-        border-radius: 8px;
         position: relative;
-        font-size: 14px;
+        font-size: 0.9rem;
         transition: background 0.3s;
+        display: flex;
+        flex-direction: column;
       }
 
       .calendar-cell:hover {
-        background: #ececec;
+        background: rgba(61, 90, 241, 0.05);
+      }
+
+      .calendar-cell strong {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        text-align: center;
+        margin-bottom: 8px;
+        border-radius: 50%;
+      }
+
+      .calendar-cell.today strong {
+        background-color: var(--secondary-color);
+        color: white;
       }
 
       .calendar-task {
         display: block;
-        font-size: 12px;
-        padding: 4px;
-        border-radius: 4px;
+        padding: 6px 8px;
+        border-radius: 6px;
         margin-top: 4px;
-        font-weight: bold;
+        font-weight: 500;
+        font-size: 0.8rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-left: 3px solid;
+      }
+
+      .calendar-task:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .calendar-task.low {
+        background-color: rgba(40, 167, 69, 0.15);
+        color: #28a745;
+        border-left-color: #28a745;
+      }
+
+      .calendar-task.medium-low {
+        background-color: rgba(23, 162, 184, 0.15);
+        color: #17a2b8;
+        border-left-color: #17a2b8;
+      }
+
+      .calendar-task.medium {
+        background-color: rgba(255, 193, 7, 0.15);
+        color: #d6a206;
+        border-left-color: #ffc107;
+      }
+
+      .calendar-task.high {
+        background-color: rgba(220, 53, 69, 0.15);
+        color: #dc3545;
+        border-left-color: #dc3545;
+      }
+
+      .calendar-task.critical {
+        background-color: rgba(255, 25, 0, 0.192);
+        color: #da1904;
+        border-left-color: #e74c3c;
       }
 
       .calendar-more {
-        color: #007bff;
-        font-size: 13px;
-        margin-top: 4px;
-        text-align: left;
-      }
-      .calendar-more:hover {
-        color: #2c3e50;
+        color: var(--secondary-color);
+        font-size: 0.8rem;
+        margin-top: 6px;
+        text-align: center;
+        background-color: rgba(61, 90, 241, 0.1);
+        padding: 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
       }
 
-      /* Responsive Design */
+      .calendar-more:hover {
+        background-color: rgba(61, 90, 241, 0.2);
+      }
+
+      /* Task popup styling */
+      .popup_tasks {
+        position: fixed;
+        z-index: 1000;
+        display: none;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--card-border);
+        width: 250px; /* Reduced width */
+        max-width: 250px; /* Added max-width */
+        animation: fadeIn 0.2s ease-out;
+        overflow: hidden; /* Prevent content from overflowing */
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        display: none;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .empty-state h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+      }
+
+      .empty-state p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      /* Loading animation */
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(61, 90, 241, 0.2);
+        border-radius: 50%;
+        border-top-color: var(--secondary-color);
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 992px) {
+        .views-container {
+          margin: 0 15px;
+        }
+      }
+
       @media (max-width: 768px) {
+        .views-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+        
+        .add-task-btn {
+          align-self: flex-start;
+        }
+        
+        .toolbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .tabs-navigation {
+          margin-bottom: 20px;
+        }
+        
+        .tab {
+          padding: 10px 16px;
+        }
+
         .calendar-grid {
           grid-template-columns: repeat(3, 1fr);
         }
       }
 
-      .calendar-header button {
-        height: 35px;
-        font-size: 16px;
-        padding: 0 10px;
-      }
+      @media (max-width: 576px) {
+        .toolbar-select {
+          min-width: 120px;
+        }
+        
+        .calendar-cell {
+          padding: 8px;
+          min-height: 80px;
+        }
 
-      .calendar-header h2 {
-        font-size: 16px;
+        .calendar-grid {
+          grid-template-columns: repeat(1, 1fr);
+        }
       }
-
     </style>
-
-    <!-- Navbar -->
+  </head>
+  <body>
+    <!-- Navbar (will be loaded via JS) -->
     <div id="navbar-placeholder"></div>
 
     <!-- Main Content -->
     <div class="main-content">
-      <div class="viwes-container">
-        <div class="tabs">
-          <a href="ganttView.html" class="tab">Gantt</a>
-          <a href="tableView.html" class="tab">Table</a>
-          <a href="calenderView.html" class="tab active">Calendar</a>
-          <a href="groupChat.html" class="tab">Chat</a>
-          <a href="whiteboard.html" class="tab">Whiteboard</a>
-        </div>
-        <div class="viwes-header">
-          <h1>Project Name</h1>
-          <button class="add-task-btn" id="openPopupBtn" >+ Add Task</button>
+      <div class="views-container">
+        <!-- Improved Tabs Navigation with Icons -->
+        <div class="tabs-navigation">
+          <a href="ganttView.html" class="tab">
+            <i class="fas fa-chart-bar"></i> Gantt
+          </a>
+          <a href="tableView.html" class="tab">
+            <i class="fas fa-table"></i> Table
+          </a>
+          <a href="calenderView.html" class="tab active">
+            <i class="fas fa-calendar"></i> Calendar
+          </a>
+          <a href="groupChat.html" class="tab">
+            <i class="fas fa-comments"></i> Chat
+          </a>
+          <a href="whiteboard.html" class="tab">
+            <i class="fas fa-chalkboard"></i> Whiteboard
+          </a>
         </div>
 
-        <!-- Toolbar -->
+        <div class="views-header">
+          <h1 id="project-title">Project Name</h1>
+          <button class="add-task-btn" id="openPopupBtn">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
+        </div>
+
+        <!-- Improved Toolbar -->
         <div class="toolbar">
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <label>
-              <select id="status-filter" class="Toolbar-btn">
-                <option value="">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </label>
+          <div class="filter-group">
+            <select id="status-filter" class="toolbar-select">
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
 
-            <label>
-              <select id="priority-filter" class="Toolbar-btn">
-                <option value="">All Priorities</option>
-                <option value="low">Low</option>
-                <option value="medium-low">Medium-Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
-            </label>
-          </div>          
-          
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <select id="priority-filter" class="toolbar-select">
+              <option value="">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="medium-low">Medium-Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
             <div class="checkbox-container">
               <input type="checkbox" id="assigned-to-me" />
               <label for="assigned-to-me">Show only my tasks</label>
             </div>
   
             <div class="calendar-header">
-              <button aria-label="Previous Month" onclick="prevMonth()">←</button>
-              <h2 id="month-name">April 2025</h2>
-              <button aria-label="Next Month" onclick="nextMonth()">→</button>
+              <button aria-label="Previous Month" onclick="prevMonth()">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <h2 id="month-name">May 2025</h2>
+              <button aria-label="Next Month" onclick="nextMonth()">
+                <i class="fas fa-chevron-right"></i>
+              </button>
             </div>
           </div>
         </div>
-          
-          <div id="calendar-grid" class="calendar-grid"></div>
-          
-          <div id="task-popup" class="popup_tasks"></div>
 
+        <!-- Calendar Container -->
+        <div class="calendar-container">
+          <div id="loading-indicator" class="loading-container">
+            <div class="loading-spinner"></div>
+          </div>
           
-      <!-- Popup add task container -->
-      <div id="popup-container"></div> 
+          <div id="empty-state" class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No tasks found in this month</h3>
+            <p>Try changing filters, selecting a different month, or add a new task to get started.</p>
+          </div>
+          
+          <div class="weekday-header">
+            <span>Sunday</span>
+            <span>Monday</span>
+            <span>Tuesday</span>
+            <span>Wednesday</span>
+            <span>Thursday</span>
+            <span>Friday</span>
+            <span>Saturday</span>
+          </div>
+          
+          <div id="calendar-grid" class="calendar-grid">
+            <!-- Calendar cells will be loaded dynamically -->
+          </div>
+        </div>
+        
+        <!-- Task Popup for details -->
+        <div id="task-popup" class="popup_tasks"></div>
+      </div>
+    </div>
+
+    <!-- Popup add task container -->
+    <div id="popup-container"></div> 
 
     <script>
       window.refreshTasks = () => {
@@ -156,32 +630,65 @@
         .then((response) => response.text())
         .then((data) => {
           document.getElementById('navbar-placeholder').innerHTML = data;
+          initializeDarkMode();
         })
         .catch((error) => console.error('Error loading navbar:', error));
+
+      // Initialize dark mode
+      function initializeDarkMode() {
+        if (localStorage.getItem("darkMode") === "enabled") {
+          document.body.classList.add("dark-mode");
+        }
+      }
 
       const monthName = document.getElementById("month-name");
       const calendarGrid = document.getElementById("calendar-grid");
       const popup = document.getElementById("task-popup");
+      const loadingIndicator = document.getElementById("loading-indicator");
+      const emptyState = document.getElementById("empty-state");
 
       let currentMonth;
       let currentYear;
       let projectStart;
       let projectEnd;
-      let taskLimit = 2;
+      let taskLimit = 3;
       let view = 'calendarView';
+      
       function loadCalendar(month, year) {
         const projectID = sessionStorage.getItem("selectedProjectID");
         if (!projectID) return alert("No project selected");
+
+        // Show loading state
+        calendarGrid.style.display = "none";
+        emptyState.style.display = "none";
+        loadingIndicator.style.display = "flex";
 
         const firstDay = new Date(year, month, 1).getDay(); // Sunday = 0
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         calendarGrid.innerHTML = "";
         monthName.textContent = `${new Date(year, month).toLocaleString("default", { month: "long" })} ${year}`;
 
+        // Clear previous calendar grid
+        calendarGrid.innerHTML = "";
+        
+        // Add empty cells for days of the week before the 1st
+        for (let i = 0; i < firstDay; i++) {
+          const emptyCell = document.createElement("div");
+          emptyCell.className = "calendar-cell";
+          calendarGrid.appendChild(emptyCell);
+        }
+
         // Fill days
+        const today = new Date();
         for (let day = 1; day <= daysInMonth; day++) {
           const cell = document.createElement("div");
           cell.className = "calendar-cell";
+          
+          // Check if this cell is today
+          if (today.getDate() === day && today.getMonth() === month && today.getFullYear() === year) {
+            cell.classList.add("today");
+          }
+          
           cell.innerHTML = `<strong>${day}</strong>`;
           calendarGrid.appendChild(cell);
         }
@@ -196,114 +703,189 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ projectID, status, priority, onlyMine })
         })
-
         .then(res => res.json())
         .then(tasks => {
-
-        tasks.forEach(task => {
-          const taskDate = new Date(task.startDate);
-          if (taskDate.getMonth() !== month || taskDate.getFullYear() !== year) return;
-
-          const day = taskDate.getDate();
-          const index = day - 1;
-          const cell = calendarGrid.children[index];
-          if (!cell) return;
-
-          let taskElements = cell.querySelectorAll(".calendar-task");
-          if (taskElements.length >= taskLimit) {
-
-            if (!cell.querySelector(".calendar-more")) {
-              const moreDiv = document.createElement("div");
-              moreDiv.className = "calendar-more";
-              moreDiv.textContent = "View More";
-              moreDiv.style.cursor = "pointer";
-
-              moreDiv.addEventListener("click", () => {
-
-                taskLimit = 100;
-
-                loadCalendar(currentMonth, currentYear);
-              });
-
-              cell.appendChild(moreDiv);
-            }
+          // Hide loading indicator
+          loadingIndicator.style.display = "none";
+          
+          // Check if there are any tasks in this month
+          const tasksInMonth = tasks.filter(task => {
+            const taskDate = new Date(task.startDate);
+            return taskDate.getMonth() === month && taskDate.getFullYear() === year;
+          });
+          
+          if (tasksInMonth.length === 0) {
+            // Show empty state but also show the calendar grid with empty cells
+            emptyState.style.display = "block";
+            calendarGrid.style.display = "grid"; // Still display the grid
             return;
           }
+          
+          // Show calendar grid
+          calendarGrid.style.display = "grid";
+          
+          tasks.forEach(task => {
+            const taskDate = new Date(task.startDate);
+            if (taskDate.getMonth() !== month || taskDate.getFullYear() !== year) return;
 
-          const taskDiv = document.createElement("div");
-          taskDiv.className = `calendar-task ${task.priority}`;
-          taskDiv.textContent = task.taskName;
+            const day = taskDate.getDate();
+            const dayIndex = firstDay + day - 1;
+            const cell = calendarGrid.children[dayIndex];
+            if (!cell) return;
 
-          taskDiv.addEventListener("mouseenter", (e) => {
-            popup.innerHTML = `
-                  <div style="padding: 10px; border-radius: 8px; background: white; 
-                  box-shadow: 0 4px 8px rgba(0,0,0,0.1); max-width: 300px;">
-                    <strong>Task Type:</strong> ${task.taskType}<br>
-                    <strong>Task:</strong> ${task.taskName}<br>
-                    <strong>Description:</strong> ${task.description}<br>
-                    <strong>Assigned To:</strong> ${task.assignedTo || 'Unassigned'}<br>
-                    <strong>Priority:</strong> ${task.priority}<br>
-                    <strong>Status:</strong> ${task.status}<br>
-                    <strong>Start Date:</strong> ${task.startDate}<br>
-                    <strong>End Date:</strong> ${task.endDate}
+            let taskElements = cell.querySelectorAll(".calendar-task");
+            if (taskElements.length >= taskLimit) {
+              if (!cell.querySelector(".calendar-more")) {
+                const moreDiv = document.createElement("div");
+                moreDiv.className = "calendar-more";
+                moreDiv.textContent = `+ ${tasksInMonth.length - taskLimit} more`;
+                moreDiv.style.cursor = "pointer";
+
+                moreDiv.addEventListener("click", () => {
+                  taskLimit = 100;
+                  loadCalendar(currentMonth, currentYear);
+                });
+
+                cell.appendChild(moreDiv);
+              }
+              return;
+            }
+
+            const taskDiv = document.createElement("div");
+            taskDiv.className = `calendar-task ${task.priority}`;
+            
+            // Add status indicator
+            let statusDot = "";
+            if (task.status === "Pending") {
+              statusDot = `<span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--status-pending); margin-right: 5px;"></span>`;
+            } else if (task.status === "In Progress") {
+              statusDot = `<span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--status-in-progress); margin-right: 5px;"></span>`;
+            } else if (task.status === "Completed") {
+              statusDot = `<span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--status-completed); margin-right: 5px;"></span>`;
+            }
+            
+            taskDiv.innerHTML = statusDot + task.taskName;
+
+            taskDiv.addEventListener("mouseenter", (e) => {
+              popup.innerHTML = `
+                <div style="padding: 15px; border-radius: 10px; background: var(--card-bg); 
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);">
+                  <h3 style="margin-top: 0; color: var(--primary-color); font-size: 1.1rem; margin-bottom: 12px;">${task.taskName}</h3>
+                  
+                  <div style="margin-bottom: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Type</span>
+                    <div style="font-size: 0.9rem;">${task.taskType}</div>
                   </div>
-                `;
-            const rect = e.target.getBoundingClientRect();
-            popup.style.visibility = 'hidden';
-            popup.style.display = 'block';
-            const popupWidth = 300;
-            const popupHeight = popup.offsetHeight + 100;
+                  
+                  <div style="margin-bottom: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Description</span>
+                    <div style="font-size: 0.9rem;">${task.description || 'No description provided'}</div>
+                  </div>
+                  
+                  <div style="margin-bottom: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Assigned To</span>
+                    <div style="font-size: 0.9rem;">${task.assignedTo || 'Unassigned'}</div>
+                  </div>
+                  
+                  <div style="margin-bottom: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Priority</span>
+                    <div style="font-size: 0.9rem;">${task.priority}</div>
+                  </div>
+                  
+                  <div style="margin-bottom: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Status</span>
+                    <div style="font-size: 0.9rem;">${task.status}</div>
+                  </div>
+                  
+                  <div style="margin-bottom: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Date Range</span>
+                    <div style="font-size: 0.9rem;">${formatDate(task.startDate)} - ${formatDate(task.endDate)}</div>
+                  </div>
+                </div>
+              `;
+              
+              // Position popup near the mouse cursor
+              popup.style.display = 'block';
+              
+              // Get cursor position
+              const mouseX = e.clientX;
+              const mouseY = e.clientY;
+              
+              // Get calendar container dimensions and position
+              const calendarContainer = document.querySelector('.calendar-container');
+              const calendarRect = calendarContainer.getBoundingClientRect();
+              
+              // Get viewport dimensions
+              const viewportWidth = window.innerWidth;
+              const viewportHeight = window.innerHeight;
+              
+              // Set popup width
+              popup.style.width = '250px'; // Narrower width to fit better
+              
+              // Get popup dimensions after setting width
+              const popupWidth = popup.offsetWidth;
+              const popupHeight = popup.offsetHeight;
+              
+              // Calculate optimal position (default to right of cursor)
+              let left = mouseX + 10;
+              let top = mouseY + window.scrollY;
+              
+              // Check if popup would go off the right edge of the calendar container
+              if (left + popupWidth > calendarRect.right - 10) {
+                left = mouseX - popupWidth - 10; // Position to the left of cursor
+              }
+              
+              // Check if popup would go off bottom edge
+              if (top + popupHeight > window.scrollY + viewportHeight - 10) {
+                top = window.scrollY + viewportHeight - popupHeight - 10;
+              }
+              
+              // Ensure popup stays within the viewport
+              left = Math.max(10, left);
+              top = Math.max(window.scrollY + 10, top);
+              
+              // Apply position
+              popup.style.position = 'fixed';
+              popup.style.top = `${top}px`;
+              popup.style.left = `${left}px`;
+            });
 
-            let left = rect.left;
-            let top = rect.bottom + window.scrollY - 110;
+            taskDiv.addEventListener("mouseleave", () => {
+              popup.style.display = "none";
+            });
 
-            // If the popup would go off the screen on the right, show it to the left
-            if (left + popupWidth > window.innerWidth) {
-              left = window.innerWidth - popupWidth - 35;  // Adding padding to prevent it from sticking to the edge
-            }
+            taskDiv.addEventListener("click", () => {
+              const projectRole = sessionStorage.getItem("selectedProjectRole");
+              
+              // Allow edit only if the user is a manager
+              if (projectRole === "Manager") {
+                openEditTaskPopup(task, projectID);
+              }
+            });
 
-            // If the popup would go off the screen on the bottom, show it above
-            if (top + popupHeight > window.innerHeight) {
-              top = rect.top + window.scrollY - popupHeight - 10; // Position it above the target element
-            }
-
-            popup.style.top = `${top}px`;
-            popup.style.left = `${left}px`;
-            popup.style.visibility = 'visible'; 
-            popup.style.display = "block";
+            cell.appendChild(taskDiv);
           });
-
-          taskDiv.addEventListener("mouseleave", () => {
-            popup.style.display = "none";
-          });
-
-          taskDiv.addEventListener("click", () => {
-            const projectRole = sessionStorage.getItem("selectedProjectRole");
-            
-            // Allow edit only if the user is a manager
-            if (projectRole === "Manager") {
-              openEditTaskPopup(task, projectID); // task object already available
-            }
-          });
-
-          cell.appendChild(taskDiv);
+        })
+        .catch(err => {
+          console.error("Error loading tasks:", err);
+          loadingIndicator.style.display = "none";
+          
+          // Show error message
+          emptyState.innerHTML = `
+            <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+            <h3>Failed to load tasks</h3>
+            <p>An error occurred while loading tasks. Please try again.</p>
+          `;
+          emptyState.style.display = "block";
+          // Still display the calendar grid with empty cells
+          calendarGrid.style.display = "grid";
         });
-          if (!tasks.some(t => {
-            const taskDate = new Date(t.startDate);
-            return taskDate.getMonth() === month && taskDate.getFullYear() === year;
-          })) {
-            const noTasks = document.createElement("p");
-            noTasks.textContent = "No tasks in this month.";
-            noTasks.style.textAlign = "center";
-            noTasks.style.color = "#888";
-            noTasks.style.gridColumn = "span 7";
-            noTasks.style.fontSize = "16px";
-            noTasks.style.padding = "10px 0 5px";
-            noTasks.style.margin = "0px";
-            
-            calendarGrid.prepend(noTasks);
-          }
-        });
+      }
+
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
       }
 
       function prevMonth() {
@@ -334,44 +916,94 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadProjectDateAndCalendar();
+        
+        // Set up event listeners for filters
+        document.getElementById("status-filter").addEventListener("change", () => {
+          loadCalendar(currentMonth, currentYear);
+        });
+        
+        document.getElementById("priority-filter").addEventListener("change", () => {
+          loadCalendar(currentMonth, currentYear);
+        });
+        
+        document.getElementById("assigned-to-me").addEventListener("change", () => {
+          loadCalendar(currentMonth, currentYear);
+        });
+        
+        // Add Task button setup
+        const addTaskBtn = document.getElementById("openPopupBtn");
+        if (addTaskBtn) {
+          addTaskBtn.addEventListener("click", () => {
+            // Make sure we're using the correct projectID
+            const currentProjectID = sessionStorage.getItem("selectedProjectID");
+            // Call the openAddTaskPopup function from script.js
+            if (typeof openAddTaskPopup === 'function') {
+              openAddTaskPopup(currentProjectID);
+            } else {
+              console.error("openAddTaskPopup function not found. Make sure script.js is loaded properly.");
+            }
+          });
+        }
       });
 
       function loadProjectDateAndCalendar() {
         const projectID = sessionStorage.getItem("selectedProjectID");
-        if (!projectID) return alert("No project selected");
+        if (!projectID) {
+          alert("No project selected. Redirecting to home page.");
+          window.location.href = "homePage.php";
+          return;
+        }
 
         fetch("getProjectDate.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ projectID })
         })
-          .then(res => res.json())
-          .then(data => {
-            if (data.startDate && data.endDate) {
-              const startDate = new Date(data.startDate);
-              projectStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-              const endDate = new Date(data.endDate);
-              projectEnd = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+        .then(res => res.json())
+        .then(data => {
+          if (data.startDate && data.endDate) {
+            const startDate = new Date(data.startDate);
+            projectStart = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+            const endDate = new Date(data.endDate);
+            projectEnd = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
 
-              const projectName = sessionStorage.getItem("selectedProjectName");
-              const projectRole = sessionStorage.getItem("selectedProjectRole");
+            const projectName = sessionStorage.getItem("selectedProjectName");
+            const projectRole = sessionStorage.getItem("selectedProjectRole");
 
+            // Update project title
+            document.getElementById("project-title").textContent = projectName || "Project";
+
+            // Hide Add Task button if user is not a manager
+            if (projectRole !== "Manager") {
+              document.getElementById("openPopupBtn").style.display = "none";
+            }
+
+            // Set current month and year (default to project start date)
+            const today = new Date();
+            // If today is within project timeline, show current month
+            if (today >= projectStart && today <= new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0)) {
+              currentMonth = today.getMonth();
+              currentYear = today.getFullYear();
+            } else {
               currentMonth = projectStart.getMonth();
               currentYear = projectStart.getFullYear();
-
-              document.querySelector(".viwes-header h1").textContent = projectName || "Project";
-              
-              if (projectRole !== "Manager") {
-                document.getElementById("openPopupBtn").style.display = "none";
-              }
-
-              loadCalendar(currentMonth, currentYear);
-              updateNavButtons();
             }
-          })
-          .catch(err => {
-            console.error("Error:", err);
-          });
+
+            loadCalendar(currentMonth, currentYear);
+            updateNavButtons();
+          }
+        })
+        .catch(err => {
+          console.error("Error:", err);
+          // Show error message
+          document.getElementById("calendar-grid").innerHTML = `
+            <div style="grid-column: span 7; text-align: center; padding: 40px 20px;">
+              <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #e74c3c; margin-bottom: 15px;"></i>
+              <h3 style="font-size: 1.2rem; margin-bottom: 10px;">Failed to load project data</h3>
+              <p style="color: var(--text-muted); font-size: 0.9rem;">An error occurred while loading project data. Please try again.</p>
+            </div>
+          `;
+        });
       }
 
       function updateNavButtons() {
@@ -386,24 +1018,27 @@
       }
 
       document.addEventListener("click", (e) => {
-        if ( taskLimit === 100 && !popup.contains(e.target) && !e.target.classList.contains("calendar-more") ) {
-          taskLimit = 2;
+        if (!popup.contains(e.target) && !e.target.closest(".calendar-task")) {
+          popup.style.display = "none";
+        }
+        
+        if (taskLimit === 100 && !e.target.classList.contains("calendar-more")) {
+          taskLimit = 3;
           loadCalendar(currentMonth, currentYear);
         }
       });
 
-      ["status-filter", "priority-filter", "assigned-to-me"].forEach(id => {
-        document.getElementById(id).addEventListener("change", () => {
-          loadCalendar(currentMonth, currentYear);
-        });
-      });
-
-
-      document.getElementById("openPopupBtn")?.addEventListener("click", () => {
-        const projectID = sessionStorage.getItem("selectedProjectID");
-        openAddTaskPopup(projectID); // null task = new task
-      });
-
+      // Window-level function for dark mode toggle (used by navbar.php)
+      window.toggleDarkMode = function() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+      };
+      
+      // Window-level function for mobile menu toggle
+      window.toggleMenu = function() {
+        const navbar = document.querySelector(".navbar");
+        if (navbar) navbar.classList.toggle("menu-open");
+      };
     </script>
   </body>
 </html>

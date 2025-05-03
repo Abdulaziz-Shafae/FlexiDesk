@@ -3,17 +3,479 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gantt View - Project Management</title>
+    <title>Gantt View - FlexiDesk</title>
     <link rel="stylesheet" href="navbarStyle.css" />
-    <link rel="stylesheet" href="viwesStyle.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
     <script src="script.js" defer></script>
-
     <style>
+      :root {
+        /* Color palette */
+        --primary-color: #0d2240;
+        --secondary-color: #3d5af1;
+        --accent-color: #22d1ee;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --white-color: #ffffff;
+        --black-color: #000000;
+        
+        /* UI Elements */
+        --body-bg: #f4f7fb;
+        --card-bg: #ffffff;
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-shadow: rgba(0, 0, 0, 0.08);
+        --toolbar-bg: rgba(248, 249, 250, 0.5);
+        
+        /* Text colors */
+        --text-primary: #1a1a1a;
+        --text-secondary: #6c757d;
+        --text-muted: #8a94a6;
+        
+        /* Status colors */
+        --status-pending: #ffc107;
+        --status-in-progress: #3d5af1;
+        --status-completed: #28a745;
+        
+        /* Gantt specific */
+        --gantt-grid-bg: #ffffff;
+        --gantt-cell-bg: #ffffff;
+        --gantt-header-bg: rgba(0, 0, 0, 0.02);
+        --gantt-row-odd-bg: rgba(0, 0, 0, 0.01);
+        --gantt-border-color: rgba(0, 0, 0, 0.08);
+        --gantt-timeline-bg: #ffffff;
+        --gantt-timeline-weekend-bg: rgba(0, 0, 0, 0.03);
+      }
+
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --body-bg: #111927;
+        --card-bg: #1a2236;
+        --card-border: rgba(255, 255, 255, 0.1);
+        --card-shadow: rgba(0, 0, 0, 0.3);
+        --toolbar-bg: rgba(26, 36, 56, 0.7);
+        --text-primary: #f1f1f1;
+        --text-secondary: #b0b7c3;
+        --text-muted: #8a94a6;
+        
+        /* Gantt dark mode specifics */
+        --gantt-grid-bg: #1a2236;
+        --gantt-cell-bg: #1a2236;
+        --gantt-header-bg: rgba(255, 255, 255, 0.05);
+        --gantt-row-odd-bg: rgba(255, 255, 255, 0.02);
+        --gantt-border-color: rgba(255, 255, 255, 0.1);
+        --gantt-timeline-bg: #232f46;
+        --gantt-timeline-weekend-bg: rgba(0, 0, 0, 0.2);
+      }
+
+      body {
+        font-family: 'Inter', 'Arial', sans-serif;
+        background-color: var(--body-bg);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .main-content {
+        padding-top: 100px;
+        padding-bottom: 40px;
+      }
+
+      .views-container {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px var(--card-shadow);
+        border: 1px solid var(--card-border);
+      }
+
+      /* Header */
+      .views-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .views-header h1 {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin: 0;
+        font-weight: 700;
+      }
+
+      /* Improved Tabs Navigation */
+      .tabs-navigation {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* For Firefox */
+      }
+
+      .tabs-navigation::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+      }
+
+      .tab {
+        text-decoration: none;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab:hover {
+        color: var(--secondary-color);
+        background-color: rgba(61, 90, 241, 0.05);
+      }
+
+      .tab.active {
+        color: var(--secondary-color);
+        border-bottom: 3px solid var(--secondary-color);
+      }
+
+      .tab i {
+        font-size: 1rem;
+      }
+
+      /* Add Task Button */
+      .add-task-btn {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 10px rgba(61, 90, 241, 0.2);
+      }
+
+      .add-task-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(61, 90, 241, 0.3);
+      }
+
+      /* Toolbar */
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--toolbar-bg);
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+        border: 1px solid var(--card-border);
+      }
+
+      .filter-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .toolbar-select {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-width: 140px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%236c757d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 30px;
+      }
+
+      .toolbar-select:hover, .toolbar-select:focus {
+        border-color: var(--secondary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.1);
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .checkbox-container input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
+
+      .checkbox-container label {
+        font-size: 0.9rem;
+        cursor: pointer;
+        color: var(--text-secondary);
+      }
+
+      /* Gantt specific styles */
+      .gantt-container {
+        width: 100%;
+        background: var(--card-bg);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
+        margin-bottom: 20px;
+      }
+
+      .zoom-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .zoom-btn {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: var(--secondary-color);
+      }
+
+      .zoom-btn:hover {
+        background-color: rgba(61, 90, 241, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .zoom-btn img {
+        width: 18px;
+        height: 18px;
+        transition: all 0.2s ease;
+      }
+
+      .today-btn {
+        background-color: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 6px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .today-btn:hover {
+        background-color: rgba(61, 90, 241, 0.1);
+        transform: translateY(-2px);
+      }
+
+      /* Custom tooltip */
+      #custom-tooltip {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 10px 25px var(--card-shadow);
+        border: 1px solid var(--card-border);
+        padding: 15px;
+        width: 300px;
+        max-width: 90vw;
+        z-index: 1000;
+        line-height: 1.6;
+        color: var(--text-primary);
+      }
+
+      #custom-tooltip strong {
+        color: var(--secondary-color);
+        font-weight: 600;
+      }
+
+      /* Gantt chart customizations */
+      .gantt_task_line.gantt_milestone {
+        background: var(--primary-color) !important;
+        border: none;
+        width: 14px !important;
+        height: 14px !important;
+        border-radius: 0 !important;
+        transform: rotate(45deg);
+        position: relative;
+        left: 0;
+        top: 7px; /* Center the milestone vertically */
+        margin-left: -8px; /* Adjust position */
+      }
+
+      /* Priority Background Colors */
+      .gantt_task_line.low {
+        background-color: var(--success-color) !important;
+        border-color: rgba(40, 167, 69, 0.6);
+      }
+      .gantt_task_line.medium-low {
+        background-color: var(--info-color) !important;
+        border-color: rgba(23, 162, 184, 0.6);
+      }
+      .gantt_task_line.medium {
+        background-color: var(--warning-color) !important;
+        border-color: rgba(255, 193, 7, 0.6);
+      }
+      .gantt_task_line.high {
+        background-color: #fd7e14 !important;
+        border-color: rgba(253, 126, 20, 0.6);
+      }
+      .gantt_task_line.critical {
+        background-color: var(--danger-color) !important;
+        border-color: rgba(220, 53, 69, 0.6);
+      }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        display: none;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+        opacity: 0.5;
+      }
+
+      .empty-state h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+      }
+
+      .empty-state p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
+      /* Loading animation */
+      .loading-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+      }
+
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(61, 90, 241, 0.2);
+        border-radius: 50%;
+        border-top-color: var(--secondary-color);
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* DHTMLX Gantt overrides to match theme */
+      .gantt_grid_head_cell, 
+      .gantt_scale_cell {
+        color: var(--text-secondary) !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        background-color: var(--gantt-header-bg) !important;
+      }
+
+      .gantt_grid {
+        background-color: var(--gantt-grid-bg) !important;
+      }
+
+      .gantt_grid_data {
+        background-color: var(--gantt-grid-bg) !important;
+      }
+
+      .gantt_row, .gantt_cell {
+        border-color: var(--gantt-border-color) !important;
+        background-color: var(--gantt-cell-bg) !important;
+        color: var(--text-primary) !important;
+      }
+
+      .gantt_row.odd {
+        background-color: var(--gantt-row-odd-bg) !important;
+      }
+
+      .gantt_task_line {
+        border-radius: 6px;
+        height: 20px;
+        line-height: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .gantt_task {
+        background-color: var(--gantt-timeline-bg) !important;
+      }
+
+      .gantt_task_scale {
+        background-color: var(--gantt-header-bg) !important;
+        color: var(--text-secondary) !important;
+      }
+
+      .gantt_task_bg {
+        background-color: var(--gantt-timeline-bg) !important;
+      }
+
+      .gantt_task_row {
+        background-color: var(--gantt-timeline-bg) !important;
+      }
+
+      .gantt_task_cell {
+        border-color: var(--gantt-border-color) !important;
+      }
+
+      .gantt_grid_scale {
+        background-color: var(--gantt-header-bg) !important;
+        color: var(--text-secondary) !important;
+      }
+
+      .gantt_scale_line {
+        border-color: var(--gantt-border-color) !important;
+      }
+
+      /* Weekend styling */
+      .weekend {
+        background-color: var(--gantt-timeline-weekend-bg) !important;
+      }
+
+      /* Hide DHTMLX built-in controls */
       .gantt_grid_head_add,
       .gantt_task_drag,
       .gantt_task_progress_drag,
@@ -24,232 +486,309 @@
         display: none !important;
       }
 
-      .zoom-btn {
-        font-size: 16px;
-        background: #2c3e50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-        height: 35px;
-        width: 80px;
-        margin-top: 3px;
-        margin-bottom: 3px;
-        display: inline-block;
-      }
-      .zoom-btn {
-        background: none;
-        border: none;
-        padding: 5px;
-      }
-      .zoom-btn img {
-        width: 30px;
-        height: 30px;
-        cursor: pointer;
+      /* Responsive adjustments */
+      @media (max-width: 992px) {
+        .views-container {
+          margin: 0 15px;
+        }
       }
 
-      .Toolbar-btn:hover {
-        opacity: 0.8;
+      @media (max-width: 768px) {
+        .views-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+        
+        .add-task-btn {
+          align-self: flex-start;
+        }
+        
+        .toolbar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .tabs-navigation {
+          margin-bottom: 20px;
+        }
+        
+        .tab {
+          padding: 10px 16px;
+        }
       }
 
-      .gantt_task_line.gantt_milestone {
-        width: 16px !important;
-        height: 16px !important;
-        background: #2c3e50 !important; /* Dark Blue */
-        border: none;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        padding: 1px;
-        margin: 4px;
-        transform: translate(120%, -5%);
+      @media (max-width: 576px) {
+        .toolbar-select {
+          min-width: 120px;
+        }
       }
-
-      /* Priority Background Colors */
-      .gantt_task_line.low {
-        background-color: #28a745 !important;
-      } /* Green */
-      .gantt_task_line.medium-low {
-        background-color: #17a2b8 !important;
-      } /* Blue */
-      .gantt_task_line.medium {
-        background-color: #ffc107 !important;
-      } /* Yellow */
-      .gantt_task_line.high {
-        background-color: #fd7e14 !important;
-      } /* Orange */
-      .gantt_task_line.critical {
-        background-color: #dc3545 !important;
-      } /* Red */
-      
     </style>
+    <link rel="stylesheet" href="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css">
   </head>
   <body>
-
-    <!-- Navbar -->
+    <!-- Navbar (will be loaded via JS) -->
     <div id="navbar-placeholder"></div>
 
     <!-- Main Content -->
     <div class="main-content">
-      <div class="viwes-container">
-        <div class="tabs">
-          <a href="ganttView.html" class="tab active">Gantt</a>
-          <a href="tableView.html" class="tab">Table</a>
-          <a href="calenderView.html" class="tab">Calendar</a>
-          <a href="groupChat.html" class="tab">Chat</a>
-          <a href="whiteboard.html" class="tab">Whiteboard</a>
+      <div class="views-container">
+        <!-- Improved Tabs Navigation with Icons -->
+        <div class="tabs-navigation">
+          <a href="ganttView.html" class="tab active">
+            <i class="fas fa-chart-bar"></i> Gantt
+          </a>
+          <a href="tableView.html" class="tab">
+            <i class="fas fa-table"></i> Table
+          </a>
+          <a href="calenderView.html" class="tab">
+            <i class="fas fa-calendar"></i> Calendar
+          </a>
+          <a href="groupChat.html" class="tab">
+            <i class="fas fa-comments"></i> Chat
+          </a>
+          <a href="whiteboard.html" class="tab">
+            <i class="fas fa-chalkboard"></i> Whiteboard
+          </a>
         </div>
-        <div class="viwes-header">
-          <h1>Project Name</h1>
 
+        <div class="views-header">
+          <h1 id="project-title">Project Name</h1>
+          <button class="add-task-btn" id="openPopupBtn">
+            <i class="fas fa-plus"></i> Add Task
+          </button>
         </div>
 
+        <!-- Improved Toolbar -->
         <div class="toolbar">
-
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <select id="view-mode" class="Toolbar-btn">
-                <option value="hour">Hour</option>
-                <option value="day" selected>Day</option>
-                <option value="week">Week</option>
-                <option value="month">Month</option>
-              </select>
-              <button onclick="goToToday()"style="width: 150px;" class="Toolbar-btn">Go to Today</button>
+          <div class="filter-group">
+            <select id="view-mode" class="toolbar-select">
+              <option value="hour">Hour</option>
+              <option value="day" selected>Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+            </select>
             
-            <label>
-              <select id="status-filter" class="Toolbar-btn">
-                <option value="">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </label>
-          
-            <label>
-              <select id="priority-filter" class="Toolbar-btn">
-                <option value="">All Priorities</option>
-                <option value="low">Low</option>
-                <option value="medium-low">Medium-Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
-            </label>
-          
+            <button onclick="goToToday()" class="today-btn">
+              <i class="fas fa-calendar-day"></i> Today
+            </button>
+
+            <select id="status-filter" class="toolbar-select">
+              <option value="">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+
+            <select id="priority-filter" class="toolbar-select">
+              <option value="">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="medium-low">Medium-Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            
             <div class="checkbox-container">
               <input type="checkbox" id="assigned-to-me" />
               <label for="assigned-to-me">Show only my tasks</label>
             </div>
           </div>
-          <div> 
-            
-          <button onclick="zoomIn()" class="zoom-btn">
-            <img src="photos/in light.png" alt="Zoom In" />
-          </button>
-          <button onclick="zoomOut()" class="zoom-btn">
-            <img src="photos/out light.png" alt="Zoom Out" />
-          </button>
-          </div>
 
+          <div class="zoom-controls">
+            <button onclick="zoomIn()" class="zoom-btn" title="Zoom In">
+              <i class="fas fa-search-plus"></i>
+            </button>
+            <button onclick="zoomOut()" class="zoom-btn" title="Zoom Out">
+              <i class="fas fa-search-minus"></i>
+            </button>
+          </div>
         </div>
 
-        <div id="gantt_here" style="width: 100%; height: 500px"></div>
+        <!-- Gantt Chart Container with Loading State -->
+        <div class="gantt-container">
+          <div id="loading-indicator" class="loading-container">
+            <div class="loading-spinner"></div>
+          </div>
+          
+          <div id="empty-state" class="empty-state">
+            <i class="fas fa-chart-bar"></i>
+            <h3>No tasks found</h3>
+            <p>Try changing your filters or add a new task to get started.</p>
+          </div>
+          
+          <div id="gantt_here" style="width: 100%; height: 500px; display: none;"></div>
+        </div>
       </div>
     </div>
 
+    <!-- Add this element to fix the Add Task popup functionality -->
+    <div id="popup-container"></div>
 
-    <div id="custom-tooltip" style="
-      position: absolute;
-      display: none;
-      padding: 10px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      width: 300px;
-      z-index: 1000;
-      line-height: 2;
-      text-align: center;
-      font-size: 14px;">
-    </div>
+    <!-- Custom Tooltip Container -->
+    <div id="custom-tooltip" style="position: absolute; display: none;"></div>
 
     <script>
-
-    const projectID = sessionStorage.getItem("selectedProjectID");
-
-    //update the coloring need working
-    gantt.templates.task_class = function (start, end, task) {
-      let priorityClass = '';
-      switch (task.priority) {
-        case 1:
-          priorityClass = 'low';
-          break; // Green
-        case 2:
-          priorityClass = 'medium-low';
-          break; // Blue
-        case 3:
-          priorityClass = 'medium';
-          break; // Yellow
-        case 4:
-          priorityClass = 'high';
-          break; // Orange
-        case 5:
-          priorityClass = 'critical';
-          break; // Red
-        default:
-          priorityClass = ''; // No class if priority is not set
-      }
-
-      // Keep the milestone style but apply the same color as tasks
-      if (task.type === 'Milestone') {
-        return `gantt_milestone ${priorityClass}`;
-      }
-       return priorityClass;
-    };
-
-    // remove the text from the milestone
-    gantt.templates.task_text = function (start, end, task) {
-      if (task.type === 'Milestone') {
-        return ''; // Hide text for milestones
-      }
-      return task.text; // Show text for other tasks
-    };
-
-    if (projectID) {
-      fetch('getProjectDate.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ projectID })
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            console.error('Error:', data.error);
-            return;
-          }
-
-          // Set Gantt chart start and end using project dates
-          gantt.config.start_date = new Date(data.startDate);
-          gantt.config.end_date = new Date(data.endDate);
-          gantt.config.fit_tasks = true;
-          gantt.config.drag_move = false;
-          gantt.config.drag_resize = false;
-          gantt.config.drag_progress = false;
-          gantt.config.drag_links = false;
-          gantt.config.show_progress = false;
-          gantt.config.show_links = false;
-
-          gantt.config.date_format = "%Y-%m-%d";
-          gantt.init("gantt_here"); // INIT GANTT AFTER SETTING DATES
-          loadGanttTasks();         // LOAD TASKS AFTER INIT
-
+      // Fetch and insert navbar
+      fetch("navbar.php")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("navbar-placeholder").innerHTML = data;
+          initializeDarkMode();
         })
-        .catch(error => {
-          console.error('Fetch error:', error);
-        });
-    }
+        .catch((error) => console.error("Error loading navbar:", error));
 
-      //zoom
+      // Initialize dark mode
+      function initializeDarkMode() {
+        if (localStorage.getItem("darkMode") === "enabled") {
+          document.body.classList.add("dark-mode");
+        }
+      }
+
+      const projectID = sessionStorage.getItem("selectedProjectID");
+      const loadingIndicator = document.getElementById("loading-indicator");
+      const emptyState = document.getElementById("empty-state");
+      const ganttChart = document.getElementById("gantt_here");
+
+      // Configure the gantt columns
+      gantt.config.columns = [
+        {name: "text", label: "Task name", width: "*", tree: true},
+        {name: "start_date", label: "Start time", align: "center", width: 100},
+        {name: "duration", label: "Duration", align: "center", width: 80}
+      ];
+
+      // Update the coloring
+      gantt.templates.task_class = function (start, end, task) {
+        let priorityClass = '';
+        switch (task.priority) {
+          case 1:
+            priorityClass = 'low';
+            break;
+          case 2:
+            priorityClass = 'medium-low';
+            break;
+          case 3:
+            priorityClass = 'medium';
+            break;
+          case 4:
+            priorityClass = 'high';
+            break;
+          case 5:
+            priorityClass = 'critical';
+            break;
+          default:
+            priorityClass = '';
+        }
+
+        // Keep the milestone style but apply the same color as tasks
+        if (task.type === 'Milestone') {
+          return `gantt_milestone ${priorityClass}`;
+        }
+        return priorityClass;
+      };
+
+      // Remove the text from the milestone
+      gantt.templates.task_text = function (start, end, task) {
+        if (task.type === 'Milestone') {
+          return '';
+        }
+        return task.text;
+      };
+      
+      // Add weekend highlighting
+      gantt.templates.scale_cell_class = function(date) {
+        if(date.getDay() === 0 || date.getDay() === 6) {
+          return "weekend";
+        }
+        return "";
+      };
+      
+      gantt.templates.timeline_cell_class = function(task, date) {
+        if(date.getDay() === 0 || date.getDay() === 6) {
+          return "weekend";
+        }
+        return "";
+      };
+
+      // Initialize the Gantt chart with project dates
+      if (projectID) {
+        // Show loading state
+        loadingIndicator.style.display = "flex";
+        emptyState.style.display = "none";
+        ganttChart.style.display = "none";
+
+        fetch('getProjectDate.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ projectID })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              console.error('Error:', data.error);
+              showEmptyState("Failed to load project data");
+              return;
+            }
+
+            // Set project name in header
+            const projectName = sessionStorage.getItem("selectedProjectName");
+            document.getElementById("project-title").textContent = projectName || "Project";
+
+            // Hide Add Task button if user is not a manager
+            const projectRole = sessionStorage.getItem("selectedProjectRole");
+            if (projectRole !== "Manager") {
+              document.getElementById("openPopupBtn").style.display = "none";
+            }
+
+            // Set Gantt chart start and end using project dates
+            gantt.config.start_date = new Date(data.startDate);
+            gantt.config.end_date = new Date(data.endDate);
+            
+            // Enable all tasks to be shown properly
+            gantt.config.show_tasks_outside_timescale = true; // Show tasks outside timescale
+            gantt.config.fit_tasks = true;
+            gantt.config.drag_move = false;
+            gantt.config.drag_resize = false;
+            gantt.config.drag_progress = false;
+            gantt.config.drag_links = false;
+            gantt.config.show_progress = false;
+            gantt.config.show_links = false;
+            gantt.config.date_format = "%Y-%m-%d";
+            
+            // Set row height and task height
+            gantt.config.row_height = 30;
+            gantt.config.task_height = 20;
+
+            // Initialize the Gantt chart
+            gantt.init("gantt_here");
+            
+            // Load tasks
+            loadGanttTasks();
+          })
+          .catch(error => {
+            console.error('Fetch error:', error);
+            showEmptyState("Failed to load project data");
+          });
+      }
+
+      function showEmptyState(message = "No tasks found") {
+        loadingIndicator.style.display = "none";
+        ganttChart.style.display = "none";
+        
+        const emptyStateTitle = document.querySelector("#empty-state h3");
+        const emptyStateMessage = document.querySelector("#empty-state p");
+        
+        emptyStateTitle.textContent = message === "No tasks found" ? "No tasks found" : "Error";
+        emptyStateMessage.textContent = message === "No tasks found" 
+          ? "Try changing your filters or add a new task to get started."
+          : "An error occurred while loading project data. Please try again.";
+        
+        emptyState.style.display = "block";
+      }
+
+      // Zoom levels
       let zoomLevels = ['hour', 'day', 'week', 'month'];
       let currentZoom = 1;
 
@@ -295,35 +834,29 @@
 
         gantt.render();
       }
-      //view change
-      document
-        .getElementById('view-mode')
-        .addEventListener('change', function () {
-          let mode = this.value;
-          currentZoom = zoomLevels.indexOf(mode);
-          applyZoom();
-        });
-      //Today
+
+      // View mode change
+      document.getElementById('view-mode').addEventListener('change', function () {
+        let mode = this.value;
+        currentZoom = zoomLevels.indexOf(mode);
+        applyZoom();
+      });
+
+      // Go to today function
       function goToToday() {
         gantt.showDate(new Date());
       }
 
-      // Fetch and insert navbar
-      fetch("navbar.php")
-        .then((res) => res.text())
-        .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
-    
-      document.getElementById("openPopupBtn")?.addEventListener("click", () => {
-        const projectID = sessionStorage.getItem("selectedProjectID");
-        openAddTaskPopup(projectID); // null task = new task          
-      });
-
-
+      // Load Gantt Tasks
       function loadGanttTasks() {
-        const projectID = sessionStorage.getItem("selectedProjectID");
         const status = document.getElementById("status-filter").value;
         const priority = document.getElementById("priority-filter").value;
         const onlyMine = document.getElementById("assigned-to-me").checked;
+
+        // Show loading indicator
+        loadingIndicator.style.display = "flex";
+        emptyState.style.display = "none";
+        ganttChart.style.display = "none";
 
         fetch("getProjectTask.php", {
           method: "POST",
@@ -332,23 +865,71 @@
         })
           .then(res => res.json())
           .then(tasks => {
-            const data = tasks.map((task) => ({
-              id: task.taskID,
-              text: task.taskName,
-              start_date: task.startDate,
-              end_date: task.endDate,
-              type: task.taskType === 'Milestone' ? 'Milestone' : 'task',
-              priority: convertPriority(task.priority),
-              description: task.description,
-              assignedTo: task.assignedTo,
-              status: task.status,
-              taskType: task.taskType
-            }));
+            // Hide loading indicator
+            loadingIndicator.style.display = "none";
+            
+            if (tasks.length === 0) {
+              showEmptyState("No tasks found");
+              return;
+            }
+            
+            // Show Gantt chart
+            ganttChart.style.display = "block";
+            
+            // Ensure all tasks are properly parsed with correct dates
+            const data = tasks.map((task) => {
+              // Make sure start_date and end_date are proper Date objects
+              let startDate = new Date(task.startDate);
+              let endDate = new Date(task.endDate);
+              
+              // Ensure valid dates
+              if (isNaN(startDate.getTime())) {
+                startDate = new Date(); // Default to today if invalid
+              }
+              
+              if (isNaN(endDate.getTime())) {
+                // If end date is invalid, set it to start date + 1 day
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1);
+              }
+              
+              // Make sure end date is not before start date
+              if (endDate < startDate) {
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1);
+              }
+
+              // Calculate duration in days
+              const diffTime = Math.abs(endDate - startDate);
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              return {
+                id: task.taskID,
+                text: task.taskName,
+                start_date: startDate,
+                end_date: endDate,
+                duration: diffDays,
+                type: task.taskType === 'Milestone' ? 'milestone' : 'task',
+                priority: convertPriority(task.priority),
+                description: task.description,
+                assignedTo: task.assignedTo,
+                status: task.status,
+                taskType: task.taskType,
+                taskID: task.taskID,  // Ensure taskID is properly passed
+                projectID: projectID  // Add projectID to task object for editing
+              };
+            });
             
             gantt.clearAll();
             gantt.parse({ data });
+            
+            // Make sure all tasks are visible in the chart
+            gantt.render();
           })
-          .catch(err => console.error("Failed to load tasks:", err));
+          .catch(err => {
+            console.error("Failed to load tasks:", err);
+            showEmptyState("Failed to load tasks");
+          });
       }
 
       function convertPriority(p) {
@@ -362,87 +943,293 @@
         }
       }
 
+      // Add Task button setup - Fixed implementation
       document.addEventListener("DOMContentLoaded", () => {
-        const projectName = sessionStorage.getItem("selectedProjectName");
-        const projectRole = sessionStorage.getItem("selectedProjectRole");
+        const addTaskBtn = document.getElementById("openPopupBtn");
+        if (addTaskBtn) {
+          addTaskBtn.addEventListener("click", () => {
+            const currentProjectID = sessionStorage.getItem("selectedProjectID");
+            if (typeof openAddTaskPopup === 'function') {
+              openAddTaskPopup(currentProjectID);
+            } else {
+              console.error("openAddTaskPopup function not found. Make sure script.js is loaded properly.");
+            }
+          });
+        }
 
-        document.querySelector(".viwes-header h1").textContent = projectName || "Project";
-
+        // Set up event listeners for filters
+        ["status-filter", "priority-filter", "assigned-to-me"].forEach(id => {
+          document.getElementById(id).addEventListener("change", loadGanttTasks);
+        });
       });
 
-      ["status-filter", "priority-filter", "assigned-to-me"].forEach(id => {
-        document.getElementById(id).addEventListener("change", loadGanttTasks);
-      });
-
+      // Disable default double-click behavior and setup for task editing
       gantt.attachEvent("onTaskDblClick", function(id, e) {
-        return false; // This disables the default lightbox
-      });
-
-      gantt.attachEvent("onMouseMove", function (id, e) {
-        if (!id) {
-          document.getElementById("custom-tooltip").style.display = "none";
-          return;
-        }
-
         const task = gantt.getTask(id);
-        const popup = document.getElementById("custom-tooltip");
-
-        popup.innerHTML = `
-          <div style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 10px;">            
-            <div><strong>Task Type:</strong> ${capitalize(task.taskType)}</div>
-            <div><strong>Task:</strong> ${task.text}</div>
-            <div><strong>Description:</strong> ${task.description || "N/A"}</div>
-            <div><strong>Assigned To:</strong> ${task.assignedTo || "Unassigned"}</div>
-            <div><strong>Priority:</strong> ${priorityLabel(task.priority)}</div>
-            <div><strong>Status:</strong> ${task.status || "Unknown"}</div>
-            <div><strong>Start Date:</strong> ${formatDate(task.start_date)}</div>
-            <div><strong>End Date:</strong> ${formatDate(task.end_date)}</div>
-          </div>
-        `;
-
-        const rect = e.target.getBoundingClientRect();
-        popup.style.visibility = 'hidden';
-        popup.style.display = 'block';
-        const popupHeight = popup.offsetHeight;
-        let top = rect.bottom + window.scrollY - 0;
-
-        if (top + popupHeight > window.innerHeight) {
-          top = rect.top + window.scrollY - popupHeight - 10;
+        const currentProjectID = sessionStorage.getItem("selectedProjectID");
+        
+        // Check if the user is a manager before allowing edit
+        const projectRole = sessionStorage.getItem("selectedProjectRole");
+        if (projectRole === "Manager" && typeof openEditTaskPopup === 'function') {
+          // Create a task object that matches the expected structure for openEditTaskPopup
+          const taskForEdit = {
+            taskID: task.id,
+            taskName: task.text,
+            taskType: task.taskType,
+            priority: task.priority,
+            description: task.description,
+            assignedTo: task.assignedTo,
+            status: task.status,
+            startDate: formatDate(task.start_date, 'yyyy-MM-dd'),
+            endDate: formatDate(task.end_date, 'yyyy-MM-dd'),
+            projectID: currentProjectID
+          };
+          
+          openEditTaskPopup(taskForEdit, currentProjectID);
         }
-
-        popup.style.top = `${top}px`;
-        popup.style.left = `${rect.left}px`;
-        popup.style.visibility = 'visible';
+        return false;
       });
 
-      gantt.attachEvent("onMouseLeave", function () {
-        document.getElementById("custom-tooltip").style.display = "none";
-      });
+      // Hide tooltip on task click
+    gantt.attachEvent("onTaskClick", function(id, e) {
+      document.getElementById("custom-tooltip").style.display = "none";
+      return true;
+    });
+
+    document.addEventListener("click", function(e) {
+    const tooltip = document.getElementById("custom-tooltip");
+    if (tooltip) tooltip.style.display = "none";
+    });
 
 
-      function formatDate(dateString) {
-        const d = new Date(dateString);
+      // Format date to yyyy-MM-dd for task editing
+      function formatDate(date, format) {
+        if (!date) return '';
+        
+        const d = new Date(date);
         const year = d.getFullYear();
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`; // Local YYYY-MM-DD
+        
+        return `${year}-${month}-${day}`;
       }
 
+      // Custom tooltip on hover
+      gantt.attachEvent("onMouseMove", function (id, e) {
+      if (!id) {
+        document.getElementById("custom-tooltip").style.display = "none";
+        return;
+      }
+
+      const task = gantt.getTask(id);
+      const popup = document.getElementById("custom-tooltip");
+
+      popup.innerHTML = `
+        <div>
+          <div><strong>Task Type:</strong> ${capitalize(task.taskType)}</div>
+          <div><strong>Task:</strong> ${task.text}</div>
+          <div><strong>Description:</strong> ${task.description || "N/A"}</div>
+          <div><strong>Assigned To:</strong> ${task.assignedTo || "Unassigned"}</div>
+          <div><strong>Priority:</strong> ${priorityLabel(task.priority)}</div>
+          <div><strong>Status:</strong> ${task.status || "Unknown"}</div>
+          <div><strong>Start Date:</strong> ${formatDateDisplay(task.start_date)}</div>
+          <div><strong>End Date:</strong> ${formatDateDisplay(task.end_date)}</div>
+        </div>
+      `;
+
+      const rect = e.target.getBoundingClientRect();
+      popup.style.display = 'block';
+      
+      // Calculate popup position
+      const popupHeight = popup.offsetHeight;
+      let top = rect.bottom + window.scrollY;
+      
+      // Adjust position if tooltip would go off the bottom of the screen
+      if (top + popupHeight > window.innerHeight + window.scrollY) {
+        top = rect.top + window.scrollY - popupHeight;
+      }
+      
+      popup.style.top = `${top}px`;
+      popup.style.left = `${rect.left}px`;
+    });
+
+    // Hide tooltip when mouse leaves
+    gantt.attachEvent("onMouseLeave", function () {
+      document.getElementById("custom-tooltip").style.display = "none";
+    });
+
+      // Format date in a more readable way
+      function formatDateDisplay(dateString) {
+        const date = new Date(dateString);
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
+      }
+
+      // Helper function to capitalize text
       function capitalize(word) {
         return word ? word.charAt(0).toUpperCase() + word.slice(1) : "";
       }
 
+      // Convert priority number to label
       function priorityLabel(p) {
         const labels = {
-          1: "low",
-          2: "medium-low",
-          3: "medium",
-          4: "high",
-          5: "critical"
+          1: "Low",
+          2: "Medium-Low",
+          3: "Medium",
+          4: "High",
+          5: "Critical"
         };
-        return labels[p] || "medium";
+        return labels[p] || "Medium";
       }
 
+      // Window-level function for dark mode toggle (used by navbar.php)
+      window.toggleDarkMode = function() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+      };
+      
+      // Window-level function for mobile menu toggle
+      window.toggleMenu = function() {
+        const navbar = document.querySelector(".navbar");
+        if (navbar) navbar.classList.toggle("menu-open");
+      };
+      
+      // Additional function to refresh gantt data after task operations
+      function refreshGanttData() {
+        loadGanttTasks();
+      }
+      
+      // Set up auto-refresh
+      function setupAutoRefresh() {
+        // Refresh chart data every 30 seconds
+        setInterval(function() {
+          if (document.visibilityState === 'visible') {
+            loadGanttTasks();
+          }
+        }, 30000);
+      }
+      
+      // Call auto-refresh setup
+      setupAutoRefresh();
+      
+      // Expose refresh function
+      window.refreshGanttData = refreshGanttData;
+
+      window.loadGanttTasks = function() {
+        const status = document.getElementById("status-filter").value;
+        const priority = document.getElementById("priority-filter").value;
+        const onlyMine = document.getElementById("assigned-to-me").checked;
+        const projectID = sessionStorage.getItem("selectedProjectID");
+
+        // Show loading indicator
+        const loadingIndicator = document.getElementById("loading-indicator");
+        const emptyState = document.getElementById("empty-state"); 
+        const ganttChart = document.getElementById("gantt_here");
+        
+        if (loadingIndicator) loadingIndicator.style.display = "flex";
+        if (emptyState) emptyState.style.display = "none";
+        if (ganttChart) ganttChart.style.display = "none";
+
+        fetch("getProjectTask.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectID, status, priority, onlyMine })
+        })
+          .then(res => {
+            if (!res.ok) {
+              throw new Error('Server responded with an error');
+            }
+            return res.json();
+          })
+          .then(tasks => {
+            // Hide loading indicator
+            if (loadingIndicator) loadingIndicator.style.display = "none";
+            
+            if (!tasks || tasks.length === 0) {
+              if (emptyState) {
+                emptyState.style.display = "block";
+                if (ganttChart) ganttChart.style.display = "none";
+              }
+              return;
+            }
+            
+            // Show Gantt chart
+            if (ganttChart) ganttChart.style.display = "block";
+            
+            // Ensure all tasks are properly parsed with correct dates
+            const data = tasks.map((task) => {
+              // Make sure start_date and end_date are proper Date objects
+              let startDate = new Date(task.startDate);
+              let endDate = new Date(task.endDate);
+              
+              // Ensure valid dates
+              if (isNaN(startDate.getTime())) {
+                startDate = new Date(); // Default to today if invalid
+              }
+              
+              if (isNaN(endDate.getTime())) {
+                // If end date is invalid, set it to start date + 1 day
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1);
+              }
+              
+              // Make sure end date is not before start date
+              if (endDate < startDate) {
+                endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + 1);
+              }
+
+              // Calculate duration in days
+              const diffTime = Math.abs(endDate - startDate);
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              return {
+                id: task.taskID,
+                text: task.taskName,
+                start_date: startDate,
+                end_date: endDate,
+                duration: diffDays,
+                type: task.taskType === 'Milestone' ? 'milestone' : 'task',
+                priority: convertPriority(task.priority),
+                description: task.description,
+                assignedTo: task.assignedTo,
+                status: task.status,
+                taskType: task.taskType,
+                taskID: task.taskID,  // Ensure taskID is properly passed
+                projectID: projectID  // Add projectID to task object for editing
+              };
+            });
+            
+            if (typeof gantt !== 'undefined' && gantt) {
+              gantt.clearAll();
+              gantt.parse({ data });
+              
+              // Make sure all tasks are visible in the chart
+              gantt.render();
+            }
+          })
+          .catch(err => {
+            console.error("Failed to load tasks:", err);
+            if (loadingIndicator) loadingIndicator.style.display = "none";
+            if (emptyState) emptyState.style.display = "block";
+            if (ganttChart) ganttChart.style.display = "none";
+            
+            // Show error notification if it exists
+            if (typeof showNotification === 'function') {
+              showNotification('error', 'Error', 'Failed to load tasks. Please try again.');
+            }
+          });
+      };
+
+      // Ensure the refreshGanttData function is globally accessible
+      window.refreshGanttData = function() {
+        if (typeof window.loadGanttTasks === 'function') {
+          window.loadGanttTasks();
+        } else {
+          console.warn("loadGanttTasks function not found, using page reload fallback");
+          location.reload();
+        }
+      };
     </script>
   </body>
 </html>
