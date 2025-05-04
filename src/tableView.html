@@ -304,49 +304,25 @@
       .priority-high { background-color: var(--danger-color); }
       .priority-critical { background-color: #e74c3c; }
 
-      /* Task popup styling */
-      .task-popup {
-        position: fixed; /* Changed from absolute to fixed for better positioning */
-        z-index: 1000;
+      /* Custom tooltip styling (similar to ganttView.html) */
+      #custom-tooltip {
         background-color: var(--card-bg);
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        border-radius: 8px;
+        box-shadow: 0 10px 25px var(--card-shadow);
         border: 1px solid var(--card-border);
-        width: 320px;
+        padding: 15px;
+        width: 300px;
+        max-width: 90vw;
+        z-index: 1000;
+        line-height: 1.6;
+        color: var(--text-primary);
+        position: absolute;
         display: none;
-        animation: fadeIn 0.2s ease-out;
       }
 
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      .task-popup-header {
-        padding: 15px;
-        border-bottom: 1px solid var(--card-border);
+      #custom-tooltip strong {
+        color: var(--secondary-color);
         font-weight: 600;
-        font-size: 1.1rem;
-        color: var(--primary-color);
-      }
-
-      .task-popup-content {
-        padding: 15px;
-      }
-
-      .task-popup-field {
-        margin-bottom: 12px;
-      }
-
-      .task-popup-label {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 4px;
-        display: block;
-      }
-
-      .task-popup-value {
-        font-size: 0.9rem;
       }
 
       /* Empty state */
@@ -533,18 +509,13 @@
           </div>
         </div>
 
-        <!-- Task Popup for details -->
-        <div id="task-popup" class="task-popup">
-          <div class="task-popup-header">Task Details</div>
-          <div class="task-popup-content">
-            <!-- Will be populated dynamically -->
-          </div>
-        </div>
+        <!-- Custom Tooltip Container (like in ganttView.html) -->
+        <div id="custom-tooltip" style="position: absolute; display: none;"></div>
       </div>
     </div>
 
     <!-- Popup add task container -->
-    <div id="popup-container"></div> 
+    <div id="popup-container"></div>
 
     <script>
       // Fetch and insert navbar
@@ -571,7 +542,7 @@
       const taskTableBody = document.querySelector("#task-table tbody");
       const loadingIndicator = document.getElementById("loading-indicator");
       const emptyState = document.getElementById("empty-state");
-      const popup = document.getElementById("task-popup");
+      const tooltip = document.getElementById("custom-tooltip");
       const projectID = sessionStorage.getItem("selectedProjectID");
 
       // Format status badge with appropriate styling
@@ -638,56 +609,28 @@
         return date.toLocaleDateString("en-US", options);
       }
 
-      // Show task details in popup
-      function showTaskPopup(task, event) {
-        const popup = document.getElementById("task-popup");
-        const popupContent = document.querySelector(".task-popup-content");
+      // Helper function to capitalize text
+      function capitalize(word) {
+        return word ? word.charAt(0).toUpperCase() + word.slice(1) : "";
+      }
+
+      // Show task tooltip (similar to ganttView.html)
+      function showTaskTooltip(task, event) {
+        const tooltip = document.getElementById("custom-tooltip");
         
-        // Store the current task ID on the popup element for reference
-        popup.dataset.currentTask = task.taskID;
-        
-        popupContent.innerHTML = `
-          <div class="task-popup-field">
-            <span class="task-popup-label">Type</span>
-            <span class="task-popup-value">${task.taskType}</span>
-          </div>
-          
-          <div class="task-popup-field">
-            <span class="task-popup-label">Description</span>
-            <span class="task-popup-value">${task.description || "No description provided"}</span>
-          </div>
-          
-          <div class="task-popup-field">
-            <span class="task-popup-label">Assigned To</span>
-            <span class="task-popup-value">${task.assignedTo || "Unassigned"}</span>
-          </div>
-          
-          <div class="task-popup-field">
-            <span class="task-popup-label">Priority</span>
-            <span class="task-popup-value">${task.priority}</span>
-          </div>
-          
-          <div class="task-popup-field">
-            <span class="task-popup-label">Status</span>
-            <span class="task-popup-value">${task.status}</span>
-          </div>
-          
-          <div class="task-popup-field">
-            <span class="task-popup-label">Start Date</span>
-            <span class="task-popup-value">${formatDate(task.startDate)}</span>
-          </div>
-          
-          <div class="task-popup-field">
-            <span class="task-popup-label">End Date</span>
-            <span class="task-popup-value">${formatDate(task.endDate)}</span>
+        tooltip.innerHTML = `
+          <div>
+            <div><strong>Task Type:</strong> ${capitalize(task.taskType)}</div>
+            <div><strong>Task:</strong> ${task.taskName}</div>
+            <div><strong>Description:</strong> ${task.description || "N/A"}</div>
+            <div><strong>Assigned To:</strong> ${task.assignedTo || "Unassigned"}</div>
+            <div><strong>Priority:</strong> ${capitalize(task.priority)}</div>
+            <div><strong>Status:</strong> ${task.status || "Unknown"}</div>
+            <div><strong>Start Date:</strong> ${formatDate(task.startDate)}</div>
+            <div><strong>End Date:</strong> ${formatDate(task.endDate)}</div>
           </div>
         `;
-        
-        document.querySelector(".task-popup-header").textContent = task.taskName;
-        
-        // Position popup near the cursor
-        popup.style.display = "block";
-        
+
         // Calculate position based on the mouse position
         const mouseX = event.clientX;
         const mouseY = event.clientY;
@@ -696,65 +639,93 @@
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         
-        // Get popup dimensions
-        const popupWidth = popup.offsetWidth;
-        const popupHeight = popup.offsetHeight;
+        // Get tooltip dimensions
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
         
-        // Calculate optimal position (prefer right side of cursor, but avoid going off-screen)
-        // Add some padding (10px) for better visual appearance
+        // Calculate optimal position with 10px padding
         let left = mouseX + 10;
         let top = mouseY + 10;
         
         // Check right edge
-        if (left + popupWidth > viewportWidth - 10) {
-          left = mouseX - popupWidth - 10; // Position to the left of the cursor
+        if (left + tooltipWidth > viewportWidth - 10) {
+          left = mouseX - tooltipWidth - 10;
         }
         
         // Check bottom edge
-        if (top + popupHeight > viewportHeight - 10) {
-          top = mouseY - popupHeight - 10; // Position above the cursor
+        if (top + tooltipHeight > viewportHeight - 10) {
+          top = mouseY - tooltipHeight - 10;
         }
         
-        // Ensure popup is never positioned outside the viewport
-        left = Math.max(10, left); // At least 10px from left edge
-        top = Math.max(10, top);   // At least 10px from top edge
+        // Ensure tooltip is never positioned outside the viewport
+        left = Math.max(10, left);
+        top = Math.max(10, top);
         
         // Apply position
-        popup.style.position = "fixed";
-        popup.style.top = `${top}px`;
-        popup.style.left = `${left}px`;
-      }
-      
-      function setupTaskClickHandler() {
-        // Get all task rows
-        const taskRows = document.querySelectorAll("#task-table tbody tr");
+        tooltip.style.position = "fixed";
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
+        tooltip.style.display = "block";
         
-        // Add click event for editing
-        taskRows.forEach(row => {
-          row.addEventListener("click", function(e) {
-            // Get the task data from the row's dataset
-            const taskID = this.dataset.taskId;
-            const projectRole = sessionStorage.getItem("selectedProjectRole");
-            const projectID = sessionStorage.getItem("selectedProjectID");
+        // Store current task ID on the tooltip
+        tooltip.dataset.currentTask = task.taskID;
+      }
 
-            // Only allow managers to edit tasks
-            if (projectRole === "Manager") {
-              // If the task popup is already open, close it first to prevent issues
-              const popup = document.getElementById("task-popup");
-              popup.style.display = "none";
-              
-              // Find the task data from our table by ID
-              const task = window.taskData.find(t => t.taskID === taskID);
-              
-              if (task && typeof openEditTaskPopup === 'function') {
-                openEditTaskPopup(task, projectID);
-              }
-            }
-          });
+      // Set up event handlers for rows
+      function setupRowEventHandlers(row, task) {
+        // Add hover event for showing task tooltip
+        row.addEventListener("mouseenter", e => {
+          showTaskTooltip(task, e);
+        });
+
+        row.addEventListener("mouseleave", () => {
+          tooltip.style.display = "none";
+        });
+
+        // Add click event for editing
+        row.addEventListener("click", () => {
+          // Hide the tooltip first
+          tooltip.style.display = "none";
+          
+          const projectRole = sessionStorage.getItem("selectedProjectRole");
+          
+          // Only allow managers to edit tasks
+          if (projectRole === "Manager" && typeof openEditTaskPopup === 'function') {
+            openEditTaskPopup(task, projectID);
+          }
         });
       }
 
-      // Fetch and render tasks
+      // Improved task rendering function
+      function renderTasks(tasks) {
+        // Store tasks data globally for reference
+        window.taskData = tasks;
+        
+        // Clear current table
+        taskTableBody.innerHTML = "";
+        
+        tasks.forEach(task => {
+          const tr = document.createElement("tr");
+          
+          // Store the task ID in the row's dataset
+          tr.dataset.taskId = task.taskID;
+
+          tr.innerHTML = `
+            <td>${task.taskType}</td>
+            <td>${task.taskName}</td>
+            <td>${task.assignedTo || "Unassigned"}</td>
+            <td>${getPriorityIndicator(task.priority)}</td>
+            <td>${formatDate(task.endDate)}</td>
+            <td>${getStatusBadge(task.status)}</td>
+          `;
+
+          // Add event handlers for tooltip and task editing
+          setupRowEventHandlers(tr, task);
+          
+          taskTableBody.appendChild(tr);
+        });
+      }
+
       // Fetch and render tasks
       function getTasks() {
         // Show loading state
@@ -814,47 +785,6 @@
             }
           });
       }
-      // Improved task rendering function
-      function renderTasks(tasks) {
-        const taskTableBody = document.querySelector("#task-table tbody");
-        const popup = document.getElementById("task-popup");
-        
-        // Clear current table
-        taskTableBody.innerHTML = "";
-        
-        // Store tasks data globally for reference
-        window.taskData = tasks;
-        
-        tasks.forEach(task => {
-          const tr = document.createElement("tr");
-          
-          // Store the task ID in the row's dataset
-          tr.dataset.taskId = task.taskID;
-
-          tr.innerHTML = `
-            <td>${task.taskType}</td>
-            <td>${task.taskName}</td>
-            <td>${task.assignedTo || "Unassigned"}</td>
-            <td>${getPriorityIndicator(task.priority)}</td>
-            <td>${formatDate(task.endDate)}</td>
-            <td>${getStatusBadge(task.status)}</td>
-          `;
-
-          // Add hover event for showing task details
-          tr.addEventListener("mouseenter", e => {
-            showTaskPopup(task, e);
-          });
-
-          tr.addEventListener("mouseleave", () => {
-            popup.style.display = "none";
-          });
-
-          taskTableBody.appendChild(tr);
-        });
-        
-        // Set up click handlers after rendering all rows
-        setupTaskClickHandler();
-      }
 
       // Initialize page when DOM is loaded
       document.addEventListener("DOMContentLoaded", () => {
@@ -899,12 +829,11 @@
         }
       });
 
-      // Close popup when clicking outside
+      // Hide tooltip on outside click
       document.addEventListener("click", function(e) {
-        const popup = document.getElementById("task-popup");
-        // Check if the click is outside both the popup and task rows
-        if (popup && !popup.contains(e.target) && !e.target.closest("tr")) {
-          popup.style.display = "none";
+        const tooltip = document.getElementById("custom-tooltip");
+        if (!e.target.closest("tr") && tooltip) {
+          tooltip.style.display = "none";
         }
       });
 
@@ -920,9 +849,8 @@
         if (navbar) navbar.classList.toggle("menu-open");
       };
 
-      // Make the getTasks function globally available, so it can be called from script.js
+      // Make the getTasks function globally available
       window.loadTableTasks = function() {
-        // Show loading state
         const taskTable = document.getElementById("task-table");
         const emptyState = document.getElementById("empty-state");
         const loadingIndicator = document.getElementById("loading-indicator");
@@ -932,6 +860,7 @@
         const assignedCheckbox = document.getElementById("assigned-to-me");
         const projectID = sessionStorage.getItem("selectedProjectID");
         
+        // Show loading state
         taskTable.style.display = "none";
         emptyState.style.display = "none";
         loadingIndicator.style.display = "flex";
@@ -958,9 +887,6 @@
             // Hide loading indicator
             loadingIndicator.style.display = "none";
             
-            // Clear current table
-            taskTableBody.innerHTML = "";
-            
             if (!tasks || tasks.length === 0) {
               // Show empty state
               emptyState.style.display = "block";
@@ -970,40 +896,8 @@
             // Show table and populate it
             taskTable.style.display = "table";
             
-            tasks.forEach(task => {
-              const tr = document.createElement("tr");
-
-              tr.innerHTML = `
-                <td>${task.taskType}</td>
-                <td>${task.taskName}</td>
-                <td>${task.assignedTo || "Unassigned"}</td>
-                <td>${getPriorityIndicator(task.priority)}</td>
-                <td>${formatDate(task.endDate)}</td>
-                <td>${getStatusBadge(task.status)}</td>
-              `;
-
-              // Add hover event for showing task details
-              tr.addEventListener("mouseenter", e => {
-                showTaskPopup(task, e);
-              });
-
-              tr.addEventListener("mouseleave", () => {
-                const popup = document.getElementById("task-popup");
-                popup.style.display = "none";
-              });
-
-              // Add click event for editing task (if manager)
-              tr.addEventListener("click", () => {
-                const projectRole = sessionStorage.getItem("selectedProjectRole");
-
-                // Allow edit only if the user is a manager
-                if (projectRole === "Manager") {
-                  openEditTaskPopup(task, projectID);
-                }
-              });
-
-              taskTableBody.appendChild(tr);
-            });
+            // Render tasks using our improved rendering function
+            renderTasks(tasks);
           })
           .catch(err => {
             console.error("Error loading tasks:", err);
@@ -1034,12 +928,10 @@
         }
       };
 
-      // Override getTasks to use the global function
+      // Use the global function for getTasks
       function getTasks() {
         window.loadTableTasks();
       }
-
-      
       
       // Auto-refresh setup
       function setupAutoRefresh() {
@@ -1053,18 +945,6 @@
       
       // Call auto-refresh setup
       setupAutoRefresh();
-      
-      // Expose the refresh function globally
-      // Set up global refresh function
-      window.refreshTableData = function() {
-        getTasks();
-      };
-      if (typeof getTasks === 'function') { 
-        getTasks = function() { 
-          window.loadTableTasks(); 
-        }; 
-      }
-      window.refreshTableData = window.refreshTableData || function() { getTasks(); };
     </script>
   </body>
 </html>

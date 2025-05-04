@@ -5,24 +5,461 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Whiteboard - FlexiDesk</title>
   <link rel="stylesheet" href="navbarStyle.css" />
-  <link rel="stylesheet" href="viwesStyle.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="script.js" defer></script>
   <script src="https://www.whiteboard.team/dist/api.js"></script>
   <style>
-    html, body {
+    :root {
+      /* Color palette */
+      --primary-color: #0d2240;
+      --secondary-color: #3d5af1;
+      --accent-color: #22d1ee;
+      --success-color: #28a745;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --info-color: #17a2b8;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --white-color: #ffffff;
+      --black-color: #000000;
+      
+      /* UI Elements */
+      --body-bg: #f4f7fb;
+      --card-bg: #ffffff;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-shadow: rgba(0, 0, 0, 0.08);
+      --toolbar-bg: rgba(248, 249, 250, 0.5);
+      
+      /* Text colors */
+      --text-primary: #1a1a1a;
+      --text-secondary: #6c757d;
+      --text-muted: #8a94a6;
+      
+      /* Whiteboard specific */
+      --whiteboard-bg: #ffffff;
+      --whiteboard-border: rgba(0, 0, 0, 0.1);
+      --whiteboard-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode {
+      --primary-color: #22d1ee;
+      --secondary-color: #3d5af1;
+      --body-bg: #111927;
+      --card-bg: #1a2236;
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-shadow: rgba(0, 0, 0, 0.3);
+      --toolbar-bg: rgba(26, 36, 56, 0.7);
+      --text-primary: #f1f1f1;
+      --text-secondary: #b0b7c3;
+      --text-muted: #8a94a6;
+      
+      /* Whiteboard dark mode */
+      --whiteboard-bg: #1a2236;
+      --whiteboard-border: rgba(255, 255, 255, 0.1);
+      --whiteboard-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: 'Inter', 'Arial', sans-serif;
+      background-color: var(--body-bg);
+      color: var(--text-primary);
       margin: 0;
       padding: 0;
-      height: 100%;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
-    .whiteboard-wrapper {
-      height: 600px; /* Or use calc(100vh - header size) */
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0px 5px 10px rgba(0,0,0,0.1);
+
+    .main-content {
+      padding-top: 100px;
+      padding-bottom: 40px;
+    }
+
+    .views-container {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px var(--card-shadow);
+      border: 1px solid var(--card-border);
+    }
+
+    /* Header */
+    .views-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .views-header h1 {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin: 0;
+      font-weight: 700;
+    }
+
+    /* Improved Tabs Navigation */
+    .tabs-navigation {
+      display: flex;
+      margin-bottom: 25px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* For Firefox */
+    }
+
+    .tabs-navigation::-webkit-scrollbar {
+      display: none; /* For Chrome, Safari, and Opera */
+    }
+
+    .tab {
+      text-decoration: none;
+      padding: 12px 24px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab:hover {
+      color: var(--secondary-color);
+      background-color: rgba(61, 90, 241, 0.05);
+    }
+
+    .tab.active {
+      color: var(--secondary-color);
+      border-bottom: 3px solid var(--secondary-color);
+    }
+
+    .tab i {
+      font-size: 1rem;
+    }
+
+    /* Whiteboard wrapper with improved styling */
+    .whiteboard-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
       margin-top: 20px;
     }
+
+    .whiteboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .whiteboard-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .whiteboard-title i {
+      color: var(--secondary-color);
+      font-size: 1.2rem;
+    }
+
+    .whiteboard-title h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--text-primary);
+    }
+
+    .whiteboard-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      padding: 8px 12px;
+      background-color: var(--toolbar-bg);
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--success-color);
+    }
+
+    .status-loading .status-dot {
+      background-color: var(--warning-color);
+    }
+
+    .status-error .status-dot {
+      background-color: var(--danger-color);
+    }
+
+    .whiteboard-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--toolbar-bg);
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid var(--card-border);
+    }
+
+    .toolbar-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .board-id {
+      font-family: monospace;
+      background-color: var(--card-bg);
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--card-border);
+      font-size: 0.85rem;
+    }
+
+    .whiteboard-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      color: var(--secondary-color);
+      border-color: var(--secondary-color);
+      box-shadow: 0 2px 8px rgba(61, 90, 241, 0.1);
+    }
+
+    .action-btn.primary {
+      background-color: var(--secondary-color);
+      color: white;
+      border-color: var(--secondary-color);
+    }
+
+    .action-btn.primary:hover {
+      background-color: var(--accent-color);
+      box-shadow: 0 4px 12px rgba(34, 209, 238, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .whiteboard-wrapper {
+      height: 650px; /* Increased height */
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--whiteboard-shadow);
+      border: 1px solid var(--whiteboard-border);
+      position: relative;
+    }
+
+    .whiteboard-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .whiteboard-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .overlay-message {
+      background: var(--card-bg);
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .overlay-message i {
+      font-size: 2rem;
+      color: var(--secondary-color);
+      margin-bottom: 15px;
+    }
+
+    .overlay-message h3 {
+      margin: 0 0 10px 0;
+      color: var(--text-primary);
+    }
+
+    .overlay-message p {
+      margin: 0;
+      color: var(--text-secondary);
+    }
+
     #wt-container {
       width: 100%;
       height: 100%;
+    }
+
+    /* User info badge */
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--toolbar-bg);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .user-badge i {
+      color: var(--secondary-color);
+    }
+
+    /* Loading animation */
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(61, 90, 241, 0.2);
+      border-radius: 50%;
+      border-top-color: var(--secondary-color);
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Instructions panel */
+    .whiteboard-instructions {
+      background-color: var(--toolbar-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .whiteboard-instructions h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .instructions-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .instructions-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--card-bg);
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Responsive design */
+    @media (max-width: 992px) {
+      .views-container {
+        margin: 0 15px;
+      }
+      
+      .whiteboard-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .whiteboard-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .views-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .tabs-navigation {
+        margin-bottom: 20px;
+      }
+      
+      .tab {
+        padding: 10px 16px;
+      }
+      
+      .whiteboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .whiteboard-status {
+        align-self: flex-start;
+      }
+      
+      .instructions-list li {
+        flex-basis: 100%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .whiteboard-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      
+      .action-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 8px;
+      }
+      
+      .whiteboard-wrapper {
+        height: 450px;
+      }
     }
   </style>
 </head>
@@ -33,46 +470,107 @@
 
   <!-- Main Content -->
   <div class="main-content">
-    <div class="viwes-container">
-      <!-- Tabs -->
-      <div class="tabs">
-        <a href="ganttView.html" class="tab">Gantt</a>
-        <a href="tableView.html" class="tab">Table</a>
-        <a href="calenderView.html" class="tab">Calendar</a>
-        <a href="groupChat.html" class="tab">Chat</a>
-        <a href="whiteboard.html" class="tab active">Whiteboard</a>
+    <div class="views-container">
+      <!-- Tabs Navigation -->
+      <div class="tabs-navigation">
+        <a href="ganttView.html" class="tab">
+          <i class="fas fa-chart-bar"></i> Gantt
+        </a>
+        <a href="tableView.html" class="tab">
+          <i class="fas fa-table"></i> Table
+        </a>
+        <a href="calenderView.html" class="tab">
+          <i class="fas fa-calendar"></i> Calendar
+        </a>
+        <a href="groupChat.html" class="tab">
+          <i class="fas fa-comments"></i> Chat
+        </a>
+        <a href="whiteboard.html" class="tab active">
+          <i class="fas fa-chalkboard"></i> Whiteboard
+        </a>
       </div>
 
-      <div class="viwes-header">
-        <h1>Project Name</h1>
+      <!-- Whiteboard view -->
+      <div class="views-header">
+        <h1 id="project-title">Project Name</h1>
       </div>
 
-      <!-- Whiteboard -->
-      <div class="whiteboard-wrapper">
-        <div id="wt-container"></div>
+      <!-- Whiteboard Container -->
+      <div class="whiteboard-container">
+        <!-- Simple Whiteboard Header -->
+        <div class="whiteboard-header" style="margin-bottom: 20px;">
+          <div class="whiteboard-title">
+            <i class="fas fa-chalkboard"></i>
+            <h2>Collaborative Whiteboard</h2>
+          </div>
+          <div id="connection-status" class="whiteboard-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Connecting...</span>
+          </div>
+        </div>
+        
+        <!-- Simple info bar -->
+        <div style="display: flex; align-items: center; margin-bottom: 20px; padding: 10px; background-color: var(--toolbar-bg); border-radius: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span><i class="fas fa-user"></i> <span id="user-name">User</span></span>
+            <span style="margin-left: 15px;">Board ID: <span id="board-id" style="font-family: monospace; background: var(--card-bg); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--card-border);">Generating...</span></span>
+          </div>
+        </div>
+
+        <!-- Whiteboard Wrapper -->
+        <div class="whiteboard-wrapper">
+          <div id="wt-container"></div>
+          
+          <!-- Loading Overlay -->
+          <div id="whiteboard-overlay" class="whiteboard-overlay visible">
+            <div class="overlay-message">
+              <div class="loading-spinner"></div>
+              <h3>Loading Whiteboard</h3>
+              <p>Please wait while we set up your collaborative space...</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // Fetch and insert navbar
     fetch("navbar.php")
       .then(res => res.text())
-      .then(data => document.getElementById("navbar-placeholder").innerHTML = data);
+      .then(data => {
+        document.getElementById("navbar-placeholder").innerHTML = data;
+        initializeDarkMode();
+      })
+      .catch(error => console.error("Error loading navbar:", error));
+    
+    // Initialize dark mode
+    function initializeDarkMode() {
+      if (localStorage.getItem("darkMode") === "enabled") {
+        document.body.classList.add("dark-mode");
+      }
+    }
   
     // Set project name in header
     document.addEventListener("DOMContentLoaded", () => {
       const projectName = sessionStorage.getItem("selectedProjectName");
-      document.querySelector(".viwes-header h1").textContent = projectName || "Whiteboard";
+      const userName = sessionStorage.getItem("username") || "User";
+      
+      document.querySelector("#project-title").textContent = projectName || "Whiteboard";
+      document.querySelector("#user-name").textContent = userName;
+      
+      // No button event listeners needed
     });
-  
+    
+    // Initialize whiteboard API
     const clientId = '92411c1d60ca1c0b68abbd94665f1323';
     const boardCode = 'flexidesk-' + crypto.randomUUID();
-  
+    
     const wt = new api.WhiteboardTeam('#wt-container', {
       clientId: clientId,
       boardCode: boardCode,
       participant: {
-        name: 'User',
+        name: sessionStorage.getItem("username") || 'User',
         role: 'editor',
         permissions: ['view_templates', 'view_chat']
       },
@@ -82,10 +580,58 @@
         color: '#000000'
       }
     });
-  
+    
     wt.waitUntilReady()
-      .then(ctx => console.log('✅ Whiteboard Ready:', ctx.uid))
-      .catch(error => console.error('❌ Whiteboard Error:', error));
+      .then(ctx => {
+        console.log('✅ Whiteboard Ready:', ctx.uid);
+        
+        // Update UI elements after successful connection
+        document.getElementById("board-id").textContent = boardCode;
+        
+        const statusEl = document.getElementById("connection-status");
+        statusEl.classList.remove("status-loading");
+        statusEl.querySelector(".status-text").textContent = "Connected";
+        statusEl.querySelector(".status-dot").style.backgroundColor = "var(--success-color)";
+        
+        // Hide the overlay
+        document.getElementById("whiteboard-overlay").classList.remove("visible");
+      })
+      .catch(error => {
+        console.error('❌ Whiteboard Error:', error);
+        
+        // Update UI elements to show error
+        const statusEl = document.getElementById("connection-status");
+        statusEl.classList.remove("status-loading");
+        statusEl.classList.add("status-error");
+        statusEl.querySelector(".status-text").textContent = "Connection Error";
+        statusEl.querySelector(".status-dot").style.backgroundColor = "var(--danger-color)";
+        
+        // Update overlay with error message
+        
+        // Show error overlay
+        const overlay = document.getElementById("whiteboard-overlay");
+        overlay.classList.add("visible");
+        overlay.querySelector(".overlay-message").innerHTML = `
+          <i class="fas fa-exclamation-circle" style="color: var(--danger-color);"></i>
+          <h3>Connection Error</h3>
+          <p>Unable to connect to the whiteboard service. Please try again later.</p>
+          <button onclick="location.reload()" class="action-btn primary" style="margin-top: 15px;">
+            <i class="fas fa-sync"></i> Retry
+          </button>
+        `;
+      });
+    
+    // Window-level function for dark mode toggle
+    window.toggleDarkMode = function() {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+    };
+    
+    // Window-level function for mobile menu toggle
+    window.toggleMenu = function() {
+      const navbar = document.querySelector(".navbar");
+      if (navbar) navbar.classList.toggle("menu-open");
+    };
   </script>
   
 </body>

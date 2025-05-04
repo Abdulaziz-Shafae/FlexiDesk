@@ -1,198 +1,760 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat View - FlexiDesk</title>
-  <link rel="stylesheet" href="navbarStyle.css" />
-  <link rel="stylesheet" href="viwesStyle.css" />
-  <script src="script.js" defer></script>
-</head>
-<body>
-  <!-- Navbar -->
-  <div id="navbar-placeholder"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat View - FlexiDesk</title>
+    <link rel="stylesheet" href="navbarStyle.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="script.js" defer></script>
+    <style>
+      :root {
+        /* Color palette */
+        --primary-color: #0d2240;
+        --secondary-color: #3d5af1;
+        --accent-color: #22d1ee;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --white-color: #ffffff;
+        --black-color: #000000;
+        
+        /* UI Elements */
+        --body-bg: #f4f7fb;
+        --card-bg: #ffffff;
+        --card-border: rgba(0, 0, 0, 0.08);
+        --card-shadow: rgba(0, 0, 0, 0.08);
+        --toolbar-bg: rgba(248, 249, 250, 0.5);
+        
+        /* Text colors */
+        --text-primary: #1a1a1a;
+        --text-secondary: #6c757d;
+        --text-muted: #8a94a6;
+        
+        /* Status colors */
+        --status-pending: #ffc107;
+        --status-in-progress: #3d5af1;
+        --status-completed: #28a745;
+        
+        /* Chat-specific */
+        --message-sent-bg: #3d5af1;
+        --message-received-bg: #f1f1f1;
+        --message-sent-text: #ffffff;
+        --message-received-text: #1a1a1a;
+        --chat-input-bg: #ffffff;
+        --chat-time-color: rgba(0, 0, 0, 0.5);
+      }
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <div class="viwes-container">
-      <div class="tabs">
-        <a href="ganttView.html" class="tab">Gantt</a>
-        <a href="tableView.html" class="tab">Table</a>
-        <a href="calenderView.html" class="tab">Calendar</a>
-        <a href="groupChat.html" class="tab active">Chat</a>
-        <a href="whiteboard.html" class="tab">Whiteboard</a>
-      </div>
+      .dark-mode {
+        --primary-color: #22d1ee;
+        --secondary-color: #3d5af1;
+        --body-bg: #111927;
+        --card-bg: #1a2236;
+        --card-border: rgba(255, 255, 255, 0.1);
+        --card-shadow: rgba(0, 0, 0, 0.3);
+        --toolbar-bg: rgba(26, 36, 56, 0.7);
+        --text-primary: #f1f1f1;
+        --text-secondary: #b0b7c3;
+        --text-muted: #8a94a6;
+        
+        /* Chat dark mode specifics */
+        --message-sent-bg: #3d5af1;
+        --message-received-bg: #232f46;
+        --message-sent-text: #ffffff;
+        --message-received-text: #f1f1f1;
+        --chat-input-bg: #1a2236;
+        --chat-time-color: rgba(255, 255, 255, 0.5);
+      }
 
-      <div class="viwes-header">
-        <h1 id="chatHeader">Chat</h1>
-      </div>
+      body {
+        font-family: 'Inter', 'Arial', sans-serif;
+        background-color: var(--body-bg);
+        color: var(--text-primary);
+        margin: 0;
+        padding: 0;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
 
-      <!-- Chat Container -->
-      <div class="chat-container">
-        <div class="chat-box" id="chatBox"></div>
+      .main-content {
+        padding-top: 100px;
+        padding-bottom: 40px;
+      }
 
-        <div class="chat-input">
-          <input type="text" id="messageInput" placeholder="Type a message..." />
-          <button id="sendMessageBtn">Send</button>
+      .views-container {
+        position: relative;
+        max-width: 1400px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px var(--card-shadow);
+        border: 1px solid var(--card-border);
+      }
+
+      /* Header */
+      .views-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+      }
+
+      .views-header h1 {
+        font-size: 1.8rem;
+        color: var(--primary-color);
+        margin: 0;
+        font-weight: 700;
+      }
+
+      /* Improved Tabs Navigation */
+      .tabs-navigation {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* For Firefox */
+      }
+
+      .tabs-navigation::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+      }
+
+      .tab {
+        text-decoration: none;
+        padding: 12px 24px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tab:hover {
+        color: var(--secondary-color);
+        background-color: rgba(61, 90, 241, 0.05);
+      }
+
+      .tab.active {
+        color: var(--secondary-color);
+        border-bottom: 3px solid var(--secondary-color);
+      }
+
+      .tab i {
+        font-size: 1rem;
+      }
+
+      /* Chat Container */
+      .chat-container {
+        width: 100%;
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
+        display: flex;
+        flex-direction: column;
+        height: 600px;
+        overflow: hidden;
+        margin: 0 auto;
+      }
+
+      .chat-header {
+        padding: 15px;
+        border-bottom: 1px solid var(--card-border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .chat-header .project-icon {
+        width: 40px;
+        height: 40px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
+      .chat-header .project-info h2 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--text-primary);
+      }
+
+      .chat-header .project-info p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      .chat-box {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        scroll-behavior: smooth;
+      }
+
+      .chat-box::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-box::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .chat-box::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+      }
+
+      .dark-mode .chat-box::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .message-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        max-width: 75%;
+      }
+
+      .message-group.sent {
+        align-self: flex-end;
+      }
+
+      .message-group.received {
+        align-self: flex-start;
+      }
+
+      .message {
+        padding: 12px 16px;
+        border-radius: 18px;
+        position: relative;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        word-break: break-word;
+      }
+
+      .message-group.sent .message {
+        background: var(--message-sent-bg);
+        color: var(--message-sent-text);
+        border-bottom-right-radius: 4px;
+      }
+
+      .message-group.received .message {
+        background: var(--message-received-bg);
+        color: var(--message-received-text);
+        border-bottom-left-radius: 4px;
+      }
+
+      .message-time {
+        font-size: 0.75rem;
+        color: var(--chat-time-color);
+        margin-top: 4px;
+        align-self: flex-start;
+      }
+
+      .message-group.sent .message-time {
+        align-self: flex-end;
+      }
+
+      .sender-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+        color: var(--text-secondary);
+      }
+
+      .message-group.sent .sender-name {
+        align-self: flex-end;
+      }
+
+      .chat-input-container {
+        padding: 15px;
+        border-top: 1px solid var(--card-border);
+        background: var(--chat-input-bg);
+        transition: background-color 0.3s ease;
+      }
+
+      .chat-input {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        background: var(--card-bg);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+
+      .chat-input input:focus {
+        outline: none;
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 3px rgba(61, 90, 241, 0.1);
+      }
+
+      .chat-input button {
+        background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        color: white;
+        border: none;
+        border-radius: 24px;
+        padding: 12px 20px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 10px rgba(61, 90, 241, 0.2);
+      }
+
+      .chat-input button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(61, 90, 241, 0.3);
+      }
+
+      .chat-input button i {
+        font-size: 0.9rem;
+      }
+
+      /* Empty state styling */
+      .empty-chat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 20px;
+      }
+
+      .empty-chat i {
+        font-size: 3rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+      }
+
+      .empty-chat h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: var(--text-secondary);
+      }
+
+      .empty-chat p {
+        max-width: 400px;
+        font-size: 0.95rem;
+      }
+
+      /* Typing indicator */
+      .typing-indicator {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+
+      .typing-indicator .dots {
+        display: flex;
+        margin-left: 8px;
+      }
+
+      .typing-indicator .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background-color: var(--text-secondary);
+        margin: 0 2px;
+        animation: typing-dot 1.4s infinite ease-in-out;
+      }
+
+      .typing-indicator .dot:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      .typing-indicator .dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-indicator .dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typing-dot {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-5px);
+        }
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 992px) {
+        .views-container {
+          margin: 0 15px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .views-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+        }
+        
+        .tabs-navigation {
+          margin-bottom: 20px;
+        }
+        
+        .tab {
+          padding: 10px 16px;
+        }
+
+        .message-group {
+          max-width: 85%;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .chat-input {
+          flex-direction: column;
+        }
+        
+        .chat-input input {
+          width: 100%;
+        }
+        
+        .chat-input button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar (will be loaded via JS) -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="views-container">
+        <!-- Improved Tabs Navigation with Icons -->
+        <div class="tabs-navigation">
+          <a href="ganttView.html" class="tab">
+            <i class="fas fa-chart-bar"></i> Gantt
+          </a>
+          <a href="tableView.html" class="tab">
+            <i class="fas fa-table"></i> Table
+          </a>
+          <a href="calenderView.html" class="tab">
+            <i class="fas fa-calendar"></i> Calendar
+          </a>
+          <a href="groupChat.html" class="tab active">
+            <i class="fas fa-comments"></i> Chat
+          </a>
+          <a href="whiteboard.html" class="tab">
+            <i class="fas fa-chalkboard"></i> Whiteboard
+          </a>
+        </div>
+
+        <div class="views-header">
+          <h1 id="project-title">Project Chat</h1>
+        </div>
+
+        <!-- Chat Container with Header -->
+        <div class="chat-container">
+          <div class="chat-header">
+            <div class="project-icon" id="project-icon"></div>
+            <div class="project-info">
+              <h2 id="project-name">Project Name</h2>
+              <p id="participant-count">Loading participants...</p>
+            </div>
+          </div>
+
+          <div class="chat-box" id="chatBox">
+            <!-- Messages will be loaded dynamically -->
+            <!-- Empty state will be shown initially -->
+            <div class="empty-chat" id="emptyChatState">
+              <i class="fas fa-comments"></i>
+              <h3>No messages yet</h3>
+              <p>Be the first one to send a message to this project chat!</p>
+            </div>
+          </div>
+
+          <div class="chat-input-container">
+            <div class="chat-input">
+              <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Type a message..." 
+                autocomplete="off"
+              />
+              <button id="sendMessageBtn">
+                <i class="fas fa-paper-plane"></i> Send
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <style>
-    .chat-container {
-      width: 100%;
-      max-width: 800px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: column;
-      height: 500px;
-      overflow: hidden;
-      margin: 0 auto;
-    }
+    <script>
+      // Fetch and insert navbar
+      fetch("navbar.php")
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById("navbar-placeholder").innerHTML = data;
+          initializeDarkMode();
+        })
+        .catch(error => console.error("Error loading navbar:", error));
 
-    .chat-box {
-      flex: 1;
-      padding: 15px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chat-input {
-      display: flex;
-      padding: 10px;
-      border-top: 1px solid #ddd;
-      background: #fff;
-    }
-
-    .chat-input input {
-      flex: 1;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    .chat-input button {
-      padding: 10px 15px;
-      background: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      margin-left: 10px;
-      border-radius: 5px;
-    }
-
-    .chat-input button:hover {
-      background: #0056b3;
-    }
-
-    .message {
-      max-width: 80%;
-      padding: 10px;
-      border-radius: 10px;
-      margin: 5px 0;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .message.sent {
-      align-self: flex-end;
-      background: #007bff;
-      color: white;
-    }
-
-    .message.received {
-      align-self: flex-start;
-      background: #f1f1f1;
-      color: black;
-    }
-
-    .sender {
-      font-size: 14px;
-      font-weight: bold;
-      margin-bottom: 3px;
-    }
-  </style>
-
-  <script>
-    
-    let currentProjectId = null;
-    let currentProjectName = null;
-
-    document.addEventListener("DOMContentLoaded", () => {
-      currentProjectId = sessionStorage.getItem("selectedProjectID");
-      currentProjectName = sessionStorage.getItem("selectedProjectName");
-
-      if (!currentProjectId) {
-        alert("No project selected. Redirecting...");
-        window.location.href = "dashboard.html"; // or your intended fallback
-        return;
+      // Initialize dark mode
+      function initializeDarkMode() {
+        if (localStorage.getItem("darkMode") === "enabled") {
+          document.body.classList.add("dark-mode");
+        }
       }
 
-      document.getElementById("chatHeader").innerText = currentProjectName || "Chat";
+      // Global variables
+      let currentProjectId = null;
+      let currentProjectName = null;
+      let lastMessageId = null;
+      let currentUser = null;
+      let messagePollingInterval = null;
+      let typingTimeout = null;
+      let lastTypingStatus = false;
 
-      // Start polling
-      setInterval(fetchMessages, 5000);
-      fetchMessages();
+      // Helper to format dates nicely
+      function formatMessageTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const isToday = date.toDateString() === now.toDateString();
+        const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === date.toDateString();
+        
+        const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        if (isToday) {
+          return `Today at ${timeStr}`;
+        } else if (isYesterday) {
+          return `Yesterday at ${timeStr}`;
+        } else {
+          return `${date.toLocaleDateString()} at ${timeStr}`;
+        }
+      }
 
-      // Event listener
-      document.getElementById("sendMessageBtn").addEventListener("click", sendMessage);
-    });
+      // Initialize chat functionality
+      document.addEventListener("DOMContentLoaded", () => {
+        currentProjectId = sessionStorage.getItem("selectedProjectID");
+        currentProjectName = sessionStorage.getItem("selectedProjectName");
+        currentUser = sessionStorage.getItem("username") || "You";
 
-    function fetchMessages() {
-      if (!currentProjectId) return;
+        if (!currentProjectId) {
+          alert("No project selected. Redirecting...");
+          window.location.href = "homePage.php"; 
+          return;
+        }
 
-      fetch(`getMessages.php?project_id=${currentProjectId}`)
-      .then(res => res.json())
-        .then(messages => {
-          const chatBox = document.getElementById("chatBox");
-          chatBox.innerHTML = "";
+        // Set project name and icon
+        document.getElementById("project-title").textContent = `${currentProjectName} - Chat`;
+        document.getElementById("project-name").textContent = currentProjectName || "Project Chat";
+        
+        const projectIcon = document.getElementById("project-icon");
+        if (currentProjectName) {
+          const initials = currentProjectName
+            .split(' ')
+            .map(word => word[0])
+            .join('')
+            .substring(0, 2)
+            .toUpperCase();
           
-          if (messages.length === 0) {
-            chatBox.innerHTML = "<p style='color: #888; text-align: center;'>No messages yet.</p>";
-            return;
-          }
+          projectIcon.textContent = initials;
+        } else {
+          projectIcon.textContent = "PC";
+        }
 
-          messages.forEach(msg => {
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "message " + (msg.is_self ? "sent" : "received");
-            msgDiv.innerHTML = `<div class="sender">${msg.username}</div><div>${msg.message}</div>`;
-            chatBox.appendChild(msgDiv);
+        // Fetch participants count
+        fetchParticipantsCount();
+        
+        // Start polling for messages
+        fetchMessages();
+        messagePollingInterval = setInterval(fetchMessages, 5000);
+        
+        // Event listeners
+        document.getElementById("sendMessageBtn").addEventListener("click", sendMessage);
+        document.getElementById("messageInput").addEventListener("keypress", function(e) {
+          if (e.key === "Enter") {
+            sendMessage();
+          }
+          
+          // Typing indicator - could be implemented if the backend supports it
+          // sendTypingStatus(true);
+        });
+      });
+
+      function fetchParticipantsCount() {
+        if (!currentProjectId) return;
+        
+        fetch(`getProjectParticipants.php?project_id=${currentProjectId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.count) {
+              document.getElementById("participant-count").textContent = 
+                `${data.count} ${data.count === 1 ? 'participant' : 'participants'}`;
+            } else {
+              document.getElementById("participant-count").textContent = "Team chat";
+            }
+          })
+          .catch(err => {
+            console.error("Error loading participants:", err);
+            document.getElementById("participant-count").textContent = "Team chat";
           });
+      }
 
-          chatBox.scrollTop = chatBox.scrollHeight;
+      function fetchMessages() {
+        if (!currentProjectId) return;
+
+        const url = lastMessageId 
+          ? `getMessages.php?project_id=${currentProjectId}&after_id=${lastMessageId}`
+          : `getMessages.php?project_id=${currentProjectId}`;
+
+        fetch(url)
+          .then(res => res.json())
+          .then(messages => {
+            const chatBox = document.getElementById("chatBox");
+            const emptyState = document.getElementById("emptyChatState");
+            
+            // Hide empty state if we have messages
+            if (messages.length > 0 && emptyState) {
+              emptyState.style.display = "none";
+            } else if (messages.length === 0 && !lastMessageId) {
+              // Only show empty state on initial load with no messages
+              if (emptyState) emptyState.style.display = "flex";
+              return;
+            }
+            
+            let currentGroup = null;
+            let currentSender = null;
+            let scrollToBottom = false;
+            
+            // Check if scroll was at bottom before adding new messages
+            const isScrolledToBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 5;
+            
+            // If this is the first fetch, clear the chat box
+            if (!lastMessageId) {
+              chatBox.innerHTML = "";
+              scrollToBottom = true;
+            }
+            
+            messages.forEach(msg => {
+              // Update lastMessageId to use for incremental fetching
+              if (!lastMessageId || parseInt(msg.id) > parseInt(lastMessageId)) {
+                lastMessageId = msg.id;
+              }
+              
+              const isSelf = msg.is_self;
+              const sender = isSelf ? currentUser : msg.username;
+              
+              // Create new message group if sender changes
+              if (sender !== currentSender) {
+                currentSender = sender;
+                
+                currentGroup = document.createElement("div");
+                currentGroup.className = `message-group ${isSelf ? "sent" : "received"}`;
+                
+                const senderEl = document.createElement("div");
+                senderEl.className = "sender-name";
+                senderEl.textContent = sender;
+                currentGroup.appendChild(senderEl);
+                
+                chatBox.appendChild(currentGroup);
+              }
+              
+              const msgEl = document.createElement("div");
+              msgEl.className = "message";
+              msgEl.textContent = msg.message;
+              currentGroup.appendChild(msgEl);
+              
+              const timeEl = document.createElement("div");
+              timeEl.className = "message-time";
+              timeEl.textContent = formatMessageTime(msg.timestamp);
+              currentGroup.appendChild(timeEl);
+              
+              scrollToBottom = true;
+            });
+            
+            // Scroll to bottom if we were at the bottom before or just loaded initial messages
+            if (scrollToBottom || isScrolledToBottom) {
+              chatBox.scrollTop = chatBox.scrollHeight;
+            }
+          })
+          .catch(err => console.error("Error loading messages:", err));
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const message = input.value.trim();
+        if (!message || !currentProjectId) return;
+
+        fetch("sendMessage.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `project_id=${encodeURIComponent(currentProjectId)}&message=${encodeURIComponent(message)}`
         })
-        .catch(err => console.error("Error loading messages:", err));
-    }
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              input.value = "";
+              fetchMessages();
+            } else {
+              console.error("Failed to send message:", data.error || "Unknown error");
+              // Could show an error notification here
+            }
+          })
+          .catch(err => console.error("Error sending message:", err));
+      }
 
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const message = input.value.trim();
-      if (!message || !currentProjectId) return;
+      // Cleanup function to clear intervals when page changes
+      window.addEventListener("beforeunload", () => {
+        if (messagePollingInterval) {
+          clearInterval(messagePollingInterval);
+        }
+      });
 
-      fetch("sendMessage.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `project_id=${encodeURIComponent(currentProjectId)}&message=${encodeURIComponent(message)}`
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            input.value = "";
-            fetchMessages();
-          }
-        })
-        .catch(err => console.error("Error sending message:", err));
-    }
-
-    fetch("navbar.php")
-      .then((res) => res.text())
-      .then((data) => (document.getElementById("navbar-placeholder").innerHTML = data));
-  </script>
-</body>
+      // Window-level function for dark mode toggle (used by navbar.php)
+      window.toggleDarkMode = function() {
+        document.body.classList.toggle("dark-mode");
+        localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
+      };
+      
+      // Window-level function for mobile menu toggle
+      window.toggleMenu = function() {
+        const navbar = document.querySelector(".navbar");
+        if (navbar) navbar.classList.toggle("menu-open");
+      };
+    </script>
+  </body>
 </html>

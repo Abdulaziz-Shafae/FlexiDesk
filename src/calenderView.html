@@ -394,24 +394,25 @@
         background-color: rgba(61, 90, 241, 0.2);
       }
 
-      /* Task popup styling */
-      .popup_tasks {
-        position: fixed;
-        z-index: 1000;
-        display: none;
+      /* Custom tooltip styling (similar to ganttView.html) */
+      #custom-tooltip {
         background-color: var(--card-bg);
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        border-radius: 8px;
+        box-shadow: 0 10px 25px var(--card-shadow);
         border: 1px solid var(--card-border);
-        width: 250px; /* Reduced width */
-        max-width: 250px; /* Added max-width */
-        animation: fadeIn 0.2s ease-out;
-        overflow: hidden; /* Prevent content from overflowing */
+        padding: 15px;
+        width: 300px;
+        max-width: 90vw;
+        z-index: 1000;
+        line-height: 1.6;
+        color: var(--text-primary);
+        position: absolute;
+        display: none;
       }
 
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+      #custom-tooltip strong {
+        color: var(--secondary-color);
+        font-weight: 600;
       }
 
       /* Empty state */
@@ -612,8 +613,8 @@
           </div>
         </div>
         
-        <!-- Task Popup for details -->
-        <div id="task-popup" class="popup_tasks"></div>
+        <!-- Custom Tooltip Container (like in ganttView.html) -->
+        <div id="custom-tooltip" style="position: absolute; display: none;"></div>
       </div>
     </div>
 
@@ -621,10 +622,6 @@
     <div id="popup-container"></div> 
 
     <script>
-      window.refreshTasks = () => {
-        getTasks();
-      };
-
       // Fetch and insert navbar
       fetch('navbar.php')
         .then((response) => response.text())
@@ -643,7 +640,7 @@
 
       const monthName = document.getElementById("month-name");
       const calendarGrid = document.getElementById("calendar-grid");
-      const popup = document.getElementById("task-popup");
+      const tooltip = document.getElementById("custom-tooltip");
       const loadingIndicator = document.getElementById("loading-indicator");
       const emptyState = document.getElementById("empty-state");
 
@@ -653,6 +650,101 @@
       let projectEnd;
       let taskLimit = 3;
       let view = 'calendarView';
+      
+      // Helper function to capitalize text
+      function capitalize(word) {
+        return word ? word.charAt(0).toUpperCase() + word.slice(1) : "";
+      }
+
+      // Format date in a more readable way
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: "numeric", month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
+      }
+
+      // Show task tooltip
+      function showTaskTooltip(task, event) {
+        const tooltip = document.getElementById("custom-tooltip");
+        
+        tooltip.innerHTML = `
+          <div>
+            <div><strong>Task Type:</strong> ${capitalize(task.taskType)}</div>
+            <div><strong>Task:</strong> ${task.taskName}</div>
+            <div><strong>Description:</strong> ${task.description || "N/A"}</div>
+            <div><strong>Assigned To:</strong> ${task.assignedTo || "Unassigned"}</div>
+            <div><strong>Priority:</strong> ${capitalize(task.priority)}</div>
+            <div><strong>Status:</strong> ${task.status || "Unknown"}</div>
+            <div><strong>Start Date:</strong> ${formatDate(task.startDate)}</div>
+            <div><strong>End Date:</strong> ${formatDate(task.endDate)}</div>
+          </div>
+        `;
+
+        // Calculate position based on the mouse position
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Get tooltip dimensions
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+        
+        // Calculate optimal position with 10px padding
+        let left = mouseX + 10;
+        let top = mouseY + 10;
+        
+        // Check right edge
+        if (left + tooltipWidth > viewportWidth - 10) {
+          left = mouseX - tooltipWidth - 10;
+        }
+        
+        // Check bottom edge
+        if (top + tooltipHeight > viewportHeight - 10) {
+          top = mouseY - tooltipHeight - 10;
+        }
+        
+        // Ensure tooltip is never positioned outside the viewport
+        left = Math.max(10, left);
+        top = Math.max(10, top);
+        
+        // Apply position
+        tooltip.style.position = "fixed";
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
+        tooltip.style.display = "block";
+        
+        // Store current task ID on the tooltip
+        tooltip.dataset.currentTask = task.taskID;
+      }
+
+      // Add event handlers to task div
+      function setupTaskEventHandlers(taskDiv, task) {
+        // Add hover event for showing task tooltip
+        taskDiv.addEventListener("mouseenter", (e) => {
+          showTaskTooltip(task, e);
+        });
+
+        taskDiv.addEventListener("mouseleave", () => {
+          tooltip.style.display = "none";
+        });
+
+        // Add click event for editing task
+        taskDiv.addEventListener("click", () => {
+          // Hide the tooltip first
+          tooltip.style.display = "none";
+          
+          const projectRole = sessionStorage.getItem("selectedProjectRole");
+          const projectID = sessionStorage.getItem("selectedProjectID");
+          
+          // Only allow managers to edit tasks
+          if (projectRole === "Manager" && typeof openEditTaskPopup === 'function') {
+            openEditTaskPopup(task, projectID);
+          }
+        });
+      }
       
       function loadCalendar(month, year) {
         const projectID = sessionStorage.getItem("selectedProjectID");
@@ -705,6 +797,9 @@
         })
         .then(res => res.json())
         .then(tasks => {
+          // Store tasks data globally for reference
+          window.taskData = tasks;
+          
           // Hide loading indicator
           loadingIndicator.style.display = "none";
           
@@ -765,104 +860,10 @@
             }
             
             taskDiv.innerHTML = statusDot + task.taskName;
-
-            taskDiv.addEventListener("mouseenter", (e) => {
-              popup.innerHTML = `
-                <div style="padding: 15px; border-radius: 10px; background: var(--card-bg); 
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);">
-                  <h3 style="margin-top: 0; color: var(--primary-color); font-size: 1.1rem; margin-bottom: 12px;">${task.taskName}</h3>
-                  
-                  <div style="margin-bottom: 8px;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Type</span>
-                    <div style="font-size: 0.9rem;">${task.taskType}</div>
-                  </div>
-                  
-                  <div style="margin-bottom: 8px;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Description</span>
-                    <div style="font-size: 0.9rem;">${task.description || 'No description provided'}</div>
-                  </div>
-                  
-                  <div style="margin-bottom: 8px;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Assigned To</span>
-                    <div style="font-size: 0.9rem;">${task.assignedTo || 'Unassigned'}</div>
-                  </div>
-                  
-                  <div style="margin-bottom: 8px;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Priority</span>
-                    <div style="font-size: 0.9rem;">${task.priority}</div>
-                  </div>
-                  
-                  <div style="margin-bottom: 8px;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Status</span>
-                    <div style="font-size: 0.9rem;">${task.status}</div>
-                  </div>
-                  
-                  <div style="margin-bottom: 8px;">
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Date Range</span>
-                    <div style="font-size: 0.9rem;">${formatDate(task.startDate)} - ${formatDate(task.endDate)}</div>
-                  </div>
-                </div>
-              `;
-              
-              // Position popup near the mouse cursor
-              popup.style.display = 'block';
-              
-              // Get cursor position
-              const mouseX = e.clientX;
-              const mouseY = e.clientY;
-              
-              // Get calendar container dimensions and position
-              const calendarContainer = document.querySelector('.calendar-container');
-              const calendarRect = calendarContainer.getBoundingClientRect();
-              
-              // Get viewport dimensions
-              const viewportWidth = window.innerWidth;
-              const viewportHeight = window.innerHeight;
-              
-              // Set popup width
-              popup.style.width = '250px'; // Narrower width to fit better
-              
-              // Get popup dimensions after setting width
-              const popupWidth = popup.offsetWidth;
-              const popupHeight = popup.offsetHeight;
-              
-              // Calculate optimal position (default to right of cursor)
-              let left = mouseX + 10;
-              let top = mouseY + window.scrollY;
-              
-              // Check if popup would go off the right edge of the calendar container
-              if (left + popupWidth > calendarRect.right - 10) {
-                left = mouseX - popupWidth - 10; // Position to the left of cursor
-              }
-              
-              // Check if popup would go off bottom edge
-              if (top + popupHeight > window.scrollY + viewportHeight - 10) {
-                top = window.scrollY + viewportHeight - popupHeight - 10;
-              }
-              
-              // Ensure popup stays within the viewport
-              left = Math.max(10, left);
-              top = Math.max(window.scrollY + 10, top);
-              
-              // Apply position
-              popup.style.position = 'fixed';
-              popup.style.top = `${top}px`;
-              popup.style.left = `${left}px`;
-            });
-
-            taskDiv.addEventListener("mouseleave", () => {
-              popup.style.display = "none";
-            });
-
-            taskDiv.addEventListener("click", () => {
-              const projectRole = sessionStorage.getItem("selectedProjectRole");
-              
-              // Allow edit only if the user is a manager
-              if (projectRole === "Manager") {
-                openEditTaskPopup(task, projectID);
-              }
-            });
-
+            
+            // Setup event handlers for the task div
+            setupTaskEventHandlers(taskDiv, task);
+            
             cell.appendChild(taskDiv);
           });
         })
@@ -880,12 +881,6 @@
           // Still display the calendar grid with empty cells
           calendarGrid.style.display = "grid";
         });
-      }
-
-      function formatDate(dateString) {
-        const date = new Date(dateString);
-        const options = { year: "numeric", month: "short", day: "numeric" };
-        return date.toLocaleDateString("en-US", options);
       }
 
       function prevMonth() {
@@ -1017,9 +1012,11 @@
         nextBtn.disabled = nextDate > projectEnd;
       }
 
-      document.addEventListener("click", (e) => {
-        if (!popup.contains(e.target) && !e.target.closest(".calendar-task")) {
-          popup.style.display = "none";
+      // Hide tooltip on outside click
+      document.addEventListener("click", function(e) {
+        const tooltip = document.getElementById("custom-tooltip");
+        if (!e.target.closest(".calendar-task") && tooltip) {
+          tooltip.style.display = "none";
         }
         
         if (taskLimit === 100 && !e.target.classList.contains("calendar-more")) {
@@ -1038,6 +1035,11 @@
       window.toggleMenu = function() {
         const navbar = document.querySelector(".navbar");
         if (navbar) navbar.classList.toggle("menu-open");
+      };
+      
+      // Set up globally accessible function to refresh the calendar view
+      window.refreshTasks = function() {
+        loadCalendar(currentMonth, currentYear);
       };
     </script>
   </body>
