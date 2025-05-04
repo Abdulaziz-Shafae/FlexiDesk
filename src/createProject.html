@@ -32,6 +32,9 @@
         --button-text: #ffffff;
         --button-hover: #0d2240;
         --error-text: #e74c3c;
+        --success-color: #28a745;
+        --error-color: #dc3545;
+        --warning-color: #ffc107;
       }
 
       /* Dark mode variables */
@@ -56,6 +59,57 @@
         --button-text: #111111;
         --button-hover: #3d5af1;
         --error-text: #ff6b6b;
+        --success-color: #2ea043;
+        --error-color: #f85149;
+        --warning-color: #d29922;
+      }
+
+      /* Success Popup */
+      .success-popup {
+        position: fixed;
+        top: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        width: 80%;
+        max-width: 500px;
+        background-color: #01cc1c;
+        color: white;
+        padding: 15px 20px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-weight: 600;
+        animation: fadeInOut 5s forwards;
+        display: none;
+      }
+      
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        10% { opacity: 1; transform: translate(-50%, 0); }
+        80% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); visibility: hidden; }
+      }
+
+      .success-popup i {
+        font-size: 24px;
+      }
+
+      .success-popup-close {
+        position: absolute;
+        right: 15px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        font-size: 18px;
+      }
+
+      .success-popup-close:hover {
+        opacity: 1;
       }
 
       body {
@@ -397,6 +451,15 @@
   <body>
     <div id="navbar-placeholder"></div>
 
+    <!-- Success Popup -->
+    <div id="success-popup" class="success-popup">
+      <i class="fas fa-check-circle"></i>
+      <span>Project created successfully!</span>
+      <div class="success-popup-close" onclick="closeSuccessPopup()">
+        <i class="fas fa-times"></i>
+      </div>
+    </div>
+
     <div class="container">
       <div class="form-container">
         <h2 class="form-title">Create Project</h2>
@@ -475,6 +538,31 @@
     </div>
 
     <script>
+      // Function to close success popup
+      function closeSuccessPopup() {
+        const popup = document.getElementById('success-popup');
+        if (popup) {
+          popup.style.display = 'none';
+        }
+      }
+
+      // Function to show success popup
+      function showSuccessPopup(message) {
+        const popup = document.getElementById('success-popup');
+        const messageElement = popup.querySelector('span');
+        
+        // Set message
+        messageElement.textContent = message || 'Project created successfully!';
+        
+        // Show popup
+        popup.style.display = 'flex';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          closeSuccessPopup();
+        }, 5000);
+      }
+
       // Fetch and insert navbar
       fetch('navbar.php')
         .then(response => response.text())
@@ -775,20 +863,35 @@
           .then(res => res.json())
           .then(data => {
             if (data.status === 'success') {
-              alert('Project created successfully!');
-              window.location.href = 'homePage.php';
+              // Show success popup
+              showSuccessPopup('Project created successfully!');
+              
+              // Redirect after a short delay
+              setTimeout(() => {
+                window.location.href = 'homePage.php';
+              }, 2000);
             } else {
               // Reset button and show error
               submitBtn.innerHTML = originalBtnContent;
               submitBtn.disabled = false;
-              alert('Error: ' + (data.message || 'Failed to create project'));
+              
+              // Show error in red popup
+              const popup = document.getElementById('success-popup');
+              popup.querySelector('i').className = 'fas fa-exclamation-circle';
+              popup.style.backgroundColor = 'var(--error-color)';
+              showSuccessPopup('Error: ' + (data.message || 'Failed to create project'));
             }
           })
           .catch(error => {
             console.error('Error creating project:', error);
             submitBtn.innerHTML = originalBtnContent;
             submitBtn.disabled = false;
-            alert('Something went wrong. Please try again.');
+            
+            // Show error in red popup
+            const popup = document.getElementById('success-popup');
+            popup.querySelector('i').className = 'fas fa-exclamation-circle';
+            popup.style.backgroundColor = 'var(--error-color)';
+            showSuccessPopup('Something went wrong. Please try again.');
           });
         });
 

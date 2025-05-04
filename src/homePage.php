@@ -5,6 +5,70 @@ include('db.php');
 $isLoggedIn = isset($_SESSION['userID']);
 $userID = $isLoggedIn ? $_SESSION['userID'] : null;
 
+// Handle project deletion if requested
+if (isset($_POST['delete_project']) && isset($_POST['project_id']) && $isLoggedIn) {
+  $projectID = $_POST['project_id'];
+  
+  // First check if user has permission to delete (only project owners or admins)
+  $checkPermission = "SELECT role FROM user_projects WHERE userID = ? AND projectID = ?";
+  $permStmt = $conn->prepare($checkPermission);
+  $permStmt->bind_param("ii", $userID, $projectID);
+  $permStmt->execute();
+  $permResult = $permStmt->get_result();
+  
+  if ($permResult->num_rows > 0) {
+    $permRow = $permResult->fetch_assoc();
+    
+    // Only allow Managers to delete projects
+    if ($permRow['role'] == 'Manager') {
+      // Begin transaction for safe deletion
+      $conn->begin_transaction();
+      
+      try {
+        // Delete tasks related to project
+        $deleteTasksSQL = "DELETE FROM Tasks WHERE projectID = ?";
+        $taskStmt = $conn->prepare($deleteTasksSQL);
+        $taskStmt->bind_param("i", $projectID);
+        $taskStmt->execute();
+        
+        // Delete user_projects relationships
+        $deleteUserProjectsSQL = "DELETE FROM user_projects WHERE projectID = ?";
+        $upStmt = $conn->prepare($deleteUserProjectsSQL);
+        $upStmt->bind_param("i", $projectID);
+        $upStmt->execute();
+        
+        // Finally delete the project itself
+        $deleteProjectSQL = "DELETE FROM Projects WHERE projectID = ?";
+        $projStmt = $conn->prepare($deleteProjectSQL);
+        $projStmt->bind_param("i", $projectID);
+        $projStmt->execute();
+        
+        // Commit transaction
+        $conn->commit();
+        
+        // Set success message
+        $_SESSION['message'] = "Project successfully deleted.";
+        $_SESSION['message_type'] = "success";
+      } catch (Exception $e) {
+        // Rollback in case of error
+        $conn->rollback();
+        $_SESSION['message'] = "Error deleting project: " . $e->getMessage();
+        $_SESSION['message_type'] = "error";
+      }
+    } else {
+      $_SESSION['message'] = "You don't have permission to delete this project.";
+      $_SESSION['message_type'] = "error";
+    }
+  } else {
+    $_SESSION['message'] = "Project not found or you don't have access.";
+    $_SESSION['message_type'] = "error";
+  }
+  
+  // Redirect to prevent form resubmission
+  header("Location: homePage.php");
+  exit();
+}
+
 // Only run the SQL query if user is logged in
 $projects = [];
 if ($isLoggedIn) {
@@ -97,6 +161,8 @@ if ($isLoggedIn) {
       --button-bg: #3d5af1;
       --button-text: #ffffff;
       --button-hover: #0d2240;
+      --danger-color: #dc3545;
+      --danger-hover: #bd2130;
     }
 
     /* Dark mode variables */
@@ -120,6 +186,8 @@ if ($isLoggedIn) {
       --button-bg: #22d1ee;
       --button-text: #111111;
       --button-hover: #3d5af1;
+      --danger-color: #e05d65;
+      --danger-hover: #f27680;
     }
 
     /* ===== RESET & BASE ===== */
@@ -391,6 +459,7 @@ if ($isLoggedIn) {
       text-align: center;
       transition: all 0.3s ease;
       border: 1px solid var(--border-color);
+      position: relative;
     }
 
     .project-card:hover {
@@ -468,6 +537,16 @@ if ($isLoggedIn) {
       box-shadow: 0 10px 20px rgba(13, 34, 64, 0.2);
     }
 
+    .delete-btn {
+      background: var(--danger-color);
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(220, 53, 69, 0.2);
+    }
+
     .deadline {
       font-size: 0.95rem;
       color: var(--text-color);
@@ -506,6 +585,106 @@ if ($isLoggedIn) {
     .create-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 15px rgba(61, 90, 241, 0.3);
+    }
+
+    /* Alert messages */
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      color: white;
+      font-weight: 500;
+      text-align: center;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+    }
+
+    .alert-success {
+      background-color: #28a745;
+    }
+
+    .alert-error {
+      background-color: #dc3545;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    /* Modal styling for delete confirmation */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg-light);
+      padding: 30px;
+      border-radius: 15px;
+      width: 400px;
+      max-width: 90%;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      animation: modalAppear 0.3s;
+    }
+
+    @keyframes modalAppear {
+      from {opacity: 0; transform: scale(0.8);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    .modal h2 {
+      color: var(--primary-color);
+      margin-bottom: 20px;
+    }
+
+    .modal p {
+      margin-bottom: 25px;
+      color: var(--text-color);
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .modal-btn {
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .confirm-delete {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .confirm-delete:hover {
+      background-color: var(--danger-hover);
+      transform: translateY(-2px);
+    }
+
+    .cancel-delete {
+      background-color: var(--subtle-bg);
+      color: var(--text-color);
+    }
+
+    .cancel-delete:hover {
+      background-color: var(--border-color);
+      transform: translateY(-2px);
     }
 
     /* ===== REVEAL ANIMATIONS ===== */
@@ -568,6 +747,17 @@ if ($isLoggedIn) {
   <!-- Projects Content -->
   <div class="main-content">
     <div class="projects-container reveal">
+      <?php if (isset($_SESSION['message'])): ?>
+        <div class="alert alert-<?php echo $_SESSION['message_type']; ?>">
+          <?php echo $_SESSION['message']; ?>
+        </div>
+        <?php
+        // Clear the message after displaying
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        ?>
+      <?php endif; ?>
+      
       <div class="top-bar">
         <h1>Your Projects (<?php echo count($projects); ?>)</h1>
         <div>
@@ -592,9 +782,31 @@ if ($isLoggedIn) {
           <button onclick="enterProject(<?= $project['projectID'] ?>, '<?= addslashes($project['title']) ?>', '<?= $project['role'] ?>')" class="btn enter-btn">
             <i class="fas fa-arrow-right"></i> Enter Project
           </button>
+          <?php if ($project['role'] == 'Manager'): ?>
+          <button onclick="confirmDelete(<?= $project['projectID'] ?>, '<?= addslashes($project['title']) ?>')" class="btn delete-btn">
+            <i class="fas fa-trash-alt"></i> Delete Project
+          </button>
+          <?php endif; ?>
           <p class="deadline">Deadline: <?php echo $project['endDate']; ?> | <?php echo $project['role']; ?></p>
         </div>
         <?php endforeach; ?>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h2>Confirm Deletion</h2>
+      <p>Are you sure you want to delete the project "<span id="projectTitle"></span>"?</p>
+      <p>This action cannot be undone and will remove all tasks and team members associated with this project.</p>
+      <div class="modal-buttons">
+        <form id="deleteForm" method="POST" action="">
+          <input type="hidden" name="project_id" id="projectId">
+          <input type="hidden" name="delete_project" value="1">
+          <button type="submit" class="modal-btn confirm-delete">Delete</button>
+        </form>
+        <button class="modal-btn cancel-delete" onclick="closeModal()">Cancel</button>
       </div>
     </div>
   </div>
@@ -656,8 +868,38 @@ if ($isLoggedIn) {
       window.location.href = 'tableView.html';
     }
     
-    // Apply dark mode if set in localStorage
+    // Delete project modal functions
+    function confirmDelete(projectID, projectName) {
+      document.getElementById('projectTitle').textContent = projectName;
+      document.getElementById('projectId').value = projectID;
+      document.getElementById('deleteModal').style.display = 'flex';
+    }
+    
+    function closeModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById('deleteModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+    
+    // Make alerts fade out after 5 seconds
     document.addEventListener('DOMContentLoaded', function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        setTimeout(() => {
+          alert.style.opacity = '0';
+          setTimeout(() => {
+            alert.style.display = 'none';
+          }, 500);
+        }, 5000);
+      });
+      
+      // Apply dark mode if set in localStorage
       if (localStorage.getItem('darkMode') === 'enabled') {
         document.body.classList.add('dark-mode');
       }

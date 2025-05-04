@@ -130,32 +130,13 @@ function attachPopupEventListeners() {
   // Delete task
   document.getElementById("delete-task").onclick = function () {
     const id = this.dataset.taskID;
-    if (confirm("Are you sure you want to delete this task?")) {
-      // Show a loading notification
-      showNotification('info', 'Processing', 'Deleting task...');
-      
-      fetch(`deleteTask.php?id=${id}`)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error('Server responded with an error');
-          }
-          return res.text();
-        })
-        .then(data => {
-          // Close the popup first
-          document.getElementById("taskPopup").style.display = "none";
-          
-          // Show success notification
-          showNotification('success', 'Success', 'Task deleted successfully');
-          
-          // Refresh the appropriate view based on the current page
-          refreshCurrentView();
-        })
-        .catch(error => {
-          console.error("Delete task error:", error);
-          showNotification('error', 'Error', 'Failed to delete task. Please try again.');
-        });
-    }
+    const taskName = document.getElementById("taskName").value;
+    
+    // Hide the task popup
+    document.getElementById("taskPopup").style.display = "none";
+    
+    // Show the delete confirmation dialog
+    showDeleteConfirmation(id, taskName);
   };
 
   // Save task (either create or update)
@@ -173,12 +154,6 @@ function attachPopupEventListeners() {
     formData.append("taskDescription", document.getElementById("taskDescription").value);
     formData.append("startDate", document.getElementById('taskStartDate').value); 
     formData.append("endDate", document.getElementById('taskEndDate').value); 
-
-    // Check if a file is uploaded
-    const fileInput = document.getElementById("taskFile");
-    if (fileInput && fileInput.files.length > 0) {
-      formData.append("taskFile", fileInput.files[0]);
-    }
 
     const isEdit = this.dataset.edit === "true";
     const taskID = this.dataset.taskID; 
@@ -559,6 +534,198 @@ function initializeDateSelectors(projectID, taskStartDate = null, taskEndDate = 
   });
 }
 
+// Function to display a styled delete confirmation popup
+function showDeleteConfirmation(taskID, taskName = "") {
+  // Create the confirmation popup element if it doesn't exist
+  let confirmationPopup = document.getElementById('delete-confirmation-popup');
+  
+  if (!confirmationPopup) {
+    confirmationPopup = document.createElement('div');
+    confirmationPopup.id = 'delete-confirmation-popup';
+    confirmationPopup.className = 'popup';
+    
+    // Create the HTML structure exactly like the screenshot
+    confirmationPopup.innerHTML = `
+      <div class="popup-content delete-confirmation-content">
+        <div class="confirm-header">
+          Confirm Deletion<span class="close-x">&times;</span>
+        </div>
+        
+        <div class="confirmation-content">
+          <div class="confirmation-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <p id="confirmation-message">Are you sure you want to delete this task?</p>
+        </div>
+        
+        <div class="button-container">
+          <button id="confirm-cancel" class="btn cancel-btn">Cancel</button>
+          <button id="confirm-delete" class="btn delete-btn">Delete</button>
+        </div>
+      </div>
+    `;
+    
+    // Add the element to the document
+    document.body.appendChild(confirmationPopup);
+    
+    // Add styles for the new confirmation dialog
+    if (!document.getElementById('confirmation-styles')) {
+      const styles = document.createElement('style');
+      styles.id = 'confirmation-styles';
+      styles.textContent = `
+        .delete-confirmation-content {
+          max-width: 500px;
+          border-radius: 5px;
+          background-color: white;
+          overflow: hidden;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .confirm-header {
+          padding: 15px 20px;
+          border-bottom: 1px solid #e0e0e0;
+          text-align: center;
+          position: relative;
+          font-weight: 600;
+          font-size: 18px;
+          color: #333;
+        }
+        
+        .close-x {
+          position: absolute;
+          right: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 28px;
+          cursor: pointer;
+          color: #888;
+          line-height: 0.8;
+          padding: 8px;
+        }
+        
+        .close-x:hover {
+          color: #555;
+        }
+        
+        .confirmation-content {
+          padding: 40px 20px;
+          text-align: center;
+          border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .confirmation-icon {
+          color: #ffc107;
+          font-size: 48px;
+          margin-bottom: 25px;
+        }
+        
+        .confirmation-icon i {
+          font-size: 48px;
+        }
+        
+        #confirmation-message {
+          font-size: 16px;
+          color: #333;
+          margin: 0;
+        }
+        
+        .button-container {
+          padding: 15px 20px;
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+        }
+        
+        .btn {
+          padding: 8px 20px;
+          border-radius: 4px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          border: 1px solid transparent;
+        }
+        
+        .cancel-btn {
+          background-color: white;
+          border-color: #ddd;
+          color: #333;
+        }
+        
+        .delete-btn {
+          background-color: #dc3545;
+          color: white;
+        }
+      `;
+      document.head.appendChild(styles);
+    }
+  }
+  
+  // Update content if taskName is provided
+  const messageElement = document.getElementById('confirmation-message');
+  if (taskName) {
+    messageElement.textContent = `Are you sure you want to delete "${taskName}"?`;
+  } else {
+    messageElement.textContent = "Are you sure you want to delete this task?";
+  }
+  
+  // Set up event listeners
+  const closeBtn = confirmationPopup.querySelector('.close-x');
+  const cancelBtn = document.getElementById('confirm-cancel');
+  const deleteBtn = document.getElementById('confirm-delete');
+  
+  // Clear previous event listeners
+  const newCloseBtn = closeBtn.cloneNode(true);
+  const newCancelBtn = cancelBtn.cloneNode(true);
+  const newDeleteBtn = deleteBtn.cloneNode(true);
+  
+  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+  deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+  
+  // Add event listeners
+  newCloseBtn.addEventListener('click', () => {
+    confirmationPopup.style.display = 'none';
+  });
+  
+  newCancelBtn.addEventListener('click', () => {
+    confirmationPopup.style.display = 'none';
+  });
+  
+  newDeleteBtn.addEventListener('click', () => {
+    // Show loading notification
+    showNotification('info', 'Processing', 'Deleting task...');
+    
+    // Hide confirmation dialog
+    confirmationPopup.style.display = 'none';
+    
+    // Call the deleteTask API
+    fetch(`deleteTask.php?id=${taskID}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Server responded with an error');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.status === 'success') {
+          // Show success notification
+          showNotification('success', 'Success', 'Task deleted successfully');
+          
+          // Refresh the view
+          refreshCurrentView();
+        } else {
+          throw new Error(data.message || 'Unknown error');
+        }
+      })
+      .catch(error => {
+        console.error('Delete task error:', error);
+        showNotification('error', 'Error', 'Failed to delete task. Please try again.');
+      });
+  });
+  
+  // Show the popup
+  confirmationPopup.style.display = 'block';
+}
 // Show notification function (global)
 function showNotification(type, title, message, duration = 3000) {
   // Check if notification banner exists
@@ -784,3 +951,4 @@ function convertPriorityToNumber(priority) {
 window.showNotification = showNotification;
 window.hideNotification = hideNotification;
 window.refreshGanttData = refreshGanttData;
+window.showDeleteConfirmation = showDeleteConfirmation;

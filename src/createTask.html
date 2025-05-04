@@ -62,6 +62,53 @@
         padding: 0;
       }
 
+      /* Project Required Alert */
+      .project-alert {
+        position: fixed;
+        top: 120px; /* Positioned further down from the navbar */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        width: 80%;
+        max-width: 500px;
+        background-color: #dc3545; /* Red background */
+        color: white; /* White text for better contrast */
+        padding: 15px 20px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-weight: 600; /* Make text bolder */
+        animation: fadeInOut 5s forwards;
+      }
+      
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -20px); }
+        10% { opacity: 1; transform: translate(-50%, 0); }
+        80% { opacity: 1; transform: translate(-50%, 0); }
+        100% { opacity: 0; transform: translate(-50%, -20px); visibility: hidden; }
+      }
+
+      .project-alert i {
+        font-size: 20px;
+      }
+
+      .project-alert-close {
+        position: absolute;
+        right: 15px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+        font-size: 18px;
+      }
+
+      .project-alert-close:hover {
+        opacity: 1;
+      }
+
       /* Notification styling */
       .notification {
         position: fixed;
@@ -206,52 +253,6 @@
         min-height: 150px;
       }
 
-      /* Checkbox */
-      .checkbox-group {
-        display: flex;
-        align-items: center;
-        margin: 20px 0;
-        cursor: pointer;
-      }
-
-      .checkbox-group input {
-        width: auto;
-        margin-right: 10px;
-        height: 18px;
-        width: 18px;
-        cursor: pointer;
-      }
-
-      .checkbox-group label {
-        display: inline;
-        font-weight: 500;
-        margin-top: 0;
-        cursor: pointer;
-      }
-
-      /* File Upload */
-      .file-upload {
-        display: none;
-        background-color: var(--subtle-bg);
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        border: 1px dashed var(--border-color);
-      }
-
-      .file-upload label {
-        display: block;
-        margin-bottom: 10px;
-      }
-
-      .file-upload input[type="file"] {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        background-color: var(--card-bg-light);
-      }
-
       /* Submit Button */
       .submit-btn {
         width: 100%;
@@ -336,6 +337,15 @@
       </div>
     </div>
 
+    <!-- Project Required Alert -->
+    <div id="project-alert" class="project-alert">
+      <i class="fas fa-exclamation-circle"></i>
+      <span>You need to create a project first before adding tasks</span>
+      <div class="project-alert-close" onclick="closeProjectAlert()">
+        <i class="fas fa-times"></i>
+      </div>
+    </div>
+
     <!-- Navbar -->
     <div id="navbar-placeholder"></div>
 
@@ -394,22 +404,6 @@
         <label for="endDate" class="required-field">End Date</label>
         <input type="date" id="endDate" name="endDate" required />
 
-        <!-- File Requirement -->
-        <div class="checkbox-group">
-          <input
-            type="checkbox"
-            id="fileRequired"
-            onclick="toggleFileUpload()"
-          />
-          <label for="fileRequired">This task requires a file attachment</label>
-        </div>
-
-        <!-- fileUpload -->
-        <div class="file-upload" id="fileUpload">
-          <label for="taskFile">Upload File</label>
-          <input type="file" id="taskFile" name="taskFile" />
-        </div>
-
         <button type="submit" class="submit-btn">
           <i class="fas fa-plus-circle"></i> Create Task
         </button>
@@ -418,6 +412,12 @@
 
     <!-- JavaScript to Handle Form and Notifications -->
     <script>
+      // Project Alert System
+      function closeProjectAlert() {
+        const projectAlert = document.getElementById('project-alert');
+        projectAlert.style.display = 'none';
+      }
+      
       // Notification System
       function showNotification(type, title, message, duration = 4000) {
         const notification = document.getElementById('notification');
@@ -494,17 +494,6 @@
         }
       };
 
-      function toggleFileUpload() {
-        let fileUpload = document.getElementById('fileUpload');
-        let checkbox = document.getElementById('fileRequired');
-
-        if (checkbox.checked) {
-          fileUpload.style.display = 'block';
-        } else {
-          fileUpload.style.display = 'none';
-        }
-      }
-
       // Initialize dark mode if enabled in localStorage
       function initDarkMode() {
         if (localStorage.getItem('darkMode') === 'enabled') {
@@ -546,6 +535,7 @@
         const assignToSelect = document.getElementById("assignTo");
         const startDateInput = document.getElementById("startDate");
         const endDateInput = document.getElementById("endDate");
+        const projectAlert = document.getElementById("project-alert");
 
         // Set today as the minimum start date
         const today = new Date().toISOString().split('T')[0];
@@ -557,8 +547,12 @@
           .then((res) => res.json())
           .then((projects) => {
             if (projects.length === 0) {
-              showNotification('warning', 'No Projects Found', 'You need to create a project first before adding tasks.');
+              // Show the project alert banner if no projects exist
+              projectAlert.style.display = 'flex';
               return;
+            } else {
+              // Hide the project alert banner if projects exist
+              projectAlert.style.display = 'none';
             }
             
             projects.forEach((project) => {
